@@ -9,14 +9,12 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.LongPollWorker;
 import org.meteorminer.LongPollWorkerFactory;
 import org.meteorminer.Work;
-import org.meteorminer.binding.Authorization;
-import org.meteorminer.binding.BitcoinProxy;
-import org.meteorminer.binding.BitcoinUrl;
-import org.meteorminer.binding.GetWorkMessage;
+import org.meteorminer.binding.*;
 import org.meteorminer.queue.*;
 
 import java.net.Proxy;
 import java.net.URL;
+import java.util.Timer;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -26,7 +24,7 @@ public class MeteorMinerModule extends AbstractModule {
 
     private MeteorAdvice meteorAdvice;
 
-    private int queueSize = 2; //todo: externalize?
+    private int queueSize = 1; //todo: externalize?
 
     public MeteorMinerModule(MeteorAdvice meteorAdvice) {
         this.meteorAdvice = meteorAdvice;
@@ -38,14 +36,16 @@ public class MeteorMinerModule extends AbstractModule {
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 
         install(factoryModuleBuilder
-                .implement(new TypeLiteral<Producer<Work>>(){}, WorkProducer.class)
+                .implement(new TypeLiteral<Producer<Work>>() {
+                }, WorkProducer.class)
                 .build(WorkProducerFactory.class));
 
         install(factoryModuleBuilder
-                .implement(new TypeLiteral<Consumer<Work>>(){}, WorkConsumer.class)
+                .implement(new TypeLiteral<Consumer<Work>>() {
+                }, WorkConsumer.class)
                 .build((WorkConsumerFactory.class)));
 
-         install(factoryModuleBuilder
+        install(factoryModuleBuilder
                 .implement(Runnable.class, LongPollWorker.class)
                 .build((LongPollWorkerFactory.class)));
 
@@ -71,5 +71,9 @@ public class MeteorMinerModule extends AbstractModule {
         getWorkNode.put("id", 1);
 
         bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(getWorkNode.toString());
+
+        bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
+
+        bind(Timer.class).toInstance(new Timer());
     }
 }

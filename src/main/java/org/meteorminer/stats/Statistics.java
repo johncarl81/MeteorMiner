@@ -8,26 +8,26 @@ import javax.inject.Singleton;
 @Singleton
 public class Statistics {
 
-    private long hashCount;
-    private long previousHashTime;
+    private double hashCount;
+    private double previousHashTime;
 
-    public Statistics(){
+    public Statistics() {
         hashCount = 0;
         previousHashTime = System.currentTimeMillis();
     }
 
-    public void incrementHashCount(long increment){
+    public void incrementHashCount(long increment) {
         hashCount += increment;
     }
 
-    public double getHashRate(){
-        double rate = (1.0 * hashCount) / (System.currentTimeMillis() - previousHashTime);
-        previousHashTime = System.currentTimeMillis();
+    public double getHashRate() {
+        long currentHashTime = System.currentTimeMillis();
+        double rate = (1000.0 * hashCount) / (currentHashTime - previousHashTime);
+        previousHashTime = currentHashTime;
         hashCount = 0;
 
         return rate;
     }
-
 
 
 }

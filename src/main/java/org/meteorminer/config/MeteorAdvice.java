@@ -12,7 +12,9 @@ import java.net.URL;
  */
 public class MeteorAdvice {
 
-    private static final String LOCALHOST_URL = "http://localhost:8332";
+    private static final String LOCALHOST = "localhost";
+    private static final String PORT = "8332";
+    private static final int GETWORK_TIMEOUT = 60;
 
     private CommandLine line;
     private URL bitcoinUrl;
@@ -23,8 +25,8 @@ public class MeteorAdvice {
         String url = line.getOptionValue("host");
         String port = line.getOptionValue("port");
 
-        url = url == null ? "localhost" : url;
-        port = port == null ? "8332" : port;
+        url = url == null ? LOCALHOST : url;
+        port = port == null ? PORT : port;
 
         bitcoinUrl = new URL("http://" + url + ":" + port);
 
@@ -47,5 +49,15 @@ public class MeteorAdvice {
 
     public Proxy getProxy() {
         return proxy;
+    }
+
+    public int getGetWorkTimeout() {
+        String getWorkTimeout = line.getOptionValue("getwork");
+
+        if (getWorkTimeout != null) {
+            return Integer.parseInt(getWorkTimeout);
+        }
+
+        return GETWORK_TIMEOUT;
     }
 }

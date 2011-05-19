@@ -22,7 +22,6 @@ public class Work {
         setData(data);
 
 
-
         for (int i = 0; i < this.midstate.length; i++) {
             String parse = midstate.substring(i * 8, (i * 8) + 8);
             this.midstate[i] = Integer.reverseBytes((int) Long.parseLong(parse, 16));

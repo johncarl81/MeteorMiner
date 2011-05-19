@@ -38,8 +38,6 @@ public class WorkProducer extends Producer<Work> {
 
             JsonNode responseNode = jsonClient.execute(getWorkMessage);
 
-            System.out.println("Got work");
-
             return workFactory.buildWork(responseNode);
 
         } catch (IOException e) {

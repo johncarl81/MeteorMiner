@@ -1,6 +1,4 @@
-package org.meteorminer;
-
-import org.meteorminer.stats.Statistics;
+package org.meteorminer.stats;
 
 import javax.inject.Inject;
 import java.util.TimerTask;

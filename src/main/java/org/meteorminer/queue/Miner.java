@@ -1,9 +1,7 @@
 package org.meteorminer.queue;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.meteorminer.JsonClient;
 import org.meteorminer.Work;
-import org.meteorminer.hash.ScanHash;
+import org.meteorminer.hash.HashScanner;
 
 import javax.inject.Inject;
 
@@ -13,18 +11,14 @@ import javax.inject.Inject;
 public class Miner {
 
     @Inject
-    ScanHash sh;
+    HashScanner scanner;
     @Inject
-    JsonClient jsonClient;
-    @Inject
-    ObjectMapper mapper;
-    @Inject
-    WorkFoundCallbackImpl workFound;
+    WorkFoundCallback workFoundCallback;
 
     public void mine(Work work) {
 
         // Nonce is a number which starts at 0 and increments until 0xFFFFFFFF
-        sh.scan(work, 0, 0xFFFFFFFF, workFound);
+        scanner.scan(work, workFoundCallback);
     }
 
 }

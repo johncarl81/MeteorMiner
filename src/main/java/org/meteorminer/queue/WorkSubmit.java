@@ -23,17 +23,15 @@ public class WorkSubmit implements Runnable {
         this.jsonClient = jsonClient;
     }
 
-    @Override
     public void run() {
         try {
-            System.out.println("Found one!");
+            System.out.println("Work Passed");
 
             boolean success = parseJsonResult(jsonClient.execute(buildSubmitMessage(work)));
 
-            if(success){
+            if (success) {
                 System.out.println("Submitted");
-            }
-            else{
+            } else {
                 System.out.println("Rejected");
             }
 

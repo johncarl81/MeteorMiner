@@ -26,17 +26,16 @@ public class MeteorMiner {
             options.addOption("h", "help", false, "this help");
             options.addOption("o", "host", true, "bitcoin host IP");
             options.addOption("r", "port", true, "bitcoin host port");
+            options.addOption("g", "getwork", true, "seconds between getwork refresh");
             /*options.addOption("f", "fps", true, "target execution timing");
             options.addOption("w", "worksize", true, "override worksize");
             options.addOption("o", "host", true, "bitcoin host IP");
             options.addOption("r", "port", true, "bitcoin host port");
-            options.addOption("g", "getwork", true, "seconds between getwork refresh");
+
             options.addOption("D", "devices", true, "devices to enable");
             options.addOption("x", "proxy", true, "optional proxy settings IP:PORT<:username:password>");
             options.addOption("l", "url", true, "bitcoin host url");
             options.addOption("z", "loops", true, "kernel loops (power of two, 0 is off)");
-            options.addOption("d", "debug", false, "enable debug output");
-            options.addOption("dd", "edebug", false, "enable extra debug output");
             */
 
             PosixParser parser = new PosixParser();
