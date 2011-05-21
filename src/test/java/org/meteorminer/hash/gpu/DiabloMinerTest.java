@@ -23,10 +23,10 @@ public class DiabloMinerTest extends TestCase {
 
         OCL ocl = new OCL("search.cl", "search");
 
-        DiabloMiner miner = new DiabloMiner(ocl, 1, work);
+        DiabloMiner miner = new DiabloMiner(ocl, 1, work, 0xF);
 
         IntBuffer buffer = miner.hash(work, ocl, nonce, 1, 1);
 
-        assertEquals(nonce, buffer.get(0));
+        assertEquals(nonce, buffer.get(nonce & 0xF));
     }
 }

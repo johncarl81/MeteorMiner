@@ -15,7 +15,8 @@ import org.meteorminer.queue.*;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.Timer;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * @author John Ericksen
@@ -37,12 +38,12 @@ public class MeteorMinerModule extends AbstractModule {
 
         install(factoryModuleBuilder
                 .implement(new TypeLiteral<Producer<Work>>() {
-                }, WorkProducer.class)
+                        }, WorkProducer.class)
                 .build(WorkProducerFactory.class));
 
         install(factoryModuleBuilder
                 .implement(new TypeLiteral<Consumer<Work>>() {
-                }, WorkConsumer.class)
+                        }, WorkConsumer.class)
                 .build((WorkConsumerFactory.class)));
 
         install(factoryModuleBuilder
@@ -56,9 +57,9 @@ public class MeteorMinerModule extends AbstractModule {
         bind(URL.class).annotatedWith(BitcoinUrl.class)
                 .toInstance(meteorAdvice.getBitcoinUrl());
 
-        bind(new TypeLiteral<ArrayBlockingQueue<Work>>() {
+        bind(new TypeLiteral<BlockingQueue<Work>>() {
         })
-                .toInstance(new ArrayBlockingQueue<Work>(queueSize));
+                .toInstance(new SynchronousQueue<Work>());
 
         bind(Proxy.class).annotatedWith(BitcoinProxy.class)
                 .toProvider(new ProxyProvider(meteorAdvice.getProxy()));

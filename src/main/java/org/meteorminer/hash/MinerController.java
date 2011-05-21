@@ -10,20 +10,13 @@ import java.util.Set;
 @Singleton
 public class MinerController {
 
-    private boolean haltProduction;
     private Set<LocalMinerController> listeners = new HashSet<LocalMinerController>();
 
-    public boolean haltProduction() {
+    public void interruptProduction(Runnable callback) {
         for (LocalMinerController controller : listeners) {
             controller.interuptProduction();
         }
-        return haltProduction;
-    }
-
-    public void interruptProduction(Runnable callback) {
-        haltProduction = true;
         callback.run();
-        haltProduction = false;
     }
 
     public void register(LocalMinerController localMinerController) {

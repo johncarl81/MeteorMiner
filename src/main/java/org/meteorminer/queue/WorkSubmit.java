@@ -6,6 +6,7 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.JsonClient;
 import org.meteorminer.Work;
+import org.meteorminer.stats.Statistics;
 
 import java.io.IOException;
 
@@ -17,10 +18,12 @@ public class WorkSubmit implements Runnable {
     private Work work;
     private JsonClient jsonClient;
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private Statistics stats;
 
-    public WorkSubmit(Work work, JsonClient jsonClient) {
+    public WorkSubmit(Work work, JsonClient jsonClient, Statistics stats) {
         this.work = work;
         this.jsonClient = jsonClient;
+        this.stats = stats;
     }
 
     public void run() {
@@ -31,8 +34,10 @@ public class WorkSubmit implements Runnable {
 
             if (success) {
                 System.out.println("Submitted");
+                stats.incrementWorkPass(1);
             } else {
                 System.out.println("Rejected");
+                stats.incrementWorkFail(1);
             }
 
         } catch (IOException e) {

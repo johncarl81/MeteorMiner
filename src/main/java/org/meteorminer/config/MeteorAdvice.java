@@ -14,7 +14,7 @@ public class MeteorAdvice {
 
     private static final String LOCALHOST = "localhost";
     private static final String PORT = "8332";
-    private static final int GETWORK_TIMEOUT = 60;
+    private static final int GETWORK_TIMEOUT = 5;
 
     private CommandLine line;
     private URL bitcoinUrl;

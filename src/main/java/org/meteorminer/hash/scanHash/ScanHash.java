@@ -28,6 +28,8 @@ public class ScanHash implements HashScanner {
     private MinerController minerController;
     @Inject
     private Timer timer;
+    @Inject
+    private ProcessHash processHash;
 
     private long previousCount;
     private long nonceCount;
@@ -44,22 +46,22 @@ public class ScanHash implements HashScanner {
 
         previousCount = nonceCount;
         timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                long currentNonceCount = nonceCount;
-                statistics.incrementHashCount(currentNonceCount - previousCount);
-                previousCount = currentNonceCount;
-            }
-        }, 1000, 1000);
+                    @Override
+                    public void run() {
+                        long currentNonceCount = nonceCount;
+                        statistics.incrementHashCount(currentNonceCount - previousCount);
+                        previousCount = currentNonceCount;
+                    }
+                }, 1000, 1000);
 
         final LocalMinerController localController = new LocalMinerController(minerController);
 
         timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                localController.interuptProduction();
-            }
-        }, getWorkTimeout * 1000);
+                    @Override
+                    public void run() {
+                        localController.interuptProduction();
+                    }
+                }, getWorkTimeout * 1000);
         int[] _data = decode(new int[16], work.getDataString().substring(128));
         int[] _midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());
         int[] __state = new int[_midstate.length];
@@ -68,7 +70,7 @@ public class ScanHash implements HashScanner {
 
         int[] __hash = SHA256.initState();
         for (int nonce = start; nonce != end && !localController.haltProduction(); nonce++, nonceCount++) {
-            if(ProcessHash.processHash(work, _data, nonce, _midstate, __state, buff, __hash, workFoundCallback)){
+            if (processHash.processHash(work, _data, nonce, _midstate, __state, buff, __hash, workFoundCallback)) {
                 break;
             }
         }
@@ -91,5 +93,9 @@ public class ScanHash implements HashScanner {
 
     public void setMinerController(MinerController minerController) {
         this.minerController = minerController;
+    }
+
+    public void setProcessHash(ProcessHash processHash) {
+        this.processHash = processHash;
     }
 }

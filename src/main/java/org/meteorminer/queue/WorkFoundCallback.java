@@ -9,5 +9,5 @@ import org.meteorminer.Work;
 @ImplementedBy(WorkFoundCallbackImpl.class)
 public interface WorkFoundCallback {
 
-    void found(Work work);
+    void found(Work work, int nonce);
 }

@@ -2,6 +2,7 @@ package org.meteorminer.queue;
 
 import org.meteorminer.JsonClient;
 import org.meteorminer.Work;
+import org.meteorminer.stats.Statistics;
 
 import javax.inject.Inject;
 
@@ -12,8 +13,11 @@ public class WorkFoundCallbackImpl implements WorkFoundCallback {
 
     @Inject
     JsonClient jsonClient;
+    @Inject
+    Statistics stats;
 
-    public void found(Work work) {
-        new Thread(new WorkSubmit(work, jsonClient)).start();
+    public void found(Work work, int nonce) {
+        work.getData()[19] = nonce;
+        new Thread(new WorkSubmit(work, jsonClient, stats)).start();
     }
 }

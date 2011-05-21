@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.meteorminer.Work;
 import org.meteorminer.hash.MinerController;
+import org.meteorminer.hash.scanHash.ProcessHash;
 import org.meteorminer.queue.WorkFoundCallback;
 import org.meteorminer.stats.Statistics;
 
@@ -13,7 +14,6 @@ import java.util.Timer;
 public class GpuHashTest extends TestCase {
 
 	private GpuHashScanner scanHash;
-    private WorkFoundCallbackTester tester;
 
 	@Override
 	public void setUp() {
@@ -22,8 +22,11 @@ public class GpuHashTest extends TestCase {
         scanHash.setGetWorkTimeout(1000);
         scanHash.setMinerController(new MinerController());
         scanHash.setTimer(new Timer());
+        ProcessHash hash = new ProcessHash();
+        hash.setStats(new Statistics());
+        scanHash.setProcessHash(hash);
 
-        tester = new WorkFoundCallbackTester();
+
 	}
 
 	public void testScanHashNegative() {
@@ -33,7 +36,8 @@ public class GpuHashTest extends TestCase {
 				"00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
 				"ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
-        scanHash.scan(work, tester, 1, 0xffff);
+        WorkFoundCallbackTester tester = new WorkFoundCallbackTester(0);
+        scanHash.scan(work, tester, 1, 0xffffL);
 
 		Assert.assertFalse("No match for casial hash", tester.isFound());
 	}
@@ -44,8 +48,12 @@ public class GpuHashTest extends TestCase {
 				"f5cb759978f54c15cef60cc43fa510bb5621fc1ddb4bb285efe6e4c55aa3fb85",
 				"00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
 				"ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
+
+        WorkFoundCallbackTester tester = new WorkFoundCallbackTester(30911318);
+
         try{
-        scanHash.scan(work, tester, 0x1d70bd0, 0xffff);
+
+            scanHash.scan(work, tester, 0x1d70bd0, 0xffffff);
         }
         catch(RuntimeException e){//good
         }
@@ -54,7 +62,7 @@ public class GpuHashTest extends TestCase {
 		Assert.assertEquals(
                 "Known sol'n",
                 work.getDataString(),
-                "0000000114cbad4d7252a937cb65437645722fa3c6cf16cfd3eaa3fc0001e6f6000000008249f5c8ee2f04f0cdca30b97949373d00db1b34d45253407567df2ce552a9ed4d1d5c9c1b04864c56abd701000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000");
+                "0000000114cbad4d7252a937cb65437645722fa3c6cf16cfd3eaa3fc0001e6f6000000008249f5c8ee2f04f0cdca30b97949373d00db1b34d45253407567df2ce552a9ed4d1d5c9c1b04864c00000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000");
 	}
 
     public void testScanHashPositive2(){
@@ -64,10 +72,11 @@ public class GpuHashTest extends TestCase {
                 "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
+        WorkFoundCallbackTester tester = new WorkFoundCallbackTester(563799816);
         //solution is 563799816
         //            110297600
         try{
-        scanHash.scan(work, tester, 563700000, 563799817);
+            scanHash.scan(work, tester, 563700000, 563799817);
         }
         catch(RuntimeException e){//good
         }
@@ -76,12 +85,19 @@ public class GpuHashTest extends TestCase {
 
     }
 
+
     private class WorkFoundCallbackTester implements WorkFoundCallback{
 
         private boolean found = false;
+        private int expectedNonce;
 
-        public void found(Work work) {
+        private WorkFoundCallbackTester(int expectedNonce) {
+            this.expectedNonce = expectedNonce;
+        }
+
+        public void found(Work work, int nonce){
             found = true;
+            assertEquals(expectedNonce, nonce);
             throw new RuntimeException(); //short circuit
         }
 

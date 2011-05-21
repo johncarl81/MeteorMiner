@@ -1,15 +1,15 @@
 package org.meteorminer.queue;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author John Ericksen
  */
 public abstract class Consumer<T> implements Runnable {
 
-    private ArrayBlockingQueue<T> queue;
+    private BlockingQueue<T> queue;
 
-    public Consumer(ArrayBlockingQueue<T> queue) {
+    public Consumer(BlockingQueue<T> queue) {
         this.queue = queue;
     }
 

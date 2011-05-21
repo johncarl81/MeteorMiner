@@ -2,15 +2,19 @@ package org.meteorminer.hash.scanHash;
 
 import org.meteorminer.Work;
 import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.stats.Statistics;
 
-import static org.meteorminer.hash.scanHash.HexUtil.encode;
+import javax.inject.Inject;
 
 /**
  * @author John Ericksen
  */
 public class ProcessHash {
 
-    public static boolean processHash(Work work, int[] data, int nonce, int[] midstate, int[] state, int[] buff, int[] hash, WorkFoundCallback workFoundCallback){
+    @Inject
+    Statistics stats;
+
+    public boolean processHash(Work work, int[] data, int nonce, int[] midstate, int[] state, int[] buff, int[] hash, WorkFoundCallback workFoundCallback) {
         data[3] = nonce; // NONCE is _data[3]
 
         System.arraycopy(midstate, 0, state, 0, midstate.length);
@@ -19,11 +23,16 @@ public class ProcessHash {
         SHA256.processBlock(hash, buff, state);
 
         if (hash[7] == 0 && hash[6] < work.getTarget()[6]) {
-            System.out.println("found one");
-            work.setData(work.getDataString().substring(0, 128) + encode(data));
-            workFoundCallback.found(work);
+            System.out.println("\rfound one");
+            //work.setData(work.getDataString().substring(0, 128) + encode(data));
+            workFoundCallback.found(work, nonce);
+
             return true;
         }
         return false;
+    }
+
+    public void setStats(Statistics stats) {
+        this.stats = stats;
     }
 }

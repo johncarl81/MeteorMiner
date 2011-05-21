@@ -1,16 +1,16 @@
 package org.meteorminer.queue;
 
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author John Ericksen
  */
 public abstract class Producer<T> implements Runnable {
 
-    private ArrayBlockingQueue<T> queue;
+    private BlockingQueue<T> queue;
 
-    public Producer(ArrayBlockingQueue<T> queue) {
+    public Producer(BlockingQueue<T> queue) {
         this.queue = queue;
     }
 

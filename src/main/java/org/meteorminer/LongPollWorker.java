@@ -9,7 +9,7 @@ import org.meteorminer.hash.MinerController;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class LongPollWorker implements Runnable {
 
     private URL longPollWorkerUrl;
-    private ArrayBlockingQueue<Work> queue;
+    private BlockingQueue<Work> queue;
     private JsonClient jsonClient;
     private String getWorkRequest;
     private WorkFactory workFactory;
@@ -27,7 +27,7 @@ public class LongPollWorker implements Runnable {
 
     @Inject
     public LongPollWorker(@Assisted URL longPollWorkerUrl,
-                          ArrayBlockingQueue<Work> queue,
+                          BlockingQueue<Work> queue,
                           JsonClient jsonClient,
                           @GetWorkMessage String getWorkRequest,
                           @GetWorkTimeout int getWorkTimeout,
@@ -48,7 +48,7 @@ public class LongPollWorker implements Runnable {
 
                 JsonNode responseNode = jsonClient.execute(getWorkRequest, longPollWorkerUrl);
 
-                System.out.println("Long Poll");
+                System.out.println("\rLong Poll");
 
                 final Work work = workFactory.buildWork(responseNode);
 

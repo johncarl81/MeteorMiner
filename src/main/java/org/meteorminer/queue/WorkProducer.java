@@ -9,7 +9,7 @@ import org.meteorminer.binding.GetWorkMessage;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author John Ericksen
@@ -22,7 +22,7 @@ public class WorkProducer extends Producer<Work> {
 
 
     @Inject
-    public WorkProducer(@Assisted ArrayBlockingQueue<Work> queue,
+    public WorkProducer(@Assisted BlockingQueue<Work> queue,
                         @GetWorkMessage String getWorkMessage,
                         JsonClient jsonClient,
                         WorkFactory workFactory) {

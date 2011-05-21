@@ -7,17 +7,18 @@ import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.LocalMinerController;
 import org.meteorminer.hash.MinerController;
 import org.meteorminer.hash.scanHash.ProcessHash;
-import org.meteorminer.hash.scanHash.SHA256;
 import org.meteorminer.queue.WorkFoundCallback;
 import org.meteorminer.stats.Statistics;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static org.meteorminer.hash.scanHash.HexUtil.decode;
 
 /**
  * @author John Ericksen
@@ -37,11 +38,14 @@ public class GpuHashScanner implements HashScanner {
     private MinerController minerController;
     @Inject
     private Timer timer;
+    @Inject
+    private ProcessHash processHash;
 
     private long previousCount;
     private long nonceCount;
     static final int workgroupSize;
     static final int localWorkSize;
+    Random rand = new Random(System.currentTimeMillis());
 
     static {
         try {
@@ -51,23 +55,25 @@ public class GpuHashScanner implements HashScanner {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        workgroupSize = ocl.kernel.getWorkGroupSize().get(ocl.context.getDevices()[0]).intValue();
-        localWorkSize = 1;
+        workgroupSize = 500000;
+        localWorkSize = 500;
 
     }
 
     public void scan(Work work, WorkFoundCallback workFoundCallback) {
-        scan(work, workFoundCallback, 0, (int) (0xFFFFFFFFL / workgroupSize));
+        scan(work, workFoundCallback, 0, 0xFFFFFFFFL);
     }
 
     public void scan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
 
-        DiabloMiner diabloMiner = new DiabloMiner(ocl, workgroupSize, work);
-        int startNonce = start / workgroupSize;
+        System.out.println("\rStart age:" + work.getAge());
+        DiabloMiner diabloMiner = new DiabloMiner(ocl, workgroupSize, work, 0xF);
+        int startNonce = (start / workgroupSize);
 
-        long nonceEnd = startNonce + (end / workgroupSize);
+        long nonceEnd = startNonce + (end / workgroupSize) + 1;
 
-        previousCount = nonceCount;
+        previousCount = nonceCount * workgroupSize;
+
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -87,24 +93,59 @@ public class GpuHashScanner implements HashScanner {
             }
         };
 
-        timer.schedule(endTimer, getWorkTimeout * 1000);
+        timer.schedule(endTimer, (getWorkTimeout * 1000) - (System.currentTimeMillis() - work.getStartTime()));
 
-        for (int nonce = startNonce; nonce < nonceEnd /*&& !localController.haltProduction()*/; nonce++/*, nonceCount++*/) {
+        for (int nonce = startNonce; nonce < nonceEnd && !localController.haltProduction(); nonce++, nonceCount++) {
 
 
             IntBuffer output = diabloMiner.hash(work, ocl, nonce, workgroupSize, localWorkSize);
 
-            for (int i = 0; i < workgroupSize; i++) {
+            for (int i = 0; i < 0xF; i++) {
 
                 if (output.get(i) > 0) {
-                    int[] _data = decode(new int[16], work.getDataString().substring(128));
+                    /*int[] _data = decode(new int[16], work.getDataString().substring(128));
                     int[] _midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());
                     int[] __state = new int[_midstate.length];
                     int[] buff = new int[64];
 
 
                     int[] __hash = SHA256.initState();
-                   ProcessHash.processHash(work, _data, output.get(i), _midstate, __state, buff, __hash, workFoundCallback);
+                    processHash.processHash(work, _data, output.get(i), _midstate, __state, buff, __hash, workFoundCallback);
+                    diabloMiner.createBuffer(ocl);*/
+                    try{
+                        final ByteBuffer digestInput = ByteBuffer.allocate(80);
+
+                        for (int j = 0; j < 19; j++)
+                            digestInput.putInt(j * 4, work.getData()[j]);
+
+                        digestInput.putInt(19 * 4, output.get(i));
+
+                        final MessageDigest digestInside = MessageDigest.getInstance("SHA-256");
+                        final MessageDigest digestOutside = MessageDigest.getInstance("SHA-256");
+
+                        byte[] digestOutput = digestOutside.digest(digestInside.digest(digestInput.array()));
+
+                        long G = ((long) ((0x000000FF & ((int) digestOutput[27])) << 24 |
+                                (0x000000FF & ((int) digestOutput[26])) << 16 |
+                                (0x000000FF & ((int) digestOutput[25])) << 8 |
+                                (0x000000FF & ((int) digestOutput[24])))) & 0xFFFFFFFFL;
+
+                        long H = ((long) ((0x000000FF & ((int) digestOutput[31])) << 24 |
+                                (0x000000FF & ((int) digestOutput[30])) << 16 |
+                                (0x000000FF & ((int) digestOutput[29])) << 8 |
+                                (0x000000FF & ((int) digestOutput[28])))) & 0xFFFFFFFFL;
+
+                        if (G <= work.getTarget()[6]) {
+                            if (H == 0) {
+                                workFoundCallback.found(work, output.get(i));
+                            } else {
+                                System.out.println("Invalid block found, possible driver or hardware issue");
+                            }
+                        }
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                    diabloMiner.createBuffer(ocl);
                 }
             }
 
@@ -116,9 +157,12 @@ public class GpuHashScanner implements HashScanner {
 
         }
 
+        System.out.println("\rFinished age:" + work.getAge());
+
         task.cancel();
         endTimer.cancel();
         diabloMiner.finish();
+        previousCount = 0;
 
 
         minerController.unregister(localController);
@@ -138,5 +182,9 @@ public class GpuHashScanner implements HashScanner {
 
     public void setTimer(Timer timer) {
         this.timer = timer;
+    }
+
+    public void setProcessHash(ProcessHash processHash) {
+        this.processHash = processHash;
     }
 }

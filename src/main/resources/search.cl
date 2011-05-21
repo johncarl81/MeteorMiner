@@ -270,12 +270,11 @@ __kernel __attribute__((vec_type_hint(uint))) WGS void search(
     D = D + (rotr(A, 6) ^ rotr(A, 11) ^ rotr(A, 25)) + (C ^ (A & (B ^ C))) + K[60] + W12; H = H + D;
 
     if(H + 0x5be0cd19 == 0) {
-      output[get_global_id(0)] = tnonce;
-    }
-    else{
-        output[get_global_id(0)] = 0;
-    }
+      output[tnonce & 0xF] = tnonce;
 #ifdef DOLOOPS
+    }
   }
+#else
+    }
 #endif
 }

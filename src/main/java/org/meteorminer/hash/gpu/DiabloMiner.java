@@ -13,23 +13,23 @@ import java.nio.IntBuffer;
  */
 public class DiabloMiner {
 
-     int fW0;
-        int fW1;
-        int fW2;
-        int fW3;
-        int fW15;
-        int fW01r;
-        int fcty_e;
-        int fcty_e2;
+    int fW0;
+    int fW1;
+    int fW2;
+    int fW3;
+    int fW15;
+    int fW01r;
+    int fcty_e;
+    int fcty_e2;
     final int[] midstate2 = new int[8];
     CLIntBuffer outputBuffer;
     IntBuffer output;
 
-    public DiabloMiner(OCL ocl, int worksize, Work work){
+    public DiabloMiner(OCL ocl, int worksize, Work work, int size) {
 
-        output = NIOUtils.directInts(worksize, ocl.getContext().getByteOrder());
+        output = NIOUtils.directInts(size, ocl.getContext().getByteOrder());
 
-        outputBuffer = ocl.getContext().createIntBuffer(CLMem.Usage.Output, worksize);
+        createBuffer(ocl);
 
         System.arraycopy(work.getMidstate(), 0, midstate2, 0, 8);
 
@@ -52,8 +52,21 @@ public class DiabloMiner {
                 (midstate2[7] & (midstate2[5] | midstate2[6])));
     }
 
-    public void finish(){
+    public void finish() {
         outputBuffer.release();
+    }
+
+    public void createBuffer(OCL ocl) {
+        if(outputBuffer != null){
+            outputBuffer.release();
+        }
+
+        int[] input = new int[0xF];
+
+        for(int i = 0; i < 0xF; i++){
+            input[i] = 0;
+        }
+        outputBuffer = ocl.getContext().createIntBuffer(CLMem.Usage.InputOutput, IntBuffer.wrap(input), true);
     }
 
     public IntBuffer hash(Work work, OCL ocl, int nonceStart, int worksize, int localWorkSize) {
@@ -77,9 +90,11 @@ public class DiabloMiner {
                 nonceStart * worksize,
                 outputBuffer);
 
-        CLEvent event = ocl.getKernel().enqueueNDRange(ocl.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
-        outputBuffer.read(ocl.getQueue(), 0, worksize, output, true, event);
-        
+        synchronized (ocl.getKernel()) {
+            CLEvent event = ocl.getKernel().enqueueNDRange(ocl.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
+            outputBuffer.read(ocl.getQueue(), 0, 0xF, output, true, event);
+        }
+
         return output;
 
     }

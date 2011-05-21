@@ -1,5 +1,7 @@
 package org.meteorminer;
 
+import java.util.Date;
+
 /**
  * @author John Ericksen
  */
@@ -12,8 +14,10 @@ public class Work {
     private final int[] data = new int[32];
     private final int[] midstate = new int[8];
     private final long[] target = new long[8];
+    private Date start;
 
     public Work(String data, String midstate, String hash1, String target) {
+        start = new Date();
         this.hash1 = hash1;
 
         this.midstateString = midstate;
@@ -80,5 +84,13 @@ public class Work {
             String parse = data.substring(i * 8, (i * 8) + 8);
             this.data[i] = Integer.reverseBytes((int) Long.parseLong(parse, 16));
         }
+    }
+
+    public String getAge() {
+        return (System.currentTimeMillis() - start.getTime()) + "ms";
+    }
+
+    public long getStartTime(){
+        return start.getTime();
     }
 }

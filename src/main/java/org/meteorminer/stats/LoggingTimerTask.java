@@ -13,6 +13,6 @@ public class LoggingTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        System.out.println(statistics.getHashRate());
+        System.out.printf("\r%1.2f mhash/sec %2d pass %3d fail", statistics.getHashRate(), statistics.getWorkPassed(), statistics.getWorkFailed());
     }
 }

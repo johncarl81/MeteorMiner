@@ -2,12 +2,12 @@ package org.meteorminer.queue;
 
 import org.meteorminer.Work;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author John Ericksen
  */
 public interface WorkConsumerFactory {
 
-    public Consumer<Work> createWorkConsumer(ArrayBlockingQueue<Work> queue);
+    public Consumer<Work> createWorkConsumer(BlockingQueue<Work> queue);
 }

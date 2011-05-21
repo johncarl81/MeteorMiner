@@ -12,7 +12,7 @@ public class LocalMinerController {
     }
 
     public void interuptProduction() {
-        System.out.println("interupt");
+        System.out.println("\rinterupt");
         this.interupt = true;
     }
 
