@@ -1,14 +1,15 @@
 package org.meteorminer.hash.gpu;
 
 import com.nativelibs4java.opencl.CLBuildException;
-import org.meteorminer.Work;
 import org.meteorminer.binding.GetWorkTimeout;
+import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.LocalMinerController;
 import org.meteorminer.hash.MinerController;
 import org.meteorminer.hash.scanHash.ProcessHash;
+import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.Statistics;
 import org.meteorminer.queue.WorkFoundCallback;
-import org.meteorminer.stats.Statistics;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -16,7 +17,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -40,12 +40,13 @@ public class GpuHashScanner implements HashScanner {
     private Timer timer;
     @Inject
     private ProcessHash processHash;
+    @Inject
+    private CLLogger logger;
 
     private long previousCount;
     private long nonceCount;
     static final int workgroupSize;
     static final int localWorkSize;
-    Random rand = new Random(System.currentTimeMillis());
 
     static {
         try {
@@ -66,7 +67,6 @@ public class GpuHashScanner implements HashScanner {
 
     public void scan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
 
-        System.out.println("\rStart age:" + work.getAge());
         DiabloMiner diabloMiner = new DiabloMiner(ocl, workgroupSize, work, 0xF);
         int startNonce = (start / workgroupSize);
 
@@ -84,7 +84,7 @@ public class GpuHashScanner implements HashScanner {
         };
         timer.schedule(task, 1000, 1000);
 
-        final LocalMinerController localController = new LocalMinerController(minerController);
+        final LocalMinerController localController = new LocalMinerController(minerController, logger);
 
         TimerTask endTimer = new TimerTask() {
             @Override
@@ -95,6 +95,7 @@ public class GpuHashScanner implements HashScanner {
 
         timer.schedule(endTimer, (getWorkTimeout * 1000) - (System.currentTimeMillis() - work.getStartTime()));
 
+        work.start();
         for (int nonce = startNonce; nonce < nonceEnd && !localController.haltProduction(); nonce++, nonceCount++) {
 
 
@@ -113,6 +114,7 @@ public class GpuHashScanner implements HashScanner {
                     processHash.processHash(work, _data, output.get(i), _midstate, __state, buff, __hash, workFoundCallback);
                     diabloMiner.createBuffer(ocl);*/
                     try{
+                        work.found();
                         final ByteBuffer digestInput = ByteBuffer.allocate(80);
 
                         for (int j = 0; j < 19; j++)
@@ -139,7 +141,7 @@ public class GpuHashScanner implements HashScanner {
                             if (H == 0) {
                                 workFoundCallback.found(work, output.get(i));
                             } else {
-                                System.out.println("Invalid block found, possible driver or hardware issue");
+                                logger.notification("Invalid block found, possible driver or hardware issue");
                             }
                         }
                     } catch (NoSuchAlgorithmException e) {
@@ -157,7 +159,7 @@ public class GpuHashScanner implements HashScanner {
 
         }
 
-        System.out.println("\rFinished age:" + work.getAge());
+        logger.notification("Finished age:" + work.getAge());
 
         task.cancel();
         endTimer.cancel();

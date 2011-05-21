@@ -4,9 +4,11 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
-import org.meteorminer.JsonClient;
-import org.meteorminer.Work;
-import org.meteorminer.stats.Statistics;
+import org.meteorminer.domain.Work;
+import org.meteorminer.hash.HashCacheScanner;
+import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.Statistics;
+import org.meteorminer.network.JsonClient;
 
 import java.io.IOException;
 
@@ -19,30 +21,37 @@ public class WorkSubmit implements Runnable {
     private JsonClient jsonClient;
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private Statistics stats;
+    private HashCacheScanner hashCache;
+    private int nonce;
+    private CLLogger logger;
 
-    public WorkSubmit(Work work, JsonClient jsonClient, Statistics stats) {
+    public WorkSubmit(Work work, JsonClient jsonClient, Statistics stats, HashCacheScanner hashCache, int nonce, CLLogger logger) {
         this.work = work;
         this.jsonClient = jsonClient;
         this.stats = stats;
+        this.hashCache = hashCache;
+        this.nonce = nonce;
+        this.logger = logger;
     }
 
     public void run() {
         try {
-            System.out.println("Work Passed");
+            logger.notification("Work Passed, found after:" + work.getFoundAge());
 
             boolean success = parseJsonResult(jsonClient.execute(buildSubmitMessage(work)));
 
             if (success) {
-                System.out.println("Submitted");
+                logger.notification("Submitted");
                 stats.incrementWorkPass(1);
+                hashCache.add(work, nonce);
             } else {
-                System.out.println("Rejected");
+                logger.notification("Rejected");
                 stats.incrementWorkFail(1);
             }
 
         } catch (IOException e) {
-            System.out.println("Exception while submitting the following work:");
-            System.out.println(work.getDataString());
+            logger.notification("Exception while submitting the following work:");
+            logger.notification(work.getDataString());
             e.printStackTrace();
         }
     }

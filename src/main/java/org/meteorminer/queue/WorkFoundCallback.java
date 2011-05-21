@@ -1,7 +1,7 @@
 package org.meteorminer.queue;
 
 import com.google.inject.ImplementedBy;
-import org.meteorminer.Work;
+import org.meteorminer.domain.Work;
 
 /**
  * @author John Ericksen

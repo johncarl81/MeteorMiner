@@ -1,12 +1,13 @@
 package org.meteorminer.hash.scanHash;
 
-import org.meteorminer.Work;
 import org.meteorminer.binding.GetWorkTimeout;
+import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.LocalMinerController;
 import org.meteorminer.hash.MinerController;
+import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.Statistics;
 import org.meteorminer.queue.WorkFoundCallback;
-import org.meteorminer.stats.Statistics;
 
 import javax.inject.Inject;
 import java.util.Random;
@@ -30,6 +31,8 @@ public class ScanHash implements HashScanner {
     private Timer timer;
     @Inject
     private ProcessHash processHash;
+    @Inject
+    private CLLogger logger;
 
     private long previousCount;
     private long nonceCount;
@@ -54,7 +57,7 @@ public class ScanHash implements HashScanner {
                     }
                 }, 1000, 1000);
 
-        final LocalMinerController localController = new LocalMinerController(minerController);
+        final LocalMinerController localController = new LocalMinerController(minerController, logger);
 
         timer.schedule(new TimerTask() {
                     @Override

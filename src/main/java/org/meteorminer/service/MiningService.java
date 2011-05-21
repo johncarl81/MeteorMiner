@@ -1,12 +1,11 @@
-package org.meteorminer;
+package org.meteorminer.service;
 
 import com.google.inject.Inject;
 import org.meteorminer.binding.GetWorkTimeout;
-import org.meteorminer.queue.Consumer;
-import org.meteorminer.queue.Producer;
+import org.meteorminer.domain.Work;
+import org.meteorminer.logging.LoggingTimerTask;
 import org.meteorminer.queue.WorkConsumerFactory;
 import org.meteorminer.queue.WorkProducerFactory;
-import org.meteorminer.stats.LoggingTimerTask;
 
 import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
@@ -33,14 +32,23 @@ public class MiningService {
     public void start() {
         timer.schedule(loggingTimerTask, 2000, 2000);
 
-        Producer producer = workProducerFactory.createWorkProducer(queue);
+        while(true){
+            workConsumerFactory.createWorkConsumer().consume(workProducerFactory.createWorkProducer().produce());
+        }
+
+        /*Producer producer = workProducerFactory.createWorkProducer(queue);
         new Thread(producer).start();
         
-        int consumerCount = 1;
+        int consumerCount = 4;
         for (int i = 0; i < consumerCount; i++) {
             Consumer consumer = workConsumerFactory.createWorkConsumer(queue);
             new Thread(consumer).start();
-        }
+            try{
+                Thread.sleep(5000 / 4);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }*/
 
 
 

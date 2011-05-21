@@ -8,12 +8,19 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.LongPollWorker;
 import org.meteorminer.LongPollWorkerFactory;
-import org.meteorminer.Work;
 import org.meteorminer.binding.*;
-import org.meteorminer.queue.*;
+import org.meteorminer.domain.Work;
+import org.meteorminer.hash.HashCacheScanner;
+import org.meteorminer.hash.HashScanner;
+import org.meteorminer.hash.gpu.GpuHashScanner;
+import org.meteorminer.queue.WorkConsumer;
+import org.meteorminer.queue.WorkConsumerFactory;
+import org.meteorminer.queue.WorkProducer;
+import org.meteorminer.queue.WorkProducerFactory;
 
 import java.net.Proxy;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
@@ -37,13 +44,11 @@ public class MeteorMinerModule extends AbstractModule {
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 
         install(factoryModuleBuilder
-                .implement(new TypeLiteral<Producer<Work>>() {
-                        }, WorkProducer.class)
+                .implement(WorkProducer.class, WorkProducer.class)
                 .build(WorkProducerFactory.class));
 
         install(factoryModuleBuilder
-                .implement(new TypeLiteral<Consumer<Work>>() {
-                        }, WorkConsumer.class)
+                .implement(WorkConsumer.class, WorkConsumer.class)
                 .build((WorkConsumerFactory.class)));
 
         install(factoryModuleBuilder
@@ -76,5 +81,14 @@ public class MeteorMinerModule extends AbstractModule {
         bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
 
         bind(Timer.class).toInstance(new Timer());
+
+        GpuHashScanner hashScanner = new GpuHashScanner();
+        requestInjection(hashScanner);
+        HashCacheScanner scanner = new HashCacheScanner(hashScanner);
+
+        bind(HashScanner.class).toInstance(scanner);
+        bind(HashCacheScanner.class).toInstance(scanner);
+
+        bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT));
     }
 }

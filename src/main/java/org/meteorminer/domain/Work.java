@@ -1,4 +1,4 @@
-package org.meteorminer;
+package org.meteorminer.domain;
 
 import java.util.Date;
 
@@ -15,6 +15,8 @@ public class Work {
     private final int[] midstate = new int[8];
     private final long[] target = new long[8];
     private Date start;
+    private Date found;
+    private Date startFind;
 
     public Work(String data, String midstate, String hash1, String target) {
         start = new Date();
@@ -88,6 +90,18 @@ public class Work {
 
     public String getAge() {
         return (System.currentTimeMillis() - start.getTime()) + "ms";
+    }
+
+    public String getFoundAge() {
+        return (found.getTime() - startFind.getTime()) + "ms";
+    }
+
+    public void start(){
+        startFind = new Date();
+    }
+
+    public void found(){
+        found = new Date();
     }
 
     public long getStartTime(){

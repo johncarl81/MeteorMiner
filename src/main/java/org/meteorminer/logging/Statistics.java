@@ -1,4 +1,4 @@
-package org.meteorminer.stats;
+package org.meteorminer.logging;
 
 import javax.inject.Singleton;
 

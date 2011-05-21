@@ -5,7 +5,11 @@ import com.google.inject.assistedinject.Assisted;
 import org.codehaus.jackson.JsonNode;
 import org.meteorminer.binding.GetWorkMessage;
 import org.meteorminer.binding.GetWorkTimeout;
+import org.meteorminer.domain.Work;
+import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.MinerController;
+import org.meteorminer.logging.CLLogger;
+import org.meteorminer.network.JsonClient;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +28,7 @@ public class LongPollWorker implements Runnable {
     private WorkFactory workFactory;
     private int getWorkTimeout;
     private MinerController minerController;
+    private CLLogger logger;
 
     @Inject
     public LongPollWorker(@Assisted URL longPollWorkerUrl,
@@ -32,7 +37,8 @@ public class LongPollWorker implements Runnable {
                           @GetWorkMessage String getWorkRequest,
                           @GetWorkTimeout int getWorkTimeout,
                           WorkFactory workFactory,
-                          MinerController minerController) {
+                          MinerController minerController,
+                          CLLogger logger) {
         this.longPollWorkerUrl = longPollWorkerUrl;
         this.queue = queue;
         this.jsonClient = jsonClient;
@@ -40,6 +46,7 @@ public class LongPollWorker implements Runnable {
         this.workFactory = workFactory;
         this.getWorkTimeout = getWorkTimeout;
         this.minerController = minerController;
+        this.logger = logger;
     }
 
     public void run() {
@@ -48,7 +55,7 @@ public class LongPollWorker implements Runnable {
 
                 JsonNode responseNode = jsonClient.execute(getWorkRequest, longPollWorkerUrl);
 
-                System.out.println("\rLong Poll");
+                logger.notification("Long Poll");
 
                 final Work work = workFactory.buildWork(responseNode);
 

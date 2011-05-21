@@ -1,4 +1,4 @@
-package org.meteorminer;
+package org.meteorminer.network;
 
 import org.meteorminer.binding.BitcoinProxy;
 import org.meteorminer.binding.BitcoinUrl;

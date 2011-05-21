@@ -4,7 +4,7 @@ import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLIntBuffer;
 import com.nativelibs4java.opencl.CLMem;
 import com.nativelibs4java.util.NIOUtils;
-import org.meteorminer.Work;
+import org.meteorminer.domain.Work;
 
 import java.nio.IntBuffer;
 

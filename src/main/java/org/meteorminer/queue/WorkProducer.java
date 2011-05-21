@@ -1,20 +1,18 @@
 package org.meteorminer.queue;
 
-import com.google.inject.assistedinject.Assisted;
 import org.codehaus.jackson.JsonNode;
-import org.meteorminer.JsonClient;
-import org.meteorminer.Work;
-import org.meteorminer.WorkFactory;
 import org.meteorminer.binding.GetWorkMessage;
+import org.meteorminer.domain.Work;
+import org.meteorminer.domain.WorkFactory;
+import org.meteorminer.network.JsonClient;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * @author John Ericksen
  */
-public class WorkProducer extends Producer<Work> {
+public class WorkProducer {
 
     private String getWorkMessage;
     private JsonClient jsonClient;
@@ -22,17 +20,16 @@ public class WorkProducer extends Producer<Work> {
 
 
     @Inject
-    public WorkProducer(@Assisted BlockingQueue<Work> queue,
+    public WorkProducer(
                         @GetWorkMessage String getWorkMessage,
                         JsonClient jsonClient,
                         WorkFactory workFactory) {
-        super(queue);
+
         this.workFactory = workFactory;
         this.jsonClient = jsonClient;
         this.getWorkMessage = getWorkMessage;
     }
 
-    @Override
     public Work produce() {
         try {
 

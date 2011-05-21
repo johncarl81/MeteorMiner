@@ -2,7 +2,7 @@ package org.meteorminer.hash.gpu;
 
 import com.nativelibs4java.opencl.CLBuildException;
 import junit.framework.TestCase;
-import org.meteorminer.Work;
+import org.meteorminer.domain.Work;
 
 import java.io.IOException;
 import java.nio.IntBuffer;

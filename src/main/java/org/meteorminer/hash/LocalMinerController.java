@@ -1,18 +1,22 @@
 package org.meteorminer.hash;
 
+import org.meteorminer.logging.CLLogger;
+
 /**
  * @author John Ericksen
  */
 public class LocalMinerController {
 
-    boolean interupt = false;
+    private boolean interupt = false;
+    private CLLogger logger;
 
-    public LocalMinerController(MinerController minerController) {
+    public LocalMinerController(MinerController minerController, CLLogger logger) {
+        this.logger = logger;
         minerController.register(this);
     }
 
     public void interuptProduction() {
-        System.out.println("\rinterupt");
+        logger.notification("interupt");
         this.interupt = true;
     }
 

@@ -3,10 +3,10 @@ package org.meteorminer.hash.scanHash;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.meteorminer.Work;
+import org.meteorminer.domain.Work;
 import org.meteorminer.hash.MinerController;
+import org.meteorminer.logging.Statistics;
 import org.meteorminer.queue.WorkFoundCallback;
-import org.meteorminer.stats.Statistics;
 
 import java.util.Timer;
 

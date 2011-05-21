@@ -8,6 +8,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerModule;
+import org.meteorminer.service.MiningService;
 
 import java.net.MalformedURLException;
 

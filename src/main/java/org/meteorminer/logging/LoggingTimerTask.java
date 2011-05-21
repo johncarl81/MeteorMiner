@@ -1,4 +1,4 @@
-package org.meteorminer.stats;
+package org.meteorminer.logging;
 
 import javax.inject.Inject;
 import java.util.TimerTask;
@@ -10,9 +10,11 @@ public class LoggingTimerTask extends TimerTask {
 
     @Inject
     private Statistics statistics;
+    @Inject
+    private CLLogger logger;
 
     @Override
     public void run() {
-        System.out.printf("\r%1.2f mhash/sec %2d pass %3d fail", statistics.getHashRate(), statistics.getWorkPassed(), statistics.getWorkFailed());
+        logger.outputMain();
     }
 }

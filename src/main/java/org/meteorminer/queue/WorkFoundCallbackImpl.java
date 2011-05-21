@@ -1,8 +1,10 @@
 package org.meteorminer.queue;
 
-import org.meteorminer.JsonClient;
-import org.meteorminer.Work;
-import org.meteorminer.stats.Statistics;
+import org.meteorminer.domain.Work;
+import org.meteorminer.hash.HashCacheScanner;
+import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.Statistics;
+import org.meteorminer.network.JsonClient;
 
 import javax.inject.Inject;
 
@@ -12,12 +14,16 @@ import javax.inject.Inject;
 public class WorkFoundCallbackImpl implements WorkFoundCallback {
 
     @Inject
-    JsonClient jsonClient;
+    private JsonClient jsonClient;
     @Inject
-    Statistics stats;
+    private Statistics stats;
+    @Inject
+    private HashCacheScanner hashCache;
+    @Inject
+    private CLLogger logger;
 
     public void found(Work work, int nonce) {
         work.getData()[19] = nonce;
-        new Thread(new WorkSubmit(work, jsonClient, stats)).start();
+        new Thread(new WorkSubmit(work, jsonClient, stats, hashCache, nonce, logger)).start();
     }
 }

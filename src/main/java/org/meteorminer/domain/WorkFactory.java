@@ -1,4 +1,4 @@
-package org.meteorminer;
+package org.meteorminer.domain;
 
 import org.codehaus.jackson.JsonNode;
 

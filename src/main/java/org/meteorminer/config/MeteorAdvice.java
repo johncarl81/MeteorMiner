@@ -12,9 +12,10 @@ import java.net.URL;
  */
 public class MeteorAdvice {
 
+    //defaults
     private static final String LOCALHOST = "localhost";
     private static final String PORT = "8332";
-    private static final int GETWORK_TIMEOUT = 5;
+    private static final int GETWORK_TIMEOUT = 2;
 
     private CommandLine line;
     private URL bitcoinUrl;

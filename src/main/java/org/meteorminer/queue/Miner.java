@@ -1,6 +1,6 @@
 package org.meteorminer.queue;
 
-import org.meteorminer.Work;
+import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashScanner;
 
 import javax.inject.Inject;
