@@ -1,4 +1,4 @@
-package org.meteorminer;
+package org.meteorminer.network;
 
 import java.net.URL;
 

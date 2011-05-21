@@ -27,7 +27,7 @@ public class Statistics {
         workPass += increment;
     }
 
-    public void incrementWorkFail(long increment){
+    public void incrementWorkFail(long increment) {
         workFail += increment;
     }
 
@@ -44,7 +44,7 @@ public class Statistics {
         return workPass;
     }
 
-    public long getWorkFailed(){
+    public long getWorkFailed() {
         return workFail;
     }
 

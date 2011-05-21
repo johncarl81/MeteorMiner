@@ -36,22 +36,22 @@ public class WorkSubmit implements Runnable {
 
     public void run() {
         try {
-            logger.notification("Work Passed, found after:" + work.getFoundAge());
+            logger.verbose("Work passed local verification.  Proceeding to submit.");
 
             boolean success = parseJsonResult(jsonClient.execute(buildSubmitMessage(work)));
 
             if (success) {
-                logger.notification("Submitted");
+                logger.notification("Hash Submitted: %08x", nonce);
                 stats.incrementWorkPass(1);
                 hashCache.add(work, nonce);
             } else {
-                logger.notification("Rejected");
+                logger.notification("Hash Rejected: %08x", nonce);
                 stats.incrementWorkFail(1);
             }
 
         } catch (IOException e) {
             logger.notification("Exception while submitting the following work:");
-            logger.notification(work.getDataString());
+            logger.notification(work.toString());
             e.printStackTrace();
         }
     }

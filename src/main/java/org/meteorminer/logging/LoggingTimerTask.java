@@ -7,9 +7,6 @@ import java.util.TimerTask;
  * @author John Ericksen
  */
 public class LoggingTimerTask extends TimerTask {
-
-    @Inject
-    private Statistics statistics;
     @Inject
     private CLLogger logger;
 

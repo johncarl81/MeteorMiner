@@ -17,7 +17,6 @@ public class OCL {
     public final CLKernel kernel;
 
     public OCL(String srcFile, String kernelName) throws CLBuildException, IOException {
-        //SetupUtils.failWithDownloadProposalsIfOpenCLNotAvailable();
         String src = IOUtils.toString(getClass().getClassLoader().getResourceAsStream(srcFile));
         context = createBestContext();
         queue = context.createDefaultQueue();

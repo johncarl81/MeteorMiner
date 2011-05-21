@@ -1,4 +1,4 @@
-package org.meteorminer;
+package org.meteorminer.network;
 
 import org.meteorminer.binding.BitcoinUrl;
 import org.meteorminer.logging.CLLogger;
@@ -18,7 +18,6 @@ public class LongPollAdaptor {
     @Inject
     @BitcoinUrl
     private URL bitcoind;
-
     @Inject
     private LongPollWorkerFactory longPollWorkerFactory;
     @Inject
@@ -32,23 +31,24 @@ public class LongPollAdaptor {
 
             if (xlongpolling != null) {
 
-                URL bitcoindLongpoll;
-
-                if (xlongpolling.startsWith("http"))
-                    bitcoindLongpoll = new URL(xlongpolling);
-                else if (xlongpolling.startsWith("/"))
-                    bitcoindLongpoll = new URL(bitcoind.getProtocol(), bitcoind.getHost(), bitcoind.getPort(),
-                            xlongpolling);
-                else
-                    bitcoindLongpoll = new URL(bitcoind.getProtocol(), bitcoind.getHost(), bitcoind.getPort(),
-                            (bitcoind.getFile() + "/" + xlongpolling).replace("//", "/"));
-
-
-                logger.notification("Enabling long poll support: " + bitcoindLongpoll);
+                URL bitcoindLongpoll = parseLongPollURL(xlongpolling);
 
                 longpollThread = new Thread(longPollWorkerFactory.buildLongPollWorker(bitcoindLongpoll));
                 longpollThread.start();
+
+                logger.notification("Long poll support enabled: " + bitcoindLongpoll);
             }
         }
+    }
+
+    private URL parseLongPollURL(String xlongpolling) throws MalformedURLException {
+        if (xlongpolling.startsWith("http"))
+            return new URL(xlongpolling);
+        else if (xlongpolling.startsWith("/"))
+            return new URL(bitcoind.getProtocol(), bitcoind.getHost(), bitcoind.getPort(),
+                    xlongpolling);
+        else
+            return new URL(bitcoind.getProtocol(), bitcoind.getHost(), bitcoind.getPort(),
+                    (bitcoind.getFile() + "/" + xlongpolling).replace("//", "/"));
     }
 }

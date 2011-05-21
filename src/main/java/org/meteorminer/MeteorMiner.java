@@ -28,6 +28,7 @@ public class MeteorMiner {
             options.addOption("o", "host", true, "bitcoin host IP");
             options.addOption("r", "port", true, "bitcoin host port");
             options.addOption("g", "getwork", true, "seconds between getwork refresh");
+            options.addOption("v", "verbose", false, "Verbose Output");
             /*options.addOption("f", "fps", true, "target execution timing");
             options.addOption("w", "worksize", true, "override worksize");
             options.addOption("o", "host", true, "bitcoin host IP");

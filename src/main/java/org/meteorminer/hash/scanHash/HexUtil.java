@@ -5,15 +5,15 @@ public class HexUtil {
     public static String encode(int[] data) {
         StringBuilder sb = new StringBuilder(data.length * 8);
 
-        for (int i = 0; i < data.length; i++) {
-            sb.append(encode((data[i] >>> 4) & 0xf));
-            sb.append(encode((data[i] >>> 0) & 0xf));
-            sb.append(encode((data[i] >>> 12) & 0xf));
-            sb.append(encode((data[i] >>> 8) & 0xf));
-            sb.append(encode((data[i] >>> 20) & 0xf));
-            sb.append(encode((data[i] >>> 16) & 0xf));
-            sb.append(encode((data[i] >>> 28) & 0xf));
-            sb.append(encode((data[i] >>> 24) & 0xf));
+        for (int aData : data) {
+            sb.append(encode((aData >>> 4) & 0xf));
+            sb.append(encode((aData) & 0xf));
+            sb.append(encode((aData >>> 12) & 0xf));
+            sb.append(encode((aData >>> 8) & 0xf));
+            sb.append(encode((aData >>> 20) & 0xf));
+            sb.append(encode((aData >>> 16) & 0xf));
+            sb.append(encode((aData >>> 28) & 0xf));
+            sb.append(encode((aData >>> 24) & 0xf));
         }
         return sb.toString();
     }
@@ -27,8 +27,8 @@ public class HexUtil {
     public static int[] decode(int[] data, String hex) {
         int len = hex.length();
         for (int i = 0; i < len / 8; i++) {
-            data[i] = decode(hex.charAt(i * 8 + 0)) << 4
-                    ^ decode(hex.charAt(i * 8 + 1)) << 0
+            data[i] = decode(hex.charAt(i * 8)) << 4
+                    ^ decode(hex.charAt(i * 8 + 1))
                     ^ decode(hex.charAt(i * 8 + 2)) << 12
                     ^ decode(hex.charAt(i * 8 + 3)) << 8
                     ^ decode(hex.charAt(i * 8 + 4)) << 20

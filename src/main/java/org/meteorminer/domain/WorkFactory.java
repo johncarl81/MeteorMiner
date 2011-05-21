@@ -2,9 +2,12 @@ package org.meteorminer.domain;
 
 import org.codehaus.jackson.JsonNode;
 
+import javax.inject.Singleton;
+
 /**
  * @author John Ericksen
  */
+@Singleton
 public class WorkFactory {
 
     public Work buildWork(JsonNode responseNode) {

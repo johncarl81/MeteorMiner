@@ -14,7 +14,7 @@ public class MinerController {
 
     public void interruptProduction(Runnable callback) {
         for (LocalMinerController controller : listeners) {
-            controller.interuptProduction();
+            controller.stopProduction();
         }
         callback.run();
     }

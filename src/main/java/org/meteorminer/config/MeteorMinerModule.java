@@ -3,21 +3,22 @@ package org.meteorminer.config;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.nativelibs4java.opencl.CLBuildException;
 import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
-import org.meteorminer.LongPollWorker;
-import org.meteorminer.LongPollWorkerFactory;
 import org.meteorminer.binding.*;
 import org.meteorminer.domain.Work;
-import org.meteorminer.hash.HashCacheScanner;
 import org.meteorminer.hash.HashScanner;
+import org.meteorminer.hash.VerifyHash;
 import org.meteorminer.hash.gpu.GpuHashScanner;
-import org.meteorminer.queue.WorkConsumer;
-import org.meteorminer.queue.WorkConsumerFactory;
-import org.meteorminer.queue.WorkProducer;
-import org.meteorminer.queue.WorkProducerFactory;
+import org.meteorminer.hash.gpu.OCL;
+import org.meteorminer.hash.scanHash.DigestProcessHashImpl;
+import org.meteorminer.network.LongPollWorker;
+import org.meteorminer.network.LongPollWorkerFactory;
+import org.meteorminer.queue.*;
 
+import java.io.IOException;
 import java.net.Proxy;
 import java.net.URL;
 import java.text.DateFormat;
@@ -30,9 +31,10 @@ import java.util.concurrent.SynchronousQueue;
  */
 public class MeteorMinerModule extends AbstractModule {
 
-    private MeteorAdvice meteorAdvice;
+    private static final String SEARCH_KERNEL = "search";
+    private static final String SEARCH_KERNEL_FILE = "search.cl";
 
-    private int queueSize = 1; //todo: externalize?
+    private MeteorAdvice meteorAdvice;
 
     public MeteorMinerModule(MeteorAdvice meteorAdvice) {
         this.meteorAdvice = meteorAdvice;
@@ -44,7 +46,7 @@ public class MeteorMinerModule extends AbstractModule {
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 
         install(factoryModuleBuilder
-                .implement(WorkProducer.class, WorkProducer.class)
+                .implement(WorkProducer.class, WorkProducerImpl.class)
                 .build(WorkProducerFactory.class));
 
         install(factoryModuleBuilder
@@ -63,12 +65,28 @@ public class MeteorMinerModule extends AbstractModule {
                 .toInstance(meteorAdvice.getBitcoinUrl());
 
         bind(new TypeLiteral<BlockingQueue<Work>>() {
-        })
-                .toInstance(new SynchronousQueue<Work>());
+        }).toInstance(new SynchronousQueue<Work>());
 
-        bind(Proxy.class).annotatedWith(BitcoinProxy.class)
-                .toProvider(new ProxyProvider(meteorAdvice.getProxy()));
+        bind(Proxy.class).annotatedWith(BitcoinProxy.class).toProvider(new ProxyProvider(meteorAdvice.getProxy()));
+        bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(createGetWorkMessage());
+        bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
+        bind(HashScanner.class).annotatedWith(Preferred.class).to(GpuHashScanner.class);
+        bind(VerifyHash.class).annotatedWith(Preferred.class).to(DigestProcessHashImpl.class);
+        bind(Boolean.class).annotatedWith(Verbose.class).toInstance(meteorAdvice.isVerbose());
 
+        try {
+            bind(OCL.class).annotatedWith(SearchKernel.class).toInstance(new OCL(SEARCH_KERNEL_FILE, SEARCH_KERNEL));
+        } catch (CLBuildException e) {
+            throw new RuntimeException("Error Creating Kernel", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error Creating Kernel", e);
+        }
+
+        bind(Timer.class).toInstance(new Timer());
+        bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT));
+    }
+
+    private String createGetWorkMessage() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode getWorkNode = mapper.createObjectNode();
 
@@ -76,19 +94,6 @@ public class MeteorMinerModule extends AbstractModule {
         getWorkNode.putArray("params");
         getWorkNode.put("id", 1);
 
-        bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(getWorkNode.toString());
-
-        bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
-
-        bind(Timer.class).toInstance(new Timer());
-
-        GpuHashScanner hashScanner = new GpuHashScanner();
-        requestInjection(hashScanner);
-        HashCacheScanner scanner = new HashCacheScanner(hashScanner);
-
-        bind(HashScanner.class).toInstance(scanner);
-        bind(HashCacheScanner.class).toInstance(scanner);
-
-        bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT));
+        return getWorkNode.toString();
     }
 }

@@ -7,10 +7,9 @@ import org.meteorminer.queue.WorkFoundCallback;
 /**
  * @author John Ericksen
  */
-@ImplementedBy(HashCacheScanner.class)
-public interface HashScanner {
+@ImplementedBy(AsynchrounousVerifyHash.class)
+public interface VerifyHash {
 
-    void scan(Work work, WorkFoundCallback workFoundCallback);
+    void verify(Work work, int nonce, WorkFoundCallback callback);
 
-    long getNonceCount();
 }
