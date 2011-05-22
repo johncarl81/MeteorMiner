@@ -8,6 +8,8 @@ import java.net.Proxy;
 import java.net.URL;
 
 /**
+ * Advice class decomposing the given CL input into defaulted and provided parameters.
+ *
  * @author John Ericksen
  */
 public class MeteorAdvice {
@@ -24,12 +26,24 @@ public class MeteorAdvice {
     private int getWorkTimeout;
     private boolean verbose;
 
+    /**
+     * Sets up default parameters
+     *
+     * @throws MalformedURLException
+     */
     public MeteorAdvice() throws MalformedURLException {
         //defaults
         this.bitcoinUrl = new URL("http://" + LOCALHOST + ":" + PORT);
         this.getWorkTimeout = Integer.parseInt(GET_WORK_TIMEOUT);
+        this.verbose = false;
     }
 
+    /**
+     * Sets up default parameters, overridden by the provided commandline arguments
+     *
+     * @param line
+     * @throws MalformedURLException
+     */
     public MeteorAdvice(CommandLine line) throws MalformedURLException {
         String url = line.getOptionValue("host", LOCALHOST);
         String port = line.getOptionValue("port", PORT);

@@ -1,6 +1,6 @@
 package org.meteorminer.hash;
 
-import org.meteorminer.logging.CLInterface;
+import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
 
@@ -11,11 +11,12 @@ public class LocalMinerController {
 
     private boolean stop = false;
     private CLInterface output;
+    private MinerController minerController;
 
     @Inject
     public LocalMinerController(MinerController minerController, CLInterface output) {
         this.output = output;
-        minerController.register(this);
+        this.minerController = minerController;
     }
 
     public void stopProduction() {
@@ -24,6 +25,6 @@ public class LocalMinerController {
     }
 
     public boolean haltProduction() {
-        return stop;
+        return stop || minerController.haultProduction();
     }
 }

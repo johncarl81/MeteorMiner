@@ -2,7 +2,7 @@ package org.meteorminer.hash;
 
 import com.google.inject.ImplementedBy;
 import org.meteorminer.domain.Work;
-import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.service.WorkFoundCallback;
 
 /**
  * @author John Ericksen

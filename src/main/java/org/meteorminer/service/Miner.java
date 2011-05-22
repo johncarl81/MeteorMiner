@@ -1,4 +1,4 @@
-package org.meteorminer.queue;
+package org.meteorminer.service;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashScanner;

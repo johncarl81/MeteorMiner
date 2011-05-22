@@ -1,8 +1,8 @@
 package org.meteorminer.hash;
 
-import org.meteorminer.binding.Preferred;
+import org.meteorminer.binding.AsyncPreferred;
 import org.meteorminer.domain.Work;
-import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public class HashCacheScanner implements HashScanner {
     private Map<String, Integer> cache = new HashMap<String, Integer>();
 
     @Inject
-    @Preferred
+    @AsyncPreferred
     private HashScanner delegate;
 
     @Override

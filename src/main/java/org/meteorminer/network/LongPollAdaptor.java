@@ -1,7 +1,7 @@
 package org.meteorminer.network;
 
 import org.meteorminer.binding.BitcoinUrl;
-import org.meteorminer.logging.CLInterface;
+import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

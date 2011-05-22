@@ -2,12 +2,15 @@ package org.meteorminer.hash.gpu;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
-import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.output.CLInterface;
+import org.meteorminer.output.Statistics;
+import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
-import java.nio.IntBuffer;
 
 /**
+ * HashScanner that utilizes the GPU through the DiabloMiner implementation
+ *
  * @author John Ericksen
  */
 public class GpuHashScanner extends AbstractHashScanner {
@@ -16,10 +19,14 @@ public class GpuHashScanner extends AbstractHashScanner {
     private DiabloMinerFactory diabloMinerFactory;
     @Inject
     private HashChecker hashChecker;
+    @Inject
+    private Statistics statistics;
+    @Inject
+    private CLInterface output;
 
     private long nonceCount;
-    static final int workgroupSize = 600000;
-    static final int localWorkSize = 500;
+    static final int workgroupSize = 1000000;
+    static final int localWorkSize = 64;
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback) {
         innerScan(work, workFoundCallback, 0, 0xFFFFFFFFL);
@@ -27,16 +34,22 @@ public class GpuHashScanner extends AbstractHashScanner {
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
 
-        DiabloMiner diabloMiner = diabloMinerFactory.createDiabloMiner(work);//new DiabloMiner(ocl, work, clIntBufferPool, intBufferPool);
+        DiabloMiner diabloMiner = diabloMinerFactory.createDiabloMiner(work);
 
         int startNonce = (start / workgroupSize);
         long nonceEnd = startNonce + (end / workgroupSize) + 1;
 
+        long startTime = System.currentTimeMillis();
+
         for (int nonce = startNonce; nonce < nonceEnd && !getLocalController().haltProduction(); nonce++, nonceCount++) {
 
-            IntBuffer output = diabloMiner.hash(nonce, workgroupSize, localWorkSize);
+            MinerResult output = diabloMiner.hash(nonce, workgroupSize, localWorkSize);
             hashChecker.check(output, work, workFoundCallback);
         }
+
+        long workTime = System.currentTimeMillis() - startTime;
+        statistics.addWorkTime(workTime);
+        output.verbose("Scan finished after " + workTime + "ms");
     }
 
     @Override

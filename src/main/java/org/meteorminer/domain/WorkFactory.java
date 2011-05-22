@@ -5,11 +5,19 @@ import org.codehaus.jackson.JsonNode;
 import javax.inject.Singleton;
 
 /**
+ * Factory building the Work object
+ *
  * @author John Ericksen
  */
 @Singleton
 public class WorkFactory {
 
+    /**
+     * Build a work object from the given JSON response node from the GetWork request.
+     *
+     * @param responseNode
+     * @return Work
+     */
     public Work buildWork(JsonNode responseNode) {
         Work work = null;
 

@@ -1,10 +1,10 @@
-package org.meteorminer.queue;
+package org.meteorminer.service;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashCacheScanner;
-import org.meteorminer.logging.CLInterface;
-import org.meteorminer.logging.Statistics;
 import org.meteorminer.network.JsonClient;
+import org.meteorminer.output.CLInterface;
+import org.meteorminer.output.Statistics;
 
 import javax.inject.Inject;
 

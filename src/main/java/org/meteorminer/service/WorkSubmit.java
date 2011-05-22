@@ -1,4 +1,4 @@
-package org.meteorminer.queue;
+package org.meteorminer.service;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -6,9 +6,9 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashCacheScanner;
-import org.meteorminer.logging.CLInterface;
-import org.meteorminer.logging.Statistics;
 import org.meteorminer.network.JsonClient;
+import org.meteorminer.output.CLInterface;
+import org.meteorminer.output.Statistics;
 
 import java.io.IOException;
 
@@ -44,6 +44,7 @@ public class WorkSubmit implements Runnable {
                 output.notification("Hash Submitted: %08x", nonce);
                 stats.incrementWorkPass(1);
                 hashCache.add(work, nonce);
+
             } else {
                 output.notification("Hash Rejected: %08x", nonce);
                 stats.incrementWorkFail(1);

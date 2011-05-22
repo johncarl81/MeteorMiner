@@ -2,8 +2,8 @@ package org.meteorminer.hash.scanHash;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.VerifyHash;
-import org.meteorminer.logging.CLInterface;
-import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.output.CLInterface;
+import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
 

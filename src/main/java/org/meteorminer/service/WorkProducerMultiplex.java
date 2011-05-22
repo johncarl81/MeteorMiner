@@ -1,9 +1,9 @@
-package org.meteorminer.queue;
+package org.meteorminer.service;
 
 import com.google.inject.Inject;
 import org.meteorminer.domain.Work;
-import org.meteorminer.logging.CLInterface;
 import org.meteorminer.network.LongPollWorkProducer;
+import org.meteorminer.output.CLInterface;
 
 /**
  * @author John Ericksen

@@ -6,7 +6,7 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.binding.Authorization;
-import org.meteorminer.logging.CLInterface;
+import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
 import java.io.*;

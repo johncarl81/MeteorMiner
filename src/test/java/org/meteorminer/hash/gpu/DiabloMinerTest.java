@@ -42,7 +42,10 @@ public class DiabloMinerTest extends TestCase {
 
         DiabloMiner miner = new DiabloMiner(work, ocl, clIntBufferPool, intBufferPool);
 
-        IntBuffer buffer = miner.hash(nonce, 1, 1);
+        MinerResult result = miner.hash(nonce, 1, 1);
+        result.getEvent().waitFor();
+
+        IntBuffer buffer = result.getBuffer();
 
         assertEquals(nonce, buffer.get(nonce & 0xF));
     }

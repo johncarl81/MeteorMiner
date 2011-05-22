@@ -1,7 +1,7 @@
 package org.meteorminer.network;
 
 import org.meteorminer.domain.Work;
-import org.meteorminer.queue.WorkProducer;
+import org.meteorminer.service.WorkProducer;
 
 import javax.inject.Singleton;
 

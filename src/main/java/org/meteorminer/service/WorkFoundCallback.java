@@ -1,4 +1,4 @@
-package org.meteorminer.queue;
+package org.meteorminer.service;
 
 import com.google.inject.ImplementedBy;
 import org.meteorminer.domain.Work;

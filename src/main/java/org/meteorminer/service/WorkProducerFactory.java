@@ -1,11 +1,10 @@
-package org.meteorminer.queue;
-
-import com.google.inject.ImplementedBy;
+package org.meteorminer.service;
 
 /**
+ * Assisted Injection WorkProducer Factory
+ *
  * @author John Ericksen
  */
-@ImplementedBy(WorkProducerImpl.class)
 public interface WorkProducerFactory {
 
     WorkProducer createWorkProducer();

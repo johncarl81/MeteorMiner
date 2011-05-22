@@ -1,27 +1,21 @@
 package org.meteorminer.hash.gpu;
 
 import com.google.inject.Inject;
-import org.meteorminer.binding.Preferred;
 import org.meteorminer.domain.Work;
-import org.meteorminer.queue.WorkFoundCallback;
-
-import java.nio.IntBuffer;
+import org.meteorminer.service.WorkFoundCallback;
 
 /**
+ * Asynchronous wrapper for the HashChecker interface
+ *
  * @author John Ericksen
  */
 public class AsynchronousHashChecker implements HashChecker {
 
     @Inject
-    @Preferred
-    private HashChecker delegate;
+    private RunnableHashCheckerFactory runnableHashCheckerFactory;
 
     @Override
-    public void check(final IntBuffer output, final Work work, final WorkFoundCallback workFoundCallback) {
-        new Thread() {
-            public void run() {
-                delegate.check(output, work, workFoundCallback);
-            }
-        }.start();
+    public void check(MinerResult output, Work work, WorkFoundCallback workFoundCallback) {
+        output.getEvent().invokeUponCompletion(runnableHashCheckerFactory.createHashChecker(output, work, workFoundCallback));
     }
 }

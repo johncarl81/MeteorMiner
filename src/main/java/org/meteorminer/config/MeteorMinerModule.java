@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.nativelibs4java.opencl.CLBuildException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolUtils;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -15,7 +16,7 @@ import org.meteorminer.hash.*;
 import org.meteorminer.hash.gpu.*;
 import org.meteorminer.network.LongPollWorker;
 import org.meteorminer.network.LongPollWorkerFactory;
-import org.meteorminer.queue.*;
+import org.meteorminer.service.*;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -26,6 +27,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 /**
+ * Guice module class for Meteor Miner configuration.
+ *
  * @author John Ericksen
  */
 public class MeteorMinerModule extends AbstractModule {
@@ -42,6 +45,7 @@ public class MeteorMinerModule extends AbstractModule {
     @Override
     protected void configure() {
 
+        //Assisted injection factories
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 
         install(factoryModuleBuilder
@@ -68,7 +72,11 @@ public class MeteorMinerModule extends AbstractModule {
                 .implement(HashStatisticsOutputTimerTask.class, HashStatisticsOutputTimerTask.class)
                 .build((HashStatisticsOutputTimerTaskFactory.class)));
 
+        install(factoryModuleBuilder
+                .implement(RunnableHashChecker.class, RunnableHashChecker.class)
+                .build((RunnableHashCheckerFactory.class)));
 
+        //Annotated @Injections
         bind(String.class).annotatedWith(Authorization.class)
                 .toInstance("Basic " + Base64.encodeBase64String((meteorAdvice.getUsername() + ":" + meteorAdvice.getPassword()).getBytes()).trim());
 
@@ -81,18 +89,23 @@ public class MeteorMinerModule extends AbstractModule {
         bind(Proxy.class).annotatedWith(BitcoinProxy.class).toProvider(new ProxyProvider(meteorAdvice.getProxy()));
         bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(createGetWorkMessage());
         bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
-        bind(HashScanner.class).annotatedWith(Preferred.class).to(GpuHashScanner.class);
-        bind(HashChecker.class).annotatedWith(Preferred.class).to(HashCheckerImpl.class);
+        bind(HashScanner.class).annotatedWith(AsyncPreferred.class).to(GpuHashScanner.class);
+        bind(HashChecker.class).annotatedWith(AsyncPreferred.class).to(HashCheckerImpl.class);
         bind(Boolean.class).annotatedWith(Verbose.class).toInstance(meteorAdvice.isVerbose());
 
+        //ObjectPool setup
         IntBufferPoolFactory intBufferPoolFactory = new IntBufferPoolFactory();
         CLIntBufferPoolFactory clIntBufferPoolFactory = new CLIntBufferPoolFactory();
 
         requestInjection(intBufferPoolFactory);
         requestInjection(clIntBufferPoolFactory);
 
-        bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(new GenericObjectPool(intBufferPoolFactory));
-        bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(new GenericObjectPool(clIntBufferPoolFactory));
+        GenericObjectPool.Config config = new GenericObjectPool.Config();
+        config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
+        config.lifo = false;
+
+        bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(PoolUtils.erodingPool(new GenericObjectPool(intBufferPoolFactory, config)));
+        bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(PoolUtils.erodingPool(new GenericObjectPool(clIntBufferPoolFactory, config)));
 
         try {
             bind(OCL.class).annotatedWith(SearchKernel.class).toInstance(new OCL(SEARCH_KERNEL_FILE, SEARCH_KERNEL));
@@ -102,6 +115,7 @@ public class MeteorMinerModule extends AbstractModule {
             throw new RuntimeException("Error Creating Kernel", e);
         }
 
+        //additional singletons
         bind(Timer.class).toInstance(new Timer());
         bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
     }

@@ -29,20 +29,16 @@ public class MeteorMiner {
             options.addOption("r", "port", true, "bitcoin host port");
             options.addOption("g", "getwork", true, "seconds between getwork refresh");
             options.addOption("v", "verbose", false, "Verbose Output");
+            options.addOption("x", "proxy", true, "optional proxy settings IP:PORT<:username:password>");
             /*options.addOption("f", "fps", true, "target execution timing");
             options.addOption("w", "worksize", true, "override worksize");
             options.addOption("o", "host", true, "bitcoin host IP");
             options.addOption("r", "port", true, "bitcoin host port");
-
             options.addOption("D", "devices", true, "devices to enable");
-            options.addOption("x", "proxy", true, "optional proxy settings IP:PORT<:username:password>");
             options.addOption("l", "url", true, "bitcoin host url");
             options.addOption("z", "loops", true, "kernel loops (power of two, 0 is off)");
             */
-
-            PosixParser parser = new PosixParser();
-
-            CommandLine line = parser.parse(options, args);
+            CommandLine line = new PosixParser().parse(options, args);
 
             Injector injector = Guice.createInjector(new MeteorMinerModule(new MeteorAdvice(line)));
 

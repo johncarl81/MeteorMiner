@@ -1,4 +1,4 @@
-package org.meteorminer.logging;
+package org.meteorminer.output;
 
 import javax.inject.Singleton;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,16 +13,21 @@ public class Statistics {
     private AtomicLong instantHashCount;
     private long previousHashTime;
     private long startHashTime;
+    private long lastWorkUpdate;
     private AtomicLong workPass;
     private AtomicLong workFail;
+    private AtomicLong workTime;
+    private AtomicLong savedTime;
 
     public Statistics() {
         hashCount = new AtomicLong();
         instantHashCount = new AtomicLong();
         workPass = new AtomicLong();
         workFail = new AtomicLong();
+        workTime = new AtomicLong();
         previousHashTime = System.currentTimeMillis();
         startHashTime = System.currentTimeMillis();
+        savedTime = new AtomicLong();
     }
 
     public void incrementHashCount(long increment) {
@@ -36,6 +41,10 @@ public class Statistics {
 
     public void incrementWorkFail(long increment) {
         workFail.addAndGet(increment);
+    }
+
+    public void incrementSavedTime(long increment) {
+        savedTime.addAndGet(increment);
     }
 
     public double getInstantHashRate() {
@@ -59,5 +68,22 @@ public class Statistics {
     public double getLongHashRate() {
 
         return (hashCount.get() / 1000.0) / (System.currentTimeMillis() - startHashTime);
+    }
+
+    public void addWorkTime(long incremenet) {
+        workTime.addAndGet(incremenet);
+        lastWorkUpdate = System.currentTimeMillis();
+    }
+
+    public long getWorkTime() {
+        return workTime.get();
+    }
+
+    public double getWorkRatio() {
+        return (getWorkTime() * 1.0) / (lastWorkUpdate - startHashTime);
+    }
+
+    public long getSavedTime() {
+        return savedTime.get();
     }
 }

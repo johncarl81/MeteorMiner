@@ -8,6 +8,8 @@ import java.io.IOException;
 import static com.nativelibs4java.opencl.JavaCL.createBestContext;
 
 /**
+ * Contetx / Kernel / Program / Queue container associated with the provided kernel source
+ *
  * @author John Ericksen
  */
 public class OCL {

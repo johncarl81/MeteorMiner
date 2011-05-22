@@ -10,6 +10,10 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 /**
+ * CLIntBuffer ObjectPool Factory.  Creates, passivates and destroys buffers for easy reuse of a set of CLIntBuffers.
+ * <p/>
+ * For use specifically with an Apache ObjectPool
+ *
  * @author John Ericksen
  */
 public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
@@ -25,17 +29,34 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
         emptyBuffer = IntBuffer.wrap(emptyArray);
     }
 
+    /**
+     * Create a new Buffer, using the empty buffer as a template
+     *
+     * @return
+     * @throws Exception
+     */
     public Object makeObject() throws Exception {
         return ocl.getContext().createIntBuffer(CLMem.Usage.InputOutput, emptyBuffer, true);
     }
 
+    /**
+     * Passivates the given buffer by writing over its contents with the empty buffer.
+     *
+     * @param passivate
+     * @throws Exception
+     */
     @Override
     public void passivateObject(Object passivate) throws Exception {
         ((CLIntBuffer) passivate).write(ocl.getQueue(), emptyBuffer, false);
     }
 
+    /**
+     * Destroys the given buffer by notifying the GPU it is able to discard it.
+     *
+     * @param buffer
+     * @throws Exception
+     */
     public void destroyObject(Object buffer) throws Exception {
-        ((CLIntBuffer) buffer).write(ocl.getQueue(), emptyBuffer, false);
         ((CLIntBuffer) buffer).release();
     }
 }

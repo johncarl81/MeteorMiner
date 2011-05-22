@@ -1,6 +1,8 @@
-package org.meteorminer.queue;
+package org.meteorminer.service;
 
 /**
+ * Assisted Injection WorkConsumer Factory
+ *
  * @author John Ericksen
  */
 public interface WorkConsumerFactory {

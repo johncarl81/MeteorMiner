@@ -1,4 +1,4 @@
-package org.meteorminer.queue;
+package org.meteorminer.service;
 
 import org.codehaus.jackson.JsonNode;
 import org.meteorminer.binding.GetWorkMessage;

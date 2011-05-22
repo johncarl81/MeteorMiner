@@ -3,7 +3,7 @@ package org.meteorminer.hash.scanHash;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
 import org.meteorminer.hash.VerifyHash;
-import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
 import java.util.Random;

@@ -3,7 +3,7 @@ package org.meteorminer.hash;
 import com.google.inject.Inject;
 import org.meteorminer.binding.GetWorkTimeout;
 import org.meteorminer.domain.Work;
-import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.service.WorkFoundCallback;
 
 import java.util.Timer;
 import java.util.TimerTask;

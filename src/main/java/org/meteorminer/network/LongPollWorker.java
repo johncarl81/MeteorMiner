@@ -7,7 +7,7 @@ import org.meteorminer.binding.GetWorkMessage;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.MinerController;
-import org.meteorminer.logging.CLInterface;
+import org.meteorminer.output.CLInterface;
 
 import java.io.IOException;
 import java.net.URL;

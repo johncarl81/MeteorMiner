@@ -1,4 +1,4 @@
-package org.meteorminer.logging;
+package org.meteorminer.output;
 
 import javax.inject.Inject;
 import java.util.TimerTask;

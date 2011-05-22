@@ -14,6 +14,13 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 /**
+ * Guts of the DiabloMiner, rearranged for use within Meteor Miner.
+ * <p/>
+ * https://github.com/Diablo-D3/DiabloMiner
+ * http://forum.bitcoin.org/?topic=1721.0
+ * <p/>
+ * Thanks to Diablo-D3
+ *
  * @author John Ericksen
  */
 public class DiabloMiner {
@@ -70,27 +77,41 @@ public class DiabloMiner {
                 midstate2[7]);
     }
 
-    public IntBuffer hash(int nonceStart, int worksize, int localWorkSize) {
+    /**
+     * Execute the hash search using the given nonceStart starting value, worsize and localworksize
+     * <p/>
+     * Returns a MinerResult which contains the CLEvent, CLIntBuffer and IntBuffer for waiting and closing
+     * asynchronously:
+     * <p/>
+     * CLEvent - Wait on this to finish
+     * CLIntBuffer - Return to @CLIntBufferPool ObjectPool when event finishes
+     * IntBuffer - Contains result.  Return to @IntBufferPool ObjectPool when finished using
+     *
+     * @param nonceStart
+     * @param worksize
+     * @param localWorkSize
+     * @return MinerResult
+     */
+    public MinerResult hash(int nonceStart, int worksize, int localWorkSize) {
 
-        IntBuffer output = null;
+        MinerResult result = null;
         try {
             CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
-            output = (IntBuffer) intBufferPool.borrowObject();
+            IntBuffer output = (IntBuffer) intBufferPool.borrowObject();
 
             ocl.getKernel().setArg(22, nonceStart * worksize);
             ocl.getKernel().setArg(23, outputBuffer);
 
             synchronized (ocl) {
                 CLEvent event = ocl.getKernel().enqueueNDRange(ocl.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
-                outputBuffer.read(ocl.getQueue(), 0, 0xF, output, true, event);
+                result = new MinerResult(outputBuffer.read(ocl.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
             }
 
-            clIntBufferPool.returnObject(outputBuffer);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return output;
+        return result;
 
     }
 

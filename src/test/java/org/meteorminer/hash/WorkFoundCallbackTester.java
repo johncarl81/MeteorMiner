@@ -3,7 +3,7 @@ package org.meteorminer.hash;
 import com.google.inject.assistedinject.Assisted;
 import junit.framework.Assert;
 import org.meteorminer.domain.Work;
-import org.meteorminer.queue.WorkFoundCallback;
+import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
 

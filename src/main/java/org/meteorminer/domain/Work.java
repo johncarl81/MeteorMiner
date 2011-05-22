@@ -1,6 +1,8 @@
 package org.meteorminer.domain;
 
 /**
+ * Contains the data provided from the bitcoin server to be processed.=
+ *
  * @author John Ericksen
  */
 public class Work {
@@ -20,7 +22,6 @@ public class Work {
         this.targetString = target;
 
         setData(data);
-
 
         for (int i = 0; i < this.midstate.length; i++) {
             String parse = midstate.substring(i * 8, (i * 8) + 8);
@@ -58,17 +59,13 @@ public class Work {
         return midstateString;
     }
 
-    public String getTargetString() {
-        return targetString;
-    }
-
     @Override
     public String toString() {
         return "Work{" +
-                "midstate='" + midstate + '\'' +
-                ", data='" + data + '\'' +
+                "midstate='" + midstateString + '\'' +
+                ", data='" + dataString + '\'' +
                 ", hash1='" + hash1 + '\'' +
-                ", target='" + target + '\'' +
+                ", target='" + targetString + '\'' +
                 '}';
     }
 

@@ -1,10 +1,9 @@
 package org.meteorminer.service;
 
 import com.google.inject.Inject;
-import org.meteorminer.logging.CLInterface;
-import org.meteorminer.logging.LoggingTimerTask;
-import org.meteorminer.queue.WorkConsumerFactory;
-import org.meteorminer.queue.WorkProducerFactory;
+import org.meteorminer.hash.MinerController;
+import org.meteorminer.output.CLInterface;
+import org.meteorminer.output.LoggingTimerTask;
 
 import java.util.Timer;
 
@@ -23,12 +22,16 @@ public class MiningService {
     private Timer timer;
     @Inject
     private CLInterface output;
+    @Inject
+    private MinerController minerController;
 
     public void start() {
         timer.schedule(loggingTimerTask, 2000, 2000);
 
         while (true) {
-            workConsumerFactory.createWorkConsumer().consume(workProducerFactory.createWorkProducer().produce());
+            minerController.reset();
+            workConsumerFactory.createWorkConsumer().consume(
+                    workProducerFactory.createWorkProducer().produce());
         }
     }
 }

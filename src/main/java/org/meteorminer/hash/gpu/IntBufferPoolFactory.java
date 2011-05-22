@@ -20,7 +20,7 @@ public class IntBufferPoolFactory extends BasePoolableObjectFactory {
     private int size = 0xF;
 
     public IntBufferPoolFactory() {
-        emptyArray = new int[0xF];
+        emptyArray = new int[size];
     }
 
     public Object makeObject() throws Exception {
