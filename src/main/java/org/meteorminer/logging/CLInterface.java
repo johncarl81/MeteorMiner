@@ -36,7 +36,7 @@ public class CLInterface {
 
     public void outputMain() {
         int prevMainSize = main.length();
-        main = new Formatter().format("\r[%1.2f mhash/sec %1.2f mhash/sec %1d pass %1d fail]",
+        main = new Formatter().format("\r[%1.2f mh/s %1.2f mh/s %1d pass %1d fail]",
                 statistics.getInstantHashRate(), statistics.getLongHashRate(), statistics.getWorkPassed(), statistics.getWorkFailed()).toString();
         try {
             out.write(StringUtils.leftPad(main, prevMainSize - main.length() + 1));
