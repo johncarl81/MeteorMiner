@@ -3,7 +3,6 @@ package org.meteorminer.service;
 import com.google.inject.Inject;
 import org.meteorminer.logging.CLInterface;
 import org.meteorminer.logging.LoggingTimerTask;
-import org.meteorminer.network.LongPollWorkProducer;
 import org.meteorminer.queue.WorkConsumerFactory;
 import org.meteorminer.queue.WorkProducerFactory;
 
@@ -16,8 +15,6 @@ public class MiningService {
 
     @Inject
     private WorkProducerFactory workProducerFactory;
-    @Inject
-    private LongPollWorkProducer longPollWorkProducer;
     @Inject
     private WorkConsumerFactory workConsumerFactory;
     @Inject
@@ -32,13 +29,6 @@ public class MiningService {
 
         while (true) {
             workConsumerFactory.createWorkConsumer().consume(workProducerFactory.createWorkProducer().produce());
-
-            //long poll
-            if (longPollWorkProducer.hasWork()) {
-                output.verbose("Starting long poll work.");
-                workConsumerFactory.createWorkConsumer().consume(longPollWorkProducer.produce());
-            }
-
         }
     }
 }

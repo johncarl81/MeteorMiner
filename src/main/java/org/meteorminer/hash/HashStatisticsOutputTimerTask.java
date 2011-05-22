@@ -1,7 +1,9 @@
 package org.meteorminer.hash;
 
+import com.google.inject.assistedinject.Assisted;
 import org.meteorminer.logging.Statistics;
 
+import javax.inject.Inject;
 import java.util.TimerTask;
 
 /**
@@ -13,7 +15,8 @@ public class HashStatisticsOutputTimerTask extends TimerTask {
     private long previousNonceCount;
     private Statistics statistics;
 
-    public HashStatisticsOutputTimerTask(HashScanner scanner, Statistics statistics) {
+    @Inject
+    public HashStatisticsOutputTimerTask(@Assisted HashScanner scanner, Statistics statistics) {
         this.scanner = scanner;
         this.statistics = statistics;
         this.previousNonceCount = 0;

@@ -18,18 +18,12 @@ public class GpuHashScanner extends AbstractHashScanner {
     private HashChecker hashChecker;
 
     private long nonceCount;
-    static final int workgroupSize;
-    static final int localWorkSize;
-
-    static {
-        workgroupSize = 200000;
-        localWorkSize = 500;
-    }
+    static final int workgroupSize = 600000;
+    static final int localWorkSize = 500;
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback) {
         innerScan(work, workFoundCallback, 0, 0xFFFFFFFFL);
     }
-
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
 
@@ -49,5 +43,4 @@ public class GpuHashScanner extends AbstractHashScanner {
     public long getNonceCount() {
         return nonceCount * workgroupSize;
     }
-
 }

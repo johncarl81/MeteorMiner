@@ -23,14 +23,18 @@ public abstract class AbstractHashScanner implements HashScanner {
     private int getWorkTimeout;
     @Inject
     private LocalMinerController localController;
-    @javax.inject.Inject
+    @Inject
     private MinerController minerController;
+    @Inject
+    private InteruptTimerTaskFactory interuptTimerTaskFactory;
+    @Inject
+    private HashStatisticsOutputTimerTaskFactory hashStatisticsOutputTimerTaskFactory;
 
     @Override
     public void scan(Work work, WorkFoundCallback workFoundCallback) {
 
-        TimerTask hashStatsTimerTask = new HashStatisticsOutputTimerTask(this, statistics);
-        TimerTask interuptTimerTask = new InteruptTimerTask(localController);
+        TimerTask hashStatsTimerTask = hashStatisticsOutputTimerTaskFactory.buildStatisticsOutputTimerTask(this);
+        TimerTask interuptTimerTask = interuptTimerTaskFactory.buildInteruptTimerTask(localController);
         timer.schedule(hashStatsTimerTask, 1000, 1000);
         timer.schedule(interuptTimerTask, getWorkTimeout * 1000);
 

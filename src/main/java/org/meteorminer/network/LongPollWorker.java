@@ -50,12 +50,9 @@ public class LongPollWorker implements Runnable {
                 output.notification("Long poll received.");
 
                 final Work work = workFactory.buildWork(responseNode);
+                longPollFactory.putWork(work);
+                minerController.interruptProduction();
 
-                minerController.interruptProduction(new Runnable() {
-                    public void run() {
-                        longPollFactory.putWork(work);
-                    }
-                });
             } catch (IOException e) {
                 e.printStackTrace();
             }

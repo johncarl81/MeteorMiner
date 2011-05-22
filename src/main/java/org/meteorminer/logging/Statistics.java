@@ -10,19 +10,24 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Statistics {
 
     private AtomicLong hashCount;
+    private AtomicLong instantHashCount;
     private long previousHashTime;
+    private long startHashTime;
     private AtomicLong workPass;
     private AtomicLong workFail;
 
     public Statistics() {
         hashCount = new AtomicLong();
+        instantHashCount = new AtomicLong();
         workPass = new AtomicLong();
         workFail = new AtomicLong();
         previousHashTime = System.currentTimeMillis();
+        startHashTime = System.currentTimeMillis();
     }
 
     public void incrementHashCount(long increment) {
         hashCount.addAndGet(increment);
+        instantHashCount.addAndGet(increment);
     }
 
     public void incrementWorkPass(long increment) {
@@ -33,11 +38,11 @@ public class Statistics {
         workFail.addAndGet(increment);
     }
 
-    public double getHashRate() {
+    public double getInstantHashRate() {
         long currentHashTime = System.currentTimeMillis();
-        double rate = (hashCount.get() / 1000.0) / (currentHashTime - previousHashTime);
+        double rate = (instantHashCount.get() / 1000.0) / (currentHashTime - previousHashTime);
         previousHashTime = currentHashTime;
-        hashCount.set(0);
+        instantHashCount.set(0);
 
         return rate;
     }
@@ -51,4 +56,8 @@ public class Statistics {
     }
 
 
+    public double getLongHashRate() {
+
+        return (hashCount.get() / 1000.0) / (System.currentTimeMillis() - startHashTime);
+    }
 }

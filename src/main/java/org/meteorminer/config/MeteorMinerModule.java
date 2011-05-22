@@ -11,7 +11,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.binding.*;
 import org.meteorminer.domain.Work;
-import org.meteorminer.hash.HashScanner;
+import org.meteorminer.hash.*;
 import org.meteorminer.hash.gpu.*;
 import org.meteorminer.network.LongPollWorker;
 import org.meteorminer.network.LongPollWorkerFactory;
@@ -45,7 +45,7 @@ public class MeteorMinerModule extends AbstractModule {
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 
         install(factoryModuleBuilder
-                .implement(WorkProducer.class, WorkProducerImpl.class)
+                .implement(WorkProducer.class, WorkProducerMultiplex.class)
                 .build(WorkProducerFactory.class));
 
         install(factoryModuleBuilder
@@ -59,6 +59,14 @@ public class MeteorMinerModule extends AbstractModule {
         install(factoryModuleBuilder
                 .implement(DiabloMiner.class, DiabloMiner.class)
                 .build((DiabloMinerFactory.class)));
+
+        install(factoryModuleBuilder
+                .implement(InteruptTimerTask.class, InteruptTimerTask.class)
+                .build((InteruptTimerTaskFactory.class)));
+
+        install(factoryModuleBuilder
+                .implement(HashStatisticsOutputTimerTask.class, HashStatisticsOutputTimerTask.class)
+                .build((HashStatisticsOutputTimerTaskFactory.class)));
 
 
         bind(String.class).annotatedWith(Authorization.class)
