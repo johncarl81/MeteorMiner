@@ -42,7 +42,6 @@ public abstract class AbstractHashScanner implements HashScanner {
 
         hashStatsTimerTask.cancel();
         interuptTimerTask.cancel();
-        minerController.unregister(localController);
     }
 
     public LocalMinerController getLocalController() {

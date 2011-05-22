@@ -32,19 +32,19 @@ public class JsonClient {
     @Inject
     private CLInterface output;
 
-    public JsonNode execute(String requestMessage, URL url) throws IOException {
-        return execute(requestMessage, connectionFactory.getBitcoinConnection(url));
+    public JsonNode execute(String requestType, String requestMessage, URL url) throws IOException {
+        return execute(requestType, requestMessage, connectionFactory.getBitcoinConnection(url));
     }
 
-    public JsonNode execute(String requestMessage) throws IOException {
+    public JsonNode execute(String requestType, String requestMessage) throws IOException {
 
         HttpURLConnection connection = connectionFactory.getBitcoinConnection();
-        return execute(requestMessage, connection);
+        return execute(requestType, requestMessage, connection);
     }
 
-    public JsonNode execute(String requestMessage, HttpURLConnection connection) throws IOException {
+    public JsonNode execute(String requestType, String requestMessage, HttpURLConnection connection) throws IOException {
 
-        output.verbose("JSON Request on " + connection.getURL());
+        output.verbose("JSON Request " + requestType + " @ " + connection.getURL());
 
         connection.setRequestProperty("Authorization", userPassword);
         connection.setRequestProperty("Accept-Encoding", "gzip,deflate");

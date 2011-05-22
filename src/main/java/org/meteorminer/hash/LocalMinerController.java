@@ -19,7 +19,7 @@ public class LocalMinerController {
     }
 
     public void stopProduction() {
-        output.verbose("Stale work detected, stopping.");
+        output.verbose("Stopping current work.");
         this.stop = true;
     }
 

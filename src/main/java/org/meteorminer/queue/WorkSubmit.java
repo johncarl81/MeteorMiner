@@ -38,7 +38,7 @@ public class WorkSubmit implements Runnable {
         try {
             output.verbose("Work passed local verification.  Proceeding to submit.");
 
-            boolean success = parseJsonResult(jsonClient.execute(buildSubmitMessage(work)));
+            boolean success = parseJsonResult(jsonClient.execute("SendWork", buildSubmitMessage(work)));
 
             if (success) {
                 output.notification("Hash Submitted: %08x", nonce);

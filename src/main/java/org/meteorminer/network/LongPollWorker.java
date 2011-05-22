@@ -45,7 +45,7 @@ public class LongPollWorker implements Runnable {
     public void run() {
         while (true) {
             try {
-                JsonNode responseNode = jsonClient.execute(getWorkRequest, longPollWorkerUrl);
+                JsonNode responseNode = jsonClient.execute("GetWork - Long Poll", getWorkRequest, longPollWorkerUrl);
 
                 output.notification("Long poll received.");
 
