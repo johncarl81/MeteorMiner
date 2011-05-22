@@ -1,25 +1,26 @@
-package org.meteorminer.hash;
+package org.meteorminer.hash.gpu;
 
 import com.google.inject.Inject;
 import org.meteorminer.binding.Preferred;
 import org.meteorminer.domain.Work;
 import org.meteorminer.queue.WorkFoundCallback;
 
+import java.nio.IntBuffer;
+
 /**
  * @author John Ericksen
  */
-public class AsynchrounousVerifyHash implements VerifyHash {
+public class AsynchronousHashChecker implements HashChecker {
 
     @Inject
     @Preferred
-    private VerifyHash delegate;
+    private HashChecker delegate;
 
     @Override
-    public void verify(final Work work, final int nonce, final WorkFoundCallback callback) {
+    public void check(final IntBuffer output, final Work work, final WorkFoundCallback workFoundCallback) {
         new Thread() {
-            @Override
             public void run() {
-                delegate.verify(work, nonce, callback);
+                delegate.check(output, work, workFoundCallback);
             }
         }.start();
     }

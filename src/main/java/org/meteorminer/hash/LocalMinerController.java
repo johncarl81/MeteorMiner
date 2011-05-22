@@ -1,6 +1,6 @@
 package org.meteorminer.hash;
 
-import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.CLInterface;
 
 import javax.inject.Inject;
 
@@ -10,16 +10,16 @@ import javax.inject.Inject;
 public class LocalMinerController {
 
     private boolean stop = false;
-    private CLLogger logger;
+    private CLInterface output;
 
     @Inject
-    public LocalMinerController(MinerController minerController, CLLogger logger) {
-        this.logger = logger;
+    public LocalMinerController(MinerController minerController, CLInterface output) {
+        this.output = output;
         minerController.register(this);
     }
 
     public void stopProduction() {
-        logger.verbose("stale work detected, stopping.");
+        output.verbose("Stale work detected, stopping.");
         this.stop = true;
     }
 

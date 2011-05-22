@@ -1,10 +1,7 @@
 package org.meteorminer.hash.gpu;
 
-import org.meteorminer.binding.SearchKernel;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
-import org.meteorminer.hash.VerifyHash;
-import org.meteorminer.logging.CLLogger;
 import org.meteorminer.queue.WorkFoundCallback;
 
 import javax.inject.Inject;
@@ -16,19 +13,16 @@ import java.nio.IntBuffer;
 public class GpuHashScanner extends AbstractHashScanner {
 
     @Inject
-    @SearchKernel
-    private OCL ocl;
+    private DiabloMinerFactory diabloMinerFactory;
     @Inject
-    private VerifyHash verifyHash;
-    @Inject
-    private CLLogger logger;
+    private HashChecker hashChecker;
 
     private long nonceCount;
     static final int workgroupSize;
     static final int localWorkSize;
 
     static {
-        workgroupSize = 100000;
+        workgroupSize = 200000;
         localWorkSize = 500;
     }
 
@@ -39,7 +33,7 @@ public class GpuHashScanner extends AbstractHashScanner {
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
 
-        DiabloMiner diabloMiner = new DiabloMiner(ocl, work, 0xF);
+        DiabloMiner diabloMiner = diabloMinerFactory.createDiabloMiner(work);//new DiabloMiner(ocl, work, clIntBufferPool, intBufferPool);
 
         int startNonce = (start / workgroupSize);
         long nonceEnd = startNonce + (end / workgroupSize) + 1;
@@ -47,19 +41,8 @@ public class GpuHashScanner extends AbstractHashScanner {
         for (int nonce = startNonce; nonce < nonceEnd && !getLocalController().haltProduction(); nonce++, nonceCount++) {
 
             IntBuffer output = diabloMiner.hash(nonce, workgroupSize, localWorkSize);
-
-            for (int i = 0; i < 0xF; i++) {
-
-                if (output.get(i) > 0) {
-                    logger.verbose("Found Hash, proceeding to local verification");
-                    verifyHash.verify(work, output.get(i), workFoundCallback);
-                    diabloMiner.createBuffer(ocl);
-                    break;
-                }
-            }
+            hashChecker.check(output, work, workFoundCallback);
         }
-
-        diabloMiner.finish();
     }
 
     @Override

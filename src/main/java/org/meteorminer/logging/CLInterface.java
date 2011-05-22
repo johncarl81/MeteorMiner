@@ -12,7 +12,7 @@ import java.util.Formatter;
  * @author John Ericksen
  */
 @Singleton
-public class CLLogger {
+public class CLInterface {
 
     @Inject
     private Statistics statistics;

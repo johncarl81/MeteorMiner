@@ -6,6 +6,7 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.binding.Authorization;
+import org.meteorminer.logging.CLInterface;
 
 import javax.inject.Inject;
 import java.io.*;
@@ -28,6 +29,8 @@ public class JsonClient {
     private ObjectMapper mapper;
     @Inject
     private LongPollAdaptor longPollAdaptor;
+    @Inject
+    private CLInterface output;
 
     public JsonNode execute(String requestMessage, URL url) throws IOException {
         return execute(requestMessage, connectionFactory.getBitcoinConnection(url));
@@ -40,6 +43,8 @@ public class JsonClient {
     }
 
     public JsonNode execute(String requestMessage, HttpURLConnection connection) throws IOException {
+
+        output.verbose("JSON Request on " + connection.getURL());
 
         connection.setRequestProperty("Authorization", userPassword);
         connection.setRequestProperty("Accept-Encoding", "gzip,deflate");

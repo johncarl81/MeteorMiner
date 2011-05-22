@@ -1,6 +1,7 @@
 package org.meteorminer.logging;
 
 import javax.inject.Singleton;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author John Ericksen
@@ -8,44 +9,45 @@ import javax.inject.Singleton;
 @Singleton
 public class Statistics {
 
-    private double hashCount;
-    private double previousHashTime;
-    private long workPass;
-    private long workFail;
+    private AtomicLong hashCount;
+    private long previousHashTime;
+    private AtomicLong workPass;
+    private AtomicLong workFail;
 
     public Statistics() {
-        hashCount = 0;
-        workPass = 0;
+        hashCount = new AtomicLong();
+        workPass = new AtomicLong();
+        workFail = new AtomicLong();
         previousHashTime = System.currentTimeMillis();
     }
 
     public void incrementHashCount(long increment) {
-        hashCount += increment;
+        hashCount.addAndGet(increment);
     }
 
     public void incrementWorkPass(long increment) {
-        workPass += increment;
+        workPass.addAndGet(increment);
     }
 
     public void incrementWorkFail(long increment) {
-        workFail += increment;
+        workFail.addAndGet(increment);
     }
 
     public double getHashRate() {
         long currentHashTime = System.currentTimeMillis();
-        double rate = (hashCount / 1000.0) / (currentHashTime - previousHashTime);
+        double rate = (hashCount.get() / 1000.0) / (currentHashTime - previousHashTime);
         previousHashTime = currentHashTime;
-        hashCount = 0;
+        hashCount.set(0);
 
         return rate;
     }
 
     public long getWorkPassed() {
-        return workPass;
+        return workPass.get();
     }
 
     public long getWorkFailed() {
-        return workFail;
+        return workFail.get();
     }
 
 

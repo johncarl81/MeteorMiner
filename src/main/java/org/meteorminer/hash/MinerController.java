@@ -12,7 +12,7 @@ public class MinerController {
 
     private Set<LocalMinerController> listeners = new HashSet<LocalMinerController>();
 
-    public void interruptProduction(Runnable callback) {
+    public synchronized void interruptProduction(Runnable callback) {
         for (LocalMinerController controller : listeners) {
             controller.stopProduction();
         }

@@ -5,15 +5,14 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.nativelibs4java.opencl.CLBuildException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.binding.*;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashScanner;
-import org.meteorminer.hash.VerifyHash;
-import org.meteorminer.hash.gpu.GpuHashScanner;
-import org.meteorminer.hash.gpu.OCL;
-import org.meteorminer.hash.scanHash.DigestProcessHashImpl;
+import org.meteorminer.hash.gpu.*;
 import org.meteorminer.network.LongPollWorker;
 import org.meteorminer.network.LongPollWorkerFactory;
 import org.meteorminer.queue.*;
@@ -57,6 +56,10 @@ public class MeteorMinerModule extends AbstractModule {
                 .implement(Runnable.class, LongPollWorker.class)
                 .build((LongPollWorkerFactory.class)));
 
+        install(factoryModuleBuilder
+                .implement(DiabloMiner.class, DiabloMiner.class)
+                .build((DiabloMinerFactory.class)));
+
 
         bind(String.class).annotatedWith(Authorization.class)
                 .toInstance("Basic " + Base64.encodeBase64String((meteorAdvice.getUsername() + ":" + meteorAdvice.getPassword()).getBytes()).trim());
@@ -71,8 +74,17 @@ public class MeteorMinerModule extends AbstractModule {
         bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(createGetWorkMessage());
         bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
         bind(HashScanner.class).annotatedWith(Preferred.class).to(GpuHashScanner.class);
-        bind(VerifyHash.class).annotatedWith(Preferred.class).to(DigestProcessHashImpl.class);
+        bind(HashChecker.class).annotatedWith(Preferred.class).to(HashCheckerImpl.class);
         bind(Boolean.class).annotatedWith(Verbose.class).toInstance(meteorAdvice.isVerbose());
+
+        IntBufferPoolFactory intBufferPoolFactory = new IntBufferPoolFactory();
+        CLIntBufferPoolFactory clIntBufferPoolFactory = new CLIntBufferPoolFactory();
+
+        requestInjection(intBufferPoolFactory);
+        requestInjection(clIntBufferPoolFactory);
+
+        bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(new GenericObjectPool(intBufferPoolFactory));
+        bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(new GenericObjectPool(clIntBufferPoolFactory));
 
         try {
             bind(OCL.class).annotatedWith(SearchKernel.class).toInstance(new OCL(SEARCH_KERNEL_FILE, SEARCH_KERNEL));
@@ -83,7 +95,7 @@ public class MeteorMinerModule extends AbstractModule {
         }
 
         bind(Timer.class).toInstance(new Timer());
-        bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT));
+        bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
     }
 
     private String createGetWorkMessage() {

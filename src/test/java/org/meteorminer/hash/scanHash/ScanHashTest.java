@@ -1,10 +1,8 @@
 package org.meteorminer.hash.scanHash;
 
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.util.Modules;
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -12,7 +10,7 @@ import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerModule;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.ShortCircuitException;
-import org.meteorminer.hash.VerifyHash;
+import org.meteorminer.hash.SynchronousModule;
 import org.meteorminer.hash.WorkFoundCallbackFactory;
 import org.meteorminer.hash.WorkFoundCallbackTester;
 
@@ -27,21 +25,7 @@ public class ScanHashTest extends TestCase {
     public void setUp() throws MalformedURLException {
         Injector injector = Guice.createInjector(
                 Modules.override(new MeteorMinerModule(new MeteorAdvice())).with(
-                        new AbstractModule() {
-
-                            @Override
-                            protected void configure() {
-                                FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
-
-                                install(factoryModuleBuilder
-                                        .implement(org.meteorminer.hash.WorkFoundCallbackTester.class, org.meteorminer.hash.WorkFoundCallbackTester.class)
-                                        .build(WorkFoundCallbackFactory.class));
-
-                                //bind directly to avoid asynchronous behaviour with
-                                bind(VerifyHash.class).to(DigestProcessHashImpl.class);
-                            }
-                        }
-                ));
+                        new SynchronousModule()));
         scanHash = injector.getInstance(ScanHash.class);
         callbackFactory = injector.getInstance(WorkFoundCallbackFactory.class);
     }

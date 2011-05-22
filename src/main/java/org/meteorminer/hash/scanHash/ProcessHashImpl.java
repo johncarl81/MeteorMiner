@@ -2,7 +2,7 @@ package org.meteorminer.hash.scanHash;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.VerifyHash;
-import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.CLInterface;
 import org.meteorminer.queue.WorkFoundCallback;
 
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ import static org.meteorminer.hash.scanHash.HexUtil.decode;
 public class ProcessHashImpl implements VerifyHash {
 
     @Inject
-    private CLLogger logger;
+    private CLInterface output;
 
     @Override
     public void verify(Work work, int nonce, WorkFoundCallback callback) {
@@ -33,7 +33,7 @@ public class ProcessHashImpl implements VerifyHash {
         SHA256.processBlock(hash, buff, state);
 
         if (hash[7] == 0 && hash[6] < work.getTarget()[6]) {
-            logger.verbose("Found Hash, proceeding to local verification");
+            output.verbose("Found Hash, proceeding to local verification");
             //work.setData(work.getDataString().substring(0, 128) + encode(data));
             callback.found(work, nonce);
         }

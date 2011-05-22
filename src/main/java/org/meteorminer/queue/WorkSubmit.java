@@ -6,7 +6,7 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashCacheScanner;
-import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.CLInterface;
 import org.meteorminer.logging.Statistics;
 import org.meteorminer.network.JsonClient;
 
@@ -23,35 +23,35 @@ public class WorkSubmit implements Runnable {
     private Statistics stats;
     private HashCacheScanner hashCache;
     private int nonce;
-    private CLLogger logger;
+    private CLInterface output;
 
-    public WorkSubmit(Work work, JsonClient jsonClient, Statistics stats, HashCacheScanner hashCache, int nonce, CLLogger logger) {
+    public WorkSubmit(Work work, JsonClient jsonClient, Statistics stats, HashCacheScanner hashCache, int nonce, CLInterface output) {
         this.work = work;
         this.jsonClient = jsonClient;
         this.stats = stats;
         this.hashCache = hashCache;
         this.nonce = nonce;
-        this.logger = logger;
+        this.output = output;
     }
 
     public void run() {
         try {
-            logger.verbose("Work passed local verification.  Proceeding to submit.");
+            output.verbose("Work passed local verification.  Proceeding to submit.");
 
             boolean success = parseJsonResult(jsonClient.execute(buildSubmitMessage(work)));
 
             if (success) {
-                logger.notification("Hash Submitted: %08x", nonce);
+                output.notification("Hash Submitted: %08x", nonce);
                 stats.incrementWorkPass(1);
                 hashCache.add(work, nonce);
             } else {
-                logger.notification("Hash Rejected: %08x", nonce);
+                output.notification("Hash Rejected: %08x", nonce);
                 stats.incrementWorkFail(1);
             }
 
         } catch (IOException e) {
-            logger.notification("Exception while submitting the following work:");
-            logger.notification(work.toString());
+            output.notification("Exception while submitting the following work:");
+            output.notification(work.toString());
             e.printStackTrace();
         }
     }

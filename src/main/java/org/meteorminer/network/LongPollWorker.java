@@ -7,7 +7,7 @@ import org.meteorminer.binding.GetWorkMessage;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.MinerController;
-import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.CLInterface;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,7 +22,7 @@ public class LongPollWorker implements Runnable {
     private String getWorkRequest;
     private WorkFactory workFactory;
     private MinerController minerController;
-    private CLLogger logger;
+    private CLInterface output;
     private LongPollWorkProducer longPollFactory;
 
     @Inject
@@ -31,14 +31,14 @@ public class LongPollWorker implements Runnable {
                           @GetWorkMessage String getWorkRequest,
                           WorkFactory workFactory,
                           MinerController minerController,
-                          CLLogger logger,
+                          CLInterface output,
                           LongPollWorkProducer longPollFactory) {
         this.longPollWorkerUrl = longPollWorkerUrl;
         this.jsonClient = jsonClient;
         this.getWorkRequest = getWorkRequest;
         this.workFactory = workFactory;
         this.minerController = minerController;
-        this.logger = logger;
+        this.output = output;
         this.longPollFactory = longPollFactory;
     }
 
@@ -47,7 +47,7 @@ public class LongPollWorker implements Runnable {
             try {
                 JsonNode responseNode = jsonClient.execute(getWorkRequest, longPollWorkerUrl);
 
-                logger.notification("Long poll received.");
+                output.notification("Long poll received.");
 
                 final Work work = workFactory.buildWork(responseNode);
 

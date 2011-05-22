@@ -1,32 +1,39 @@
 package org.meteorminer.hash.gpu;
 
+import com.google.inject.assistedinject.Assisted;
 import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLIntBuffer;
-import com.nativelibs4java.opencl.CLMem;
-import com.nativelibs4java.util.NIOUtils;
+import org.apache.commons.pool.ObjectPool;
+import org.meteorminer.binding.CLIntBufferPool;
+import org.meteorminer.binding.IntBufferPool;
+import org.meteorminer.binding.SearchKernel;
 import org.meteorminer.domain.Work;
 
+import javax.inject.Inject;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 /**
  * @author John Ericksen
  */
 public class DiabloMiner {
 
-    private final IntBuffer output;
     private final OCL ocl;
 
-    private CLIntBuffer outputBuffer;
+    private ObjectPool clIntBufferPool;
+    private ObjectPool intBufferPool;
 
-    public DiabloMiner(OCL ocl, Work work, int size) {
+    @Inject
+    public DiabloMiner(@Assisted Work work,
+                       @SearchKernel OCL ocl,
+                       @CLIntBufferPool ObjectPool clIntBufferPool,
+                       @IntBufferPool ObjectPool intBufferPool) {
 
         this.ocl = ocl;
-        this.output = NIOUtils.directInts(size, ocl.getContext().getByteOrder());
+        this.clIntBufferPool = clIntBufferPool;
+        this.intBufferPool = intBufferPool;
 
-        createBuffer(ocl);
-
-        int[] midstate2 = new int[8];
-        System.arraycopy(work.getMidstate(), 0, midstate2, 0, 8);
+        int[] midstate2 = Arrays.copyOf(work.getMidstate(), 8);
 
         sharound(midstate2, 0, 1, 2, 3, 4, 5, 6, 7, work.getData()[16], 0x428A2F98);
         sharound(midstate2, 7, 0, 1, 2, 3, 4, 5, 6, work.getData()[17], 0x71374491);
@@ -63,31 +70,24 @@ public class DiabloMiner {
                 midstate2[7]);
     }
 
-    public void finish() {
-        outputBuffer.release();
-    }
-
-    public void createBuffer(OCL ocl) {
-        if (outputBuffer != null) {
-            outputBuffer.release();
-        }
-
-        int[] input = new int[0xF];
-
-        for (int i = 0; i < 0xF; i++) {
-            input[i] = 0;
-        }
-        outputBuffer = ocl.getContext().createIntBuffer(CLMem.Usage.InputOutput, IntBuffer.wrap(input), true);
-    }
-
     public IntBuffer hash(int nonceStart, int worksize, int localWorkSize) {
 
-        ocl.getKernel().setArg(22, nonceStart * worksize);
-        ocl.getKernel().setArg(23, outputBuffer);
+        IntBuffer output = null;
+        try {
+            CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
+            output = (IntBuffer) intBufferPool.borrowObject();
 
-        synchronized (ocl) {
-            CLEvent event = ocl.getKernel().enqueueNDRange(ocl.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
-            outputBuffer.read(ocl.getQueue(), 0, 0xF, output, true, event);
+            ocl.getKernel().setArg(22, nonceStart * worksize);
+            ocl.getKernel().setArg(23, outputBuffer);
+
+            synchronized (ocl) {
+                CLEvent event = ocl.getKernel().enqueueNDRange(ocl.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
+                outputBuffer.read(ocl.getQueue(), 0, 0xF, output, true, event);
+            }
+
+            clIntBufferPool.returnObject(outputBuffer);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return output;

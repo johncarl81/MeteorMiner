@@ -31,7 +31,6 @@ public class WorkProducerImpl implements WorkProducer {
 
     public Work produce() {
         try {
-
             JsonNode responseNode = jsonClient.execute(getWorkMessage);
 
             return workFactory.buildWork(responseNode);

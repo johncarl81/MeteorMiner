@@ -3,7 +3,7 @@ package org.meteorminer.hash.scanHash;
 import com.google.inject.Inject;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.VerifyHash;
-import org.meteorminer.logging.CLLogger;
+import org.meteorminer.logging.CLInterface;
 import org.meteorminer.queue.WorkFoundCallback;
 
 import java.nio.ByteBuffer;
@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 public class DigestProcessHashImpl implements VerifyHash {
 
     @Inject
-    private CLLogger logger;
+    private CLInterface output;
 
     @Override
     public void verify(Work work, int nonce, WorkFoundCallback workFoundCallback) {
@@ -47,10 +47,10 @@ public class DigestProcessHashImpl implements VerifyHash {
                 if (H == 0) {
                     workFoundCallback.found(work, nonce);
                 } else {
-                    logger.notification("Invalid block found, possible driver or hardware issue");
+                    output.notification("Invalid block found, possible driver or hardware issue");
                 }
             } else {
-                logger.verbose("Hash failed internal validation.");
+                output.verbose("Hash failed internal validation.");
             }
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

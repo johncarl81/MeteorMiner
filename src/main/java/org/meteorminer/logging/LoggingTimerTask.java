@@ -8,10 +8,10 @@ import java.util.TimerTask;
  */
 public class LoggingTimerTask extends TimerTask {
     @Inject
-    private CLLogger logger;
+    private CLInterface output;
 
     @Override
     public void run() {
-        logger.outputMain();
+        output.outputMain();
     }
 }
