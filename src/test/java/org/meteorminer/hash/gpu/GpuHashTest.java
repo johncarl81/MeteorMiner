@@ -4,15 +4,15 @@ package org.meteorminer.hash.gpu;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
+import com.nativelibs4java.opencl.JavaCL;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.meteorminer.config.DeviceModule;
+import org.meteorminer.config.GPUDeviceModule;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerModule;
 import org.meteorminer.domain.Work;
-import org.meteorminer.hash.ShortCircuitException;
-import org.meteorminer.hash.SynchronousModule;
-import org.meteorminer.hash.WorkFoundCallbackFactory;
-import org.meteorminer.hash.WorkFoundCallbackTester;
+import org.meteorminer.hash.*;
 
 import java.net.MalformedURLException;
 
@@ -24,8 +24,11 @@ public class GpuHashTest extends TestCase {
     @Override
     public void setUp() throws MalformedURLException {
         Injector injector = Guice.createInjector(
-                Modules.override(new MeteorMinerModule(new MeteorAdvice())).with(
-                        new SynchronousModule()));
+                Modules.override(new MeteorMinerModule(new MeteorAdvice()),
+                        new DeviceModule(),
+                        new GPUDeviceModule(JavaCL.getBestDevice())).with(
+                        new SynchronousModule(),
+                        new GPUSynchronousModule()));
         scanHash = injector.getInstance(GpuHashScanner.class);
         callbackFactory = injector.getInstance(WorkFoundCallbackFactory.class);
     }

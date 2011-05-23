@@ -1,15 +1,15 @@
 package org.meteorminer.hash.gpu;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.nativelibs4java.opencl.JavaCL;
 import junit.framework.TestCase;
 import org.apache.commons.pool.ObjectPool;
 import org.meteorminer.binding.CLIntBufferPool;
 import org.meteorminer.binding.IntBufferPool;
 import org.meteorminer.binding.SearchKernel;
 import org.meteorminer.config.MeteorAdvice;
-import org.meteorminer.config.MeteorMinerModule;
+import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.domain.Work;
 
 import java.net.MalformedURLException;
@@ -25,7 +25,8 @@ public class DiabloMinerTest extends TestCase {
     private ObjectPool clIntBufferPool;
 
     public void setUp() throws MalformedURLException {
-        Injector injector = Guice.createInjector(new MeteorMinerModule(new MeteorAdvice()));
+        MeteorMinerInjector.buildInjector(new MeteorAdvice());
+        Injector injector = MeteorMinerInjector.buildGPUDeviceInjector(JavaCL.getBestDevice());
         ocl = injector.getInstance(Key.get(OCL.class, SearchKernel.class));
         intBufferPool = injector.getInstance(Key.get(ObjectPool.class, IntBufferPool.class));
         clIntBufferPool = injector.getInstance(Key.get(ObjectPool.class, CLIntBufferPool.class));

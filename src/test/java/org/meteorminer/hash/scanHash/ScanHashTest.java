@@ -6,6 +6,8 @@ import com.google.inject.Injector;
 import com.google.inject.util.Modules;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.meteorminer.config.CPUDeviceModule;
+import org.meteorminer.config.DeviceModule;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerModule;
 import org.meteorminer.domain.Work;
@@ -24,7 +26,9 @@ public class ScanHashTest extends TestCase {
     @Override
     public void setUp() throws MalformedURLException {
         Injector injector = Guice.createInjector(
-                Modules.override(new MeteorMinerModule(new MeteorAdvice())).with(
+                Modules.override(new MeteorMinerModule(new MeteorAdvice()),
+                        new DeviceModule(),
+                        new CPUDeviceModule()).with(
                         new SynchronousModule()));
         scanHash = injector.getInstance(ScanHash.class);
         callbackFactory = injector.getInstance(WorkFoundCallbackFactory.class);

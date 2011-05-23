@@ -1,6 +1,8 @@
 package org.meteorminer.domain;
 
+import com.google.inject.Inject;
 import org.codehaus.jackson.JsonNode;
+import org.meteorminer.output.CLInterface;
 
 import javax.inject.Singleton;
 
@@ -11,6 +13,9 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class WorkFactory {
+
+    @Inject
+    private CLInterface output;
 
     /**
      * Build a work object from the given JSON response node from the GetWork request.
@@ -29,6 +34,7 @@ public class WorkFactory {
                     responseNode.get("midstate").getValueAsText(),
                     responseNode.get("hash1").getValueAsText(),
                     responseNode.get("target").getValueAsText());
+            output.verbose("Work built: " + work.getDataString());
         }
 
         return work;

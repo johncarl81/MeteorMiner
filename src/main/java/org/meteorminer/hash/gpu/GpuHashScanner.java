@@ -25,7 +25,7 @@ public class GpuHashScanner extends AbstractHashScanner {
     private CLInterface output;
 
     private long nonceCount;
-    static final int workgroupSize = 1000000;
+    static final int workgroupSize = 3000000;
     static final int localWorkSize = 64;
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback) {

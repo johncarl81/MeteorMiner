@@ -31,11 +31,15 @@ public class MeteorAdvice {
      *
      * @throws MalformedURLException
      */
-    public MeteorAdvice() throws MalformedURLException {
+    public MeteorAdvice() {
         //defaults
-        this.bitcoinUrl = new URL("http://" + LOCALHOST + ":" + PORT);
-        this.getWorkTimeout = Integer.parseInt(GET_WORK_TIMEOUT);
-        this.verbose = false;
+        try {
+            this.bitcoinUrl = new URL("http://" + LOCALHOST + ":" + PORT);
+            this.getWorkTimeout = Integer.parseInt(GET_WORK_TIMEOUT);
+            this.verbose = false;
+        } catch (MalformedURLException e) {
+            throw new MeteorMinerRuntimeException("Error setting up default configuration");
+        }
     }
 
     /**

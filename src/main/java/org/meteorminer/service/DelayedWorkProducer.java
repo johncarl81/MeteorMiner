@@ -3,12 +3,9 @@ package org.meteorminer.service;
 import com.google.inject.Inject;
 import org.meteorminer.domain.Work;
 
-import javax.inject.Singleton;
-
 /**
  * @author John Ericksen
  */
-@Singleton
 public class DelayedWorkProducer implements WorkProducer {
 
     @Inject

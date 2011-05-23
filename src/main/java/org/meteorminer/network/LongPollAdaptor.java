@@ -4,7 +4,6 @@ import org.meteorminer.binding.BitcoinUrl;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,7 +11,6 @@ import java.net.URL;
 /**
  * @author John Ericksen
  */
-@Singleton
 public class LongPollAdaptor {
 
     @Inject

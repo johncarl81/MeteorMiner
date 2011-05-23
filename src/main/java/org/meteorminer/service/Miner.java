@@ -16,7 +16,6 @@ public class Miner {
     WorkFoundCallback workFoundCallback;
 
     public void mine(Work work) {
-
         // Nonce is a number which starts at 0 and increments until 0xFFFFFFFF
         scanner.scan(work, workFoundCallback);
     }

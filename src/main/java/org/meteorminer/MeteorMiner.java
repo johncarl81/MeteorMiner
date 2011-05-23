@@ -1,13 +1,12 @@
 package org.meteorminer;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.meteorminer.config.MeteorAdvice;
-import org.meteorminer.config.MeteorMinerModule;
+import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.service.MiningService;
 
 import java.net.MalformedURLException;
@@ -16,7 +15,6 @@ import java.net.MalformedURLException;
  * @author John Ericksen
  */
 public class MeteorMiner {
-
     public static void main(String[] args) {
 
         try {
@@ -39,7 +37,7 @@ public class MeteorMiner {
             */
             CommandLine line = new PosixParser().parse(options, args);
 
-            Injector injector = Guice.createInjector(new MeteorMinerModule(new MeteorAdvice(line)));
+            Injector injector = MeteorMinerInjector.buildInjector(new MeteorAdvice(line));
 
             MiningService miningService = injector.getInstance(MiningService.class);
 

@@ -5,8 +5,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 
-import static com.nativelibs4java.opencl.JavaCL.createBestContext;
-
 /**
  * Contetx / Kernel / Program / Queue container associated with the provided kernel source
  *
@@ -18,9 +16,9 @@ public class OCL {
     public final CLContext context;
     public final CLKernel kernel;
 
-    public OCL(String srcFile, String kernelName) throws CLBuildException, IOException {
+    public OCL(String srcFile, String kernelName, CLDevice device) throws CLBuildException, IOException {
         String src = IOUtils.toString(getClass().getClassLoader().getResourceAsStream(srcFile));
-        context = createBestContext();
+        context = device.getPlatform().createContext(null, device);
         queue = context.createDefaultQueue();
         program = context.createProgram(src).build();
         kernel = program.createKernel(kernelName);

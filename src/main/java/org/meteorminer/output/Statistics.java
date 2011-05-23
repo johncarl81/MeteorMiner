@@ -1,12 +1,11 @@
 package org.meteorminer.output;
 
-import javax.inject.Singleton;
+import java.util.Formatter;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author John Ericksen
  */
-@Singleton
 public class Statistics {
 
     private AtomicLong hashCount;
@@ -85,5 +84,10 @@ public class Statistics {
 
     public long getSavedTime() {
         return savedTime.get();
+    }
+
+    public String toString() {
+        return new Formatter().format("%1.2f(%1.2f)mh/s %1d pass %1d fail",
+                getInstantHashRate(), getLongHashRate(), getWorkPassed(), getWorkFailed()).toString();
     }
 }
