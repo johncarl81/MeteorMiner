@@ -48,10 +48,10 @@ public class Statistics {
     }
 
     public double getInstantHashRate() {
+        long tempHashCount = instantHashCount.getAndSet(0);
         long currentHashTime = System.currentTimeMillis();
-        double rate = (instantHashCount.get() / 1000.0) / (currentHashTime - previousHashTime);
+        double rate = (tempHashCount / 1000.0) / (currentHashTime - previousHashTime);
         previousHashTime = currentHashTime;
-        instantHashCount.set(0);
 
         return rate;
     }

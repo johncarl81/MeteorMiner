@@ -6,7 +6,6 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.nativelibs4java.opencl.CLBuildException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.PoolUtils;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -104,8 +103,8 @@ public class MeteorMinerModule extends AbstractModule {
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
         config.lifo = false;
 
-        bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(PoolUtils.erodingPool(new GenericObjectPool(intBufferPoolFactory, config)));
-        bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(PoolUtils.erodingPool(new GenericObjectPool(clIntBufferPoolFactory, config)));
+        bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(new GenericObjectPool(intBufferPoolFactory, config));
+        bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(new GenericObjectPool(clIntBufferPoolFactory, config));
 
         try {
             bind(OCL.class).annotatedWith(SearchKernel.class).toInstance(new OCL(SEARCH_KERNEL_FILE, SEARCH_KERNEL));

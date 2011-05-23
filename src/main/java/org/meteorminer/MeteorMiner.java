@@ -20,7 +20,6 @@ public class MeteorMiner {
     public static void main(String[] args) {
 
         try {
-
             Options options = new Options();
             options.addOption("u", "user", true, "bitcoin host username");
             options.addOption("p", "pass", true, "bitcoin host password");
@@ -52,6 +51,4 @@ public class MeteorMiner {
             e.printStackTrace();
         }
     }
-
-
 }
