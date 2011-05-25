@@ -1,4 +1,4 @@
-package org.meteorminer.binding;
+package org.meteorminer.config.binding;
 
 import com.google.inject.BindingAnnotation;
 
@@ -9,10 +9,10 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * JSON GetWork message
+ * Binding annotation identifying the OCL Search Kernel
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface GetWorkMessage {
+public @interface SearchKernel {
 }

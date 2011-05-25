@@ -1,7 +1,7 @@
 package org.meteorminer.hash;
 
 import com.google.inject.Inject;
-import org.meteorminer.binding.GetWorkTimeout;
+import org.meteorminer.config.binding.GetWorkTimeout;
 import org.meteorminer.domain.Work;
 import org.meteorminer.service.WorkFoundCallback;
 

@@ -1,4 +1,4 @@
-package org.meteorminer.binding;
+package org.meteorminer.config.binding;
 
 import com.google.inject.BindingAnnotation;
 
@@ -9,10 +9,10 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Binding annotation identifying the OCL Search Kernel
+ * Binding annotation for the verbose configuration parameter.
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface SearchKernel {
+public @interface Verbose {
 }

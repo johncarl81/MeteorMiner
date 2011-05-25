@@ -3,7 +3,7 @@ package org.meteorminer.hash.gpu;
 import com.nativelibs4java.opencl.CLIntBuffer;
 import com.nativelibs4java.opencl.CLMem;
 import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.meteorminer.binding.SearchKernel;
+import org.meteorminer.config.binding.SearchKernel;
 
 import javax.inject.Inject;
 import java.nio.IntBuffer;

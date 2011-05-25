@@ -2,8 +2,8 @@ package org.meteorminer.hash.gpu;
 
 import com.google.inject.Inject;
 import org.apache.commons.pool.ObjectPool;
-import org.meteorminer.binding.CLIntBufferPool;
-import org.meteorminer.binding.IntBufferPool;
+import org.meteorminer.config.binding.CLIntBufferPool;
+import org.meteorminer.config.binding.IntBufferPool;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.VerifyHash;
 import org.meteorminer.output.CLInterface;

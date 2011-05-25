@@ -1,4 +1,4 @@
-package org.meteorminer.binding;
+package org.meteorminer.config.binding;
 
 import com.google.inject.BindingAnnotation;
 
@@ -9,10 +9,10 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Binding annotation for the url of the bitcoin server being used
+ * Binding annotation for the ObjectPool containing the CL Integer Buffers
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface BitcoinUrl {
+public @interface CLIntBufferPool {
 }

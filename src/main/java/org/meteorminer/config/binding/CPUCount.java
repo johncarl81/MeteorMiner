@@ -1,4 +1,4 @@
-package org.meteorminer.binding;
+package org.meteorminer.config.binding;
 
 import com.google.inject.BindingAnnotation;
 
@@ -9,10 +9,10 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Binding annotation for the authorization parameters (username and password) for the given user.
+ * Binding annotation for the CPU Count parameter
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface Authorization {
+public @interface CPUCount {
 }

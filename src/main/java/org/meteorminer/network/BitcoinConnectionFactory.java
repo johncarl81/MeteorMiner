@@ -1,7 +1,7 @@
 package org.meteorminer.network;
 
-import org.meteorminer.binding.BitcoinProxy;
-import org.meteorminer.binding.BitcoinUrl;
+import org.meteorminer.config.binding.BitcoinProxy;
+import org.meteorminer.config.binding.BitcoinUrl;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;

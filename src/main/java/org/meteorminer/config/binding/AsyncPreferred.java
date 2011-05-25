@@ -1,4 +1,4 @@
-package org.meteorminer.binding;
+package org.meteorminer.config.binding;
 
 import com.google.inject.BindingAnnotation;
 
@@ -9,10 +9,11 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Binding annotation for the ObjectPool containing the Integer Buffers
+ * For the numerous instances where a class is decorated with an asynchronous wrapper, this annotation points
+ * out what class to wrap.
  */
 @BindingAnnotation
 @Target({FIELD, PARAMETER, METHOD})
 @Retention(RUNTIME)
-public @interface IntBufferPool {
+public @interface AsyncPreferred {
 }

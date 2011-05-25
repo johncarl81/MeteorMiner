@@ -6,11 +6,11 @@ import com.nativelibs4java.opencl.JavaCL;
 import org.apache.commons.pool.ObjectPool;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.binding.CLIntBufferPool;
-import org.meteorminer.binding.IntBufferPool;
-import org.meteorminer.binding.SearchKernel;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
+import org.meteorminer.config.binding.CLIntBufferPool;
+import org.meteorminer.config.binding.IntBufferPool;
+import org.meteorminer.config.binding.SearchKernel;
 import org.meteorminer.domain.Work;
 
 import java.net.MalformedURLException;

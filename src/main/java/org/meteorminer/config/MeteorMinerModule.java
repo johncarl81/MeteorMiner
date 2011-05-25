@@ -6,7 +6,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
-import org.meteorminer.binding.*;
+import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.Work;
 
 import java.net.Proxy;

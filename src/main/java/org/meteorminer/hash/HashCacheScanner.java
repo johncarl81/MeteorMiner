@@ -1,6 +1,6 @@
 package org.meteorminer.hash;
 
-import org.meteorminer.binding.AsyncPreferred;
+import org.meteorminer.config.binding.AsyncPreferred;
 import org.meteorminer.domain.Work;
 import org.meteorminer.service.WorkFoundCallback;
 

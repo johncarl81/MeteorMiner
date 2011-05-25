@@ -3,7 +3,7 @@ package org.meteorminer.network;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import org.codehaus.jackson.JsonNode;
-import org.meteorminer.binding.GetWorkMessage;
+import org.meteorminer.config.binding.GetWorkMessage;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.MinerController;

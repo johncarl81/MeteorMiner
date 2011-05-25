@@ -1,9 +1,9 @@
 package org.meteorminer.output;
 
 import org.apache.commons.pool.ObjectPool;
-import org.meteorminer.binding.CLIntBufferPool;
-import org.meteorminer.binding.IntBufferPool;
-import org.meteorminer.binding.Verbose;
+import org.meteorminer.config.binding.CLIntBufferPool;
+import org.meteorminer.config.binding.IntBufferPool;
+import org.meteorminer.config.binding.Verbose;
 
 import javax.inject.Inject;
 import java.util.Formatter;

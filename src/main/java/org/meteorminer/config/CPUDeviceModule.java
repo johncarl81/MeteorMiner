@@ -1,7 +1,7 @@
 package org.meteorminer.config;
 
 import com.google.inject.AbstractModule;
-import org.meteorminer.binding.AsyncPreferred;
+import org.meteorminer.config.binding.AsyncPreferred;
 import org.meteorminer.domain.CPUDevice;
 import org.meteorminer.domain.Device;
 import org.meteorminer.hash.HashScanner;

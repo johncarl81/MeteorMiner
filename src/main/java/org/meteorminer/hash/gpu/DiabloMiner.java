@@ -4,9 +4,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLIntBuffer;
 import org.apache.commons.pool.ObjectPool;
-import org.meteorminer.binding.CLIntBufferPool;
-import org.meteorminer.binding.IntBufferPool;
-import org.meteorminer.binding.SearchKernel;
+import org.meteorminer.config.binding.CLIntBufferPool;
+import org.meteorminer.config.binding.IntBufferPool;
+import org.meteorminer.config.binding.SearchKernel;
 import org.meteorminer.domain.Work;
 
 import javax.inject.Inject;

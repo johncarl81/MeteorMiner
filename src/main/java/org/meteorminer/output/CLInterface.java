@@ -2,7 +2,7 @@ package org.meteorminer.output;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang.StringUtils;
-import org.meteorminer.binding.Verbose;
+import org.meteorminer.config.binding.Verbose;
 import org.meteorminer.domain.Device;
 
 import javax.inject.Singleton;

@@ -1,15 +1,12 @@
 package org.meteorminer.service;
 
-import javax.inject.Inject;
-import java.util.concurrent.ThreadFactory;
+import com.google.inject.Singleton;
 
 /**
  * @author John Ericksen
  */
+@Singleton
 public class AsynchronousFactory {
-
-    @Inject
-    private ThreadFactory threadFactory;
 
     public void startRunnable(Runnable runnable) {
         new Thread(runnable).start();

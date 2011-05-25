@@ -2,7 +2,7 @@ package org.meteorminer.hash.gpu;
 
 import com.nativelibs4java.util.NIOUtils;
 import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.meteorminer.binding.SearchKernel;
+import org.meteorminer.config.binding.SearchKernel;
 
 import javax.inject.Inject;
 import java.nio.IntBuffer;
