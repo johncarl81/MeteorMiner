@@ -11,7 +11,6 @@ import org.meteorminer.config.DeviceModule;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerModule;
 import org.meteorminer.domain.Work;
-import org.meteorminer.hash.ShortCircuitException;
 import org.meteorminer.hash.SynchronousModule;
 import org.meteorminer.hash.WorkFoundCallbackFactory;
 import org.meteorminer.hash.WorkFoundCallbackTester;
@@ -41,7 +40,7 @@ public class ScanHashTest extends TestCase {
                 "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
-        WorkFoundCallbackTester tester = callbackFactory.buildCallback(0, false);
+        WorkFoundCallbackTester tester = callbackFactory.buildCallback(0);
         scanHash.innerScan(work, tester, 1, 0xffff);
 
         Assert.assertFalse("No match for casial hash", tester.isFound());
@@ -54,11 +53,9 @@ public class ScanHashTest extends TestCase {
                 "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
-        WorkFoundCallbackTester tester = callbackFactory.buildCallback(30911318, true);
+        WorkFoundCallbackTester tester = callbackFactory.buildCallback(30911318);
 
-        try {
-            scanHash.innerScan(work, tester, 0x1d70bd0, 0xffffff);
-        } catch (ShortCircuitException e) {/*short circuit*/}
+        scanHash.innerScan(work, tester, 0x1d70bd0, 0xffffff);
 
         Assert.assertTrue("Known sol'n", tester.isFound());
         Assert.assertEquals(
@@ -74,12 +71,10 @@ public class ScanHashTest extends TestCase {
                 "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
-        WorkFoundCallbackTester tester = callbackFactory.buildCallback(563799816, true);
+        WorkFoundCallbackTester tester = callbackFactory.buildCallback(563799816);
         //solution is 563799816
         //            110297600
-        try {
-            scanHash.innerScan(work, tester, 563700000, 563799817);
-        } catch (ShortCircuitException e) {/*short circuit*/}
+        scanHash.innerScan(work, tester, 563700000, 563799817);
 
         Assert.assertTrue("Known sol'n", tester.isFound());
 

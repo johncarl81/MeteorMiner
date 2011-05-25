@@ -34,22 +34,22 @@ public class GpuHashScanner extends AbstractHashScanner {
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
 
+        long startTime = System.currentTimeMillis();
+
         DiabloMiner diabloMiner = diabloMinerFactory.createDiabloMiner(work);
 
         int startNonce = (start / workgroupSize);
         long nonceEnd = startNonce + (end / workgroupSize) + 1;
 
-        long startTime = System.currentTimeMillis();
-
         for (int nonce = startNonce; nonce < nonceEnd && !getLocalController().haltProduction(); nonce++, nonceCount++) {
-
+            long loopTime = System.currentTimeMillis();
             MinerResult output = diabloMiner.hash(nonce, workgroupSize, localWorkSize);
             hashChecker.check(output, work, workFoundCallback);
+            statistics.addWorkTime(System.currentTimeMillis() - loopTime);
         }
 
-        long workTime = System.currentTimeMillis() - startTime;
-        statistics.addWorkTime(workTime);
-        output.verbose("Scan finished after " + workTime + "ms");
+        output.verbose("Scan finished after " + (System.currentTimeMillis() - startTime) + "ms");
+
     }
 
     @Override

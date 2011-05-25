@@ -46,6 +46,7 @@ public class MeteorMinerModule extends AbstractModule {
         bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(createGetWorkMessage());
         bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
         bind(Boolean.class).annotatedWith(Verbose.class).toInstance(meteorAdvice.isVerbose());
+        bind(Integer.class).annotatedWith(CPUCount.class).toInstance(meteorAdvice.getCpuCount());
 
         //additional singletons
         bind(Timer.class).toInstance(new Timer());

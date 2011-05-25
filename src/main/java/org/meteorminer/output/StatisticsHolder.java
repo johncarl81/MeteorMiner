@@ -13,9 +13,15 @@ import java.util.Map;
 @Singleton
 public class StatisticsHolder {
 
-    private Map<Device, Statistics> statisticsList = new HashMap<Device, Statistics>();
+    private Map<Device, Statistics> statisticsMap = new HashMap<Device, Statistics>();
 
     public Map<Device, Statistics> getStatistics() {
-        return statisticsList;
+        return statisticsMap;
+    }
+
+    public void updateInstants() {
+        for (Statistics statistics : statisticsMap.values()) {
+            statistics.updateInstants();
+        }
     }
 }

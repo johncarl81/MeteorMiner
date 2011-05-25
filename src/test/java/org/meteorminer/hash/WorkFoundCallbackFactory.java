@@ -5,5 +5,5 @@ package org.meteorminer.hash;
  */
 public interface WorkFoundCallbackFactory {
 
-    WorkFoundCallbackTester buildCallback(int expectedNonce, boolean shortCircuit);
+    WorkFoundCallbackTester buildCallback(int expectedNonce);
 }

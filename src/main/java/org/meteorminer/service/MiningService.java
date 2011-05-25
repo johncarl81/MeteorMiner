@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import com.nativelibs4java.opencl.CLDevice;
 import com.nativelibs4java.opencl.CLPlatform;
 import com.nativelibs4java.opencl.JavaCL;
+import org.meteorminer.binding.CPUCount;
 import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.domain.Device;
 import org.meteorminer.output.CLInterface;
@@ -30,20 +31,26 @@ public class MiningService {
     private CLInterface output;
     @Inject
     private StatisticsHolder statisticsHolder;
+    @Inject
+    @CPUCount
+    private int cpuCount;
 
     public void start() {
-        timer.schedule(loggingTimerTask, 3000, 3000);
+        timer.schedule(loggingTimerTask, 1000, 1000);
 
-        //Iterate over devices
+        //gpu setup
         for (CLDevice gpuDevice : getAllDevices()) {
             Injector gpuDeviceInjector = MeteorMinerInjector.buildGPUDeviceInjector(gpuDevice);
 
             setupDevice(gpuDeviceInjector);
         }
 
-        /*Injector cpuDeviceInjector = MeteorMinerInjector.buildCPUDeviceInjector();
+        //cpu setup
+        for (int i = 0; i < cpuCount; i++) {
+            Injector cpuDeviceInjector = MeteorMinerInjector.buildCPUDeviceInjector();
 
-        setupDevice(cpuDeviceInjector);*/
+            setupDevice(cpuDeviceInjector);
+        }
 
 
     }

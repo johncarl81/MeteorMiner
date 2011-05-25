@@ -13,21 +13,16 @@ import javax.inject.Inject;
 public class WorkFoundCallbackTester implements WorkFoundCallback {
 
     private boolean found = false;
-    private boolean shortCircuit;
     private int expectedNonce;
 
     @Inject
-    public WorkFoundCallbackTester(@Assisted int expectedNonce, @Assisted boolean shortCircuit) {
+    public WorkFoundCallbackTester(@Assisted int expectedNonce) {
         this.expectedNonce = expectedNonce;
-        this.shortCircuit = shortCircuit;
     }
 
     public void found(Work work, int nonce) {
         found = true;
         Assert.assertEquals(expectedNonce, nonce);
-        if (shortCircuit) {
-            throw new ShortCircuitException(); //short circuit
-        }
     }
 
     public boolean isFound() {

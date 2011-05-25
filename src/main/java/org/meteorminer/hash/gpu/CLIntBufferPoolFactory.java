@@ -47,7 +47,7 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
      */
     @Override
     public void passivateObject(Object passivate) throws Exception {
-        ((CLIntBuffer) passivate).write(ocl.getQueue(), emptyBuffer, false);
+        ((CLIntBuffer) passivate).write(ocl.getQueue(), emptyBuffer, true);
     }
 
     /**

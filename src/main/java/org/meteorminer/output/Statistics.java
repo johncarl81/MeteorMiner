@@ -13,6 +13,8 @@ public class Statistics {
     private long previousHashTime;
     private long startHashTime;
     private long lastWorkUpdate;
+    private long previousHashCount;
+    private double instantHashRate;
     private AtomicLong workPass;
     private AtomicLong workFail;
     private AtomicLong workTime;
@@ -30,8 +32,8 @@ public class Statistics {
     }
 
     public void incrementHashCount(long increment) {
-        hashCount.addAndGet(increment);
-        instantHashCount.addAndGet(increment);
+        hashCount.getAndAdd(increment);
+        instantHashCount.getAndAdd(increment);
     }
 
     public void incrementWorkPass(long increment) {
@@ -47,12 +49,7 @@ public class Statistics {
     }
 
     public double getInstantHashRate() {
-        long tempHashCount = instantHashCount.getAndSet(0);
-        long currentHashTime = System.currentTimeMillis();
-        double rate = (tempHashCount / 1000.0) / (currentHashTime - previousHashTime);
-        previousHashTime = currentHashTime;
-
-        return rate;
+        return instantHashRate;
     }
 
     public long getWorkPassed() {
@@ -65,7 +62,6 @@ public class Statistics {
 
 
     public double getLongHashRate() {
-
         return (hashCount.get() / 1000.0) / (System.currentTimeMillis() - startHashTime);
     }
 
@@ -79,7 +75,7 @@ public class Statistics {
     }
 
     public double getWorkRatio() {
-        return (getWorkTime() * 1.0) / (lastWorkUpdate - startHashTime);
+        return (getWorkTime() * 100.0) / (lastWorkUpdate - startHashTime);
     }
 
     public long getSavedTime() {
@@ -87,7 +83,15 @@ public class Statistics {
     }
 
     public String toString() {
-        return new Formatter().format("%1.2f(%1.2f)mh/s %1d pass %1d fail",
-                getInstantHashRate(), getLongHashRate(), getWorkPassed(), getWorkFailed()).toString();
+        return new Formatter().format("%1.2f(%1.2f)mh/s %1d pass %1d fail %1.4f",
+                getInstantHashRate(), getLongHashRate(), getWorkPassed(), getWorkFailed(), getWorkRatio()).toString();
+    }
+
+    public void updateInstants() {
+        long currentHashCount = instantHashCount.get();
+        long currentHashTime = System.currentTimeMillis();
+        instantHashRate = ((currentHashCount - previousHashCount) / 1000.0) / (currentHashTime - previousHashTime);
+        previousHashCount = currentHashCount;
+        previousHashTime = currentHashTime;
     }
 }

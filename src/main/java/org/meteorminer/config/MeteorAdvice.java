@@ -18,6 +18,7 @@ public class MeteorAdvice {
     private static final String LOCALHOST = "localhost";
     private static final String PORT = "8332";
     private static final String GET_WORK_TIMEOUT = "5";
+    private static final String CPU_COUNT = "0";
 
     private URL bitcoinUrl;
     private String username;
@@ -25,11 +26,10 @@ public class MeteorAdvice {
     private Proxy proxy = null;
     private int getWorkTimeout;
     private boolean verbose;
+    private int cpuCount;
 
     /**
      * Sets up default parameters
-     *
-     * @throws MalformedURLException
      */
     public MeteorAdvice() {
         //defaults
@@ -62,6 +62,7 @@ public class MeteorAdvice {
         password = line.getOptionValue("pass", null);
         getWorkTimeout = Integer.parseInt(line.getOptionValue("getwork", GET_WORK_TIMEOUT));
         verbose = line.hasOption("verbose");
+        cpuCount = Integer.parseInt(line.getOptionValue("cpuCount", CPU_COUNT));
     }
 
     public String getUsername() {
@@ -86,5 +87,9 @@ public class MeteorAdvice {
 
     public Boolean isVerbose() {
         return verbose;
+    }
+
+    public int getCpuCount() {
+        return cpuCount;
     }
 }
