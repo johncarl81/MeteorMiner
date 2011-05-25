@@ -18,4 +18,8 @@ public class AsynchronousHashChecker implements HashChecker {
     public void check(MinerResult output, Work work, WorkFoundCallback workFoundCallback) {
         output.getEvent().invokeUponCompletion(runnableHashCheckerFactory.createHashChecker(output, work, workFoundCallback));
     }
+
+    public void setRunnableHashCheckerFactory(RunnableHashCheckerFactory runnableHashCheckerFactory) {
+        this.runnableHashCheckerFactory = runnableHashCheckerFactory;
+    }
 }

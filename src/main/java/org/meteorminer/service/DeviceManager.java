@@ -25,7 +25,7 @@ public class DeviceManager implements Runnable {
     public void run() {
         while (mining) {
             minerController.reset();
-            workConsumerFactory.createWorkConsumer().consume(
+            workConsumerFactory.createWorkConsumer().mine(
                     workProducerFactory.createWorkProducer().produce());
         }
     }

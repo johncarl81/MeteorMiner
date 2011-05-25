@@ -15,7 +15,7 @@ public class IntBufferPoolFactory extends BasePoolableObjectFactory {
     private int[] emptyArray;
     @Inject
     @SearchKernel
-    private OCL ocl;
+    private KernelContext kernelContext;
 
     private int size = 0xF;
 
@@ -24,7 +24,7 @@ public class IntBufferPoolFactory extends BasePoolableObjectFactory {
     }
 
     public Object makeObject() throws Exception {
-        return NIOUtils.directInts(size, ocl.getContext().getByteOrder());
+        return NIOUtils.directInts(size, kernelContext.getContext().getByteOrder());
     }
 
     public void passivateObject(Object passivated) throws Exception {

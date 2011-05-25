@@ -14,6 +14,6 @@ public class SynchronousModule extends AbstractModule {
 
         install(factoryModuleBuilder
                 .implement(org.meteorminer.hash.WorkFoundCallbackTester.class, org.meteorminer.hash.WorkFoundCallbackTester.class)
-                .build(WorkFoundCallbackFactory.class));
+                .build(WorkFoundCallbackTesterFactory.class));
     }
 }

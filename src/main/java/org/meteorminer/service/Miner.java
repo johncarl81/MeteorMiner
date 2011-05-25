@@ -2,6 +2,7 @@ package org.meteorminer.service;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashScanner;
+import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
 
@@ -11,13 +12,18 @@ import javax.inject.Inject;
 public class Miner {
 
     @Inject
-    HashScanner scanner;
+    private HashScanner scanner;
     @Inject
-    WorkFoundCallback workFoundCallback;
+    private WorkFoundCallback workFoundCallback;
+    @Inject
+    private CLInterface output;
 
     public void mine(Work work) {
-        // Nonce is a number which starts at 0 and increments until 0xFFFFFFFF
-        scanner.scan(work, workFoundCallback);
+        if (work != null) {
+            output.verbose("Starting mine: " + work.getDataString());
+            // Nonce is a number which starts at 0 and increments until 0xFFFFFFFF
+            scanner.scan(work, workFoundCallback);
+        }
     }
 
 }

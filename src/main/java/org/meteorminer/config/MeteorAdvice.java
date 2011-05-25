@@ -27,6 +27,7 @@ public class MeteorAdvice {
     private int getWorkTimeout;
     private boolean verbose;
     private int cpuCount;
+    private boolean help;
 
     /**
      * Sets up default parameters
@@ -49,13 +50,22 @@ public class MeteorAdvice {
      * @throws MalformedURLException
      */
     public MeteorAdvice(CommandLine line) throws MalformedURLException {
+        help = line.hasOption("help");
+
         String url = line.getOptionValue("host", LOCALHOST);
         String port = line.getOptionValue("port", PORT);
 
         bitcoinUrl = new URL("http://" + url + ":" + port);
 
         if (line.hasOption("proxy")) {
-            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8080));
+            String proxyString = line.getOptionValue("proxy");
+            String[] proxyParts = proxyString.split(":");
+
+            if (proxyParts.length != 2) {
+                throw new MalformedURLException("Proxy provided needs to be of the form domain:port");
+            }
+
+            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyParts[0], Integer.parseInt(proxyParts[1])));
         }
 
         username = line.getOptionValue("user", null);
@@ -63,6 +73,7 @@ public class MeteorAdvice {
         getWorkTimeout = Integer.parseInt(line.getOptionValue("getwork", GET_WORK_TIMEOUT));
         verbose = line.hasOption("verbose");
         cpuCount = Integer.parseInt(line.getOptionValue("cpuCount", CPU_COUNT));
+
     }
 
     public String getUsername() {
@@ -91,5 +102,9 @@ public class MeteorAdvice {
 
     public int getCpuCount() {
         return cpuCount;
+    }
+
+    public boolean help() {
+        return help;
     }
 }

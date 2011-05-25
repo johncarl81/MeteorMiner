@@ -12,11 +12,18 @@ import org.meteorminer.output.Statistics;
  * @author John Ericksen
  */
 public class CPUDeviceModule extends AbstractModule {
+
+    private int cpuNumber;
+
+    public CPUDeviceModule(int cpuNumber) {
+        this.cpuNumber = cpuNumber;
+    }
+
     @Override
     protected void configure() {
         //Assisted injection factories
 
-        bind(Device.class).toInstance(new CPUDevice());
+        bind(Device.class).toInstance(new CPUDevice(cpuNumber));
 
         bind(HashScanner.class).annotatedWith(AsyncPreferred.class).to(ScanHash.class);
 

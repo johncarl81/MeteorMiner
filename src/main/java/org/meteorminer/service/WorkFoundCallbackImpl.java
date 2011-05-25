@@ -1,10 +1,8 @@
 package org.meteorminer.service;
 
 import org.meteorminer.domain.Work;
-import org.meteorminer.hash.HashCacheScanner;
-import org.meteorminer.network.JsonClient;
-import org.meteorminer.output.CLInterface;
-import org.meteorminer.output.Statistics;
+import org.meteorminer.network.JsonCommandFactory;
+import org.meteorminer.network.WorkSubmit;
 
 import javax.inject.Inject;
 
@@ -14,16 +12,21 @@ import javax.inject.Inject;
 public class WorkFoundCallbackImpl implements WorkFoundCallback {
 
     @Inject
-    private JsonClient jsonClient;
+    private AsynchronousFactory asyncFactory;
     @Inject
-    private Statistics stats;
-    @Inject
-    private HashCacheScanner hashCache;
-    @Inject
-    private CLInterface output;
+    private JsonCommandFactory commandFactory;
 
     public void found(Work work, int nonce) {
         work.getData()[19] = nonce;
-        new Thread(new WorkSubmit(work, jsonClient, stats, hashCache, nonce, output)).start();
+        WorkSubmit workSubmit = commandFactory.buildWorkSubmit(work, nonce);
+        asyncFactory.startRunnable(workSubmit);
+    }
+
+    public void setAsyncFactory(AsynchronousFactory asyncFactory) {
+        this.asyncFactory = asyncFactory;
+    }
+
+    public void setCommandFactory(JsonCommandFactory commandFactory) {
+        this.commandFactory = commandFactory;
     }
 }

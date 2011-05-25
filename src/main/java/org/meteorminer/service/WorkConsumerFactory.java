@@ -7,5 +7,5 @@ package org.meteorminer.service;
  */
 public interface WorkConsumerFactory {
 
-    public WorkConsumer createWorkConsumer();
+    public Miner createWorkConsumer();
 }

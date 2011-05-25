@@ -32,6 +32,8 @@ public class MiningService {
     @Inject
     private StatisticsHolder statisticsHolder;
     @Inject
+    private AsynchronousFactory asyncFactory;
+    @Inject
     @CPUCount
     private int cpuCount;
 
@@ -47,7 +49,7 @@ public class MiningService {
 
         //cpu setup
         for (int i = 0; i < cpuCount; i++) {
-            Injector cpuDeviceInjector = MeteorMinerInjector.buildCPUDeviceInjector();
+            Injector cpuDeviceInjector = MeteorMinerInjector.buildCPUDeviceInjector(i);
 
             setupDevice(cpuDeviceInjector);
         }
@@ -62,7 +64,7 @@ public class MiningService {
 
         statisticsHolder.getStatistics().put(device, statistics);
 
-        new Thread(deviceManager).start();
+        asyncFactory.startRunnable(deviceManager);
     }
 
     public List<CLDevice> getAllDevices() {

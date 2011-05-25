@@ -21,7 +21,7 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
     private IntBuffer emptyBuffer;
     @Inject
     @SearchKernel
-    private OCL ocl;
+    private KernelContext kernelContext;
 
     public CLIntBufferPoolFactory() {
         int[] emptyArray = new int[0xF];
@@ -36,7 +36,7 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
      * @throws Exception
      */
     public Object makeObject() throws Exception {
-        return ocl.getContext().createIntBuffer(CLMem.Usage.InputOutput, emptyBuffer, true);
+        return kernelContext.getContext().createIntBuffer(CLMem.Usage.InputOutput, emptyBuffer, true);
     }
 
     /**
@@ -47,7 +47,7 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
      */
     @Override
     public void passivateObject(Object passivate) throws Exception {
-        ((CLIntBuffer) passivate).write(ocl.getQueue(), emptyBuffer, true);
+        ((CLIntBuffer) passivate).write(kernelContext.getQueue(), emptyBuffer, true);
     }
 
     /**

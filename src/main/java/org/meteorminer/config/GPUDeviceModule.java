@@ -46,7 +46,7 @@ public class GPUDeviceModule extends AbstractModule {
 
         bind(HashScanner.class).annotatedWith(AsyncPreferred.class).to(GpuHashScanner.class);
 
-        bind(OCL.class).annotatedWith(SearchKernel.class).toProvider(OCLProvider.class).asEagerSingleton();
+        bind(KernelContext.class).annotatedWith(SearchKernel.class).toProvider(KernelContextProvider.class).asEagerSingleton();
 
         bind(HashChecker.class).annotatedWith(AsyncPreferred.class).to(HashCheckerImpl.class);
 

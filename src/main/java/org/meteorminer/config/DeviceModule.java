@@ -2,11 +2,10 @@ package org.meteorminer.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import org.meteorminer.hash.*;
-import org.meteorminer.network.LongPollAdaptor;
-import org.meteorminer.network.LongPollWorkProducer;
-import org.meteorminer.network.LongPollWorker;
-import org.meteorminer.network.LongPollWorkerFactory;
+import org.meteorminer.hash.HashStatisticsOutputTimerTaskFactory;
+import org.meteorminer.hash.InteruptTimerTaskFactory;
+import org.meteorminer.hash.MinerController;
+import org.meteorminer.network.*;
 import org.meteorminer.service.*;
 
 /**
@@ -19,7 +18,6 @@ public class DeviceModule extends AbstractModule {
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 
         install(factoryModuleBuilder
-                .implement(InteruptTimerTask.class, InteruptTimerTask.class)
                 .build((InteruptTimerTaskFactory.class)));
 
         install(factoryModuleBuilder
@@ -27,7 +25,6 @@ public class DeviceModule extends AbstractModule {
                 .build(WorkProducerFactory.class));
 
         install(factoryModuleBuilder
-                .implement(WorkConsumer.class, WorkConsumer.class)
                 .build((WorkConsumerFactory.class)));
 
         install(factoryModuleBuilder
@@ -35,8 +32,10 @@ public class DeviceModule extends AbstractModule {
                 .build((LongPollWorkerFactory.class)));
 
         install(factoryModuleBuilder
-                .implement(HashStatisticsOutputTimerTask.class, HashStatisticsOutputTimerTask.class)
                 .build((HashStatisticsOutputTimerTaskFactory.class)));
+
+        install(factoryModuleBuilder
+                .build((JsonCommandFactory.class)));
 
         bind(LongPollAdaptor.class).asEagerSingleton();
         bind(MinerController.class).asEagerSingleton();

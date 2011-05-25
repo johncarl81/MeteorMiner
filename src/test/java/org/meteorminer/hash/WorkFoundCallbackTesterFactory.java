@@ -3,7 +3,7 @@ package org.meteorminer.hash;
 /**
  * @author John Ericksen
  */
-public interface WorkFoundCallbackFactory {
+public interface WorkFoundCallbackTesterFactory {
 
     WorkFoundCallbackTester buildCallback(int expectedNonce);
 }

@@ -3,7 +3,7 @@ package org.meteorminer.config;
 import com.google.inject.Inject;
 import com.nativelibs4java.opencl.CLBuildException;
 import com.nativelibs4java.opencl.CLDevice;
-import org.meteorminer.hash.gpu.OCL;
+import org.meteorminer.hash.gpu.KernelContext;
 
 import javax.inject.Provider;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * @author John Ericksen
  */
-public class OCLProvider implements Provider<OCL> {
+public class KernelContextProvider implements Provider<KernelContext> {
 
     private static final String SEARCH_KERNEL = "search";
     private static final String SEARCH_KERNEL_FILE = "search.cl";
@@ -19,18 +19,17 @@ public class OCLProvider implements Provider<OCL> {
     private CLDevice device;
 
     @Override
-    public OCL get() {
-        OCL ocl;
+    public KernelContext get() {
+        KernelContext kernelContext;
 
         try {
-            ocl = new OCL(SEARCH_KERNEL_FILE, SEARCH_KERNEL, device);
+            kernelContext = new KernelContext(SEARCH_KERNEL_FILE, SEARCH_KERNEL, device);
         } catch (CLBuildException e) {
             throw new MeteorMinerRuntimeException("Error Creating Kernel", e);
         } catch (IOException e) {
             throw new MeteorMinerRuntimeException("Error Creating Kernel", e);
         }
 
-
-        return ocl;
+        return kernelContext;
     }
 }

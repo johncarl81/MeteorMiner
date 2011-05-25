@@ -10,22 +10,17 @@ import java.io.IOException;
  *
  * @author John Ericksen
  */
-public class OCL {
-    public final CLProgram program;
+public class KernelContext {
     public final CLQueue queue;
     public final CLContext context;
     public final CLKernel kernel;
 
-    public OCL(String srcFile, String kernelName, CLDevice device) throws CLBuildException, IOException {
+    public KernelContext(String srcFile, String kernelName, CLDevice device) throws CLBuildException, IOException {
         String src = IOUtils.toString(getClass().getClassLoader().getResourceAsStream(srcFile));
         context = device.getPlatform().createContext(null, device);
         queue = context.createDefaultQueue();
-        program = context.createProgram(src).build();
+        CLProgram program = context.createProgram(src).build();
         kernel = program.createKernel(kernelName);
-    }
-
-    public CLProgram getProgram() {
-        return program;
     }
 
     public CLQueue getQueue() {

@@ -25,18 +25,18 @@ import java.util.Arrays;
  */
 public class DiabloMiner {
 
-    private final OCL ocl;
+    private final KernelContext kernelContext;
 
     private ObjectPool clIntBufferPool;
     private ObjectPool intBufferPool;
 
     @Inject
     public DiabloMiner(@Assisted Work work,
-                       @SearchKernel OCL ocl,
+                       @SearchKernel KernelContext kernelContext,
                        @CLIntBufferPool ObjectPool clIntBufferPool,
                        @IntBufferPool ObjectPool intBufferPool) {
 
-        this.ocl = ocl;
+        this.kernelContext = kernelContext;
         this.clIntBufferPool = clIntBufferPool;
         this.intBufferPool = intBufferPool;
 
@@ -60,7 +60,7 @@ public class DiabloMiner {
         int fcty_e2 = (rot(midstate2[5], 2) ^ rot(midstate2[5], 13) ^ rot(midstate2[5], 22)) + ((midstate2[5] & midstate2[6]) |
                 (midstate2[7] & (midstate2[5] | midstate2[6])));
 
-        ocl.getKernel().setArgs(fW0, fW1, fW2, fW3, fW15, fW01r, fcty_e, fcty_e2,
+        kernelContext.getKernel().setArgs(fW0, fW1, fW2, fW3, fW15, fW01r, fcty_e, fcty_e2,
                 work.getMidstate()[0],
                 work.getMidstate()[1],
                 work.getMidstate()[2],
@@ -99,12 +99,12 @@ public class DiabloMiner {
             CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
             IntBuffer output = (IntBuffer) intBufferPool.borrowObject();
 
-            ocl.getKernel().setArg(22, nonceStart * worksize);
-            ocl.getKernel().setArg(23, outputBuffer);
+            kernelContext.getKernel().setArg(22, nonceStart * worksize);
+            kernelContext.getKernel().setArg(23, outputBuffer);
 
-            synchronized (ocl) {
-                CLEvent event = ocl.getKernel().enqueueNDRange(ocl.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
-                result = new MinerResult(outputBuffer.read(ocl.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
+            synchronized (kernelContext) {
+                CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
+                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
             }
 
         } catch (Exception e) {

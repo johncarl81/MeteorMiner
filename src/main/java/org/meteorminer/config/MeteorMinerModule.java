@@ -2,6 +2,7 @@ package org.meteorminer.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 import java.util.Timer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Guice module class for Meteor Miner configuration.
@@ -31,6 +33,11 @@ public class MeteorMinerModule extends AbstractModule {
 
     @Override
     protected void configure() {
+
+        FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
+
+        install(factoryModuleBuilder
+                .build((ThreadFactory.class)));
 
         //Annotated @Injections
         bind(String.class).annotatedWith(Authorization.class)

@@ -31,7 +31,7 @@ public class MeteorMinerInjector {
         return getApplicationInjector().createChildInjector(new DeviceModule(), new GPUDeviceModule(device));
     }
 
-    public synchronized static Injector buildCPUDeviceInjector() {
-        return getApplicationInjector().createChildInjector(new DeviceModule(), new CPUDeviceModule());
+    public synchronized static Injector buildCPUDeviceInjector(int cpuNumber) {
+        return getApplicationInjector().createChildInjector(new DeviceModule(), new CPUDeviceModule(cpuNumber));
     }
 }

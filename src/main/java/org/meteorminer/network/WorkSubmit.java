@@ -1,12 +1,13 @@
-package org.meteorminer.service;
+package org.meteorminer.network;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashCacheScanner;
-import org.meteorminer.network.JsonClient;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.output.Statistics;
 
@@ -25,7 +26,10 @@ public class WorkSubmit implements Runnable {
     private int nonce;
     private CLInterface output;
 
-    public WorkSubmit(Work work, JsonClient jsonClient, Statistics stats, HashCacheScanner hashCache, int nonce, CLInterface output) {
+    @Inject
+    public WorkSubmit(@Assisted Work work, @Assisted int nonce,
+                      JsonClient jsonClient, Statistics stats,
+                      HashCacheScanner hashCache, CLInterface output) {
         this.work = work;
         this.jsonClient = jsonClient;
         this.stats = stats;
