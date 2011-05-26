@@ -34,17 +34,12 @@ public class GPUDeviceModule extends AbstractModule {
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 
         install(factoryModuleBuilder
-                .implement(DiabloMiner.class, DiabloMiner.class)
                 .build((DiabloMinerFactory.class)));
-
-        install(factoryModuleBuilder
-                .implement(RunnableHashChecker.class, RunnableHashChecker.class)
-                .build((RunnableHashCheckerFactory.class)));
 
         bind(CLDevice.class).toInstance(device);
         bind(Device.class).toInstance(new GPUDevice(device));
 
-        bind(HashScanner.class).annotatedWith(AsyncPreferred.class).to(GpuHashScanner.class);
+        bind(HashScanner.class).to(GpuHashScanner.class);
 
         bind(KernelContext.class).annotatedWith(SearchKernel.class).toProvider(KernelContextProvider.class).asEagerSingleton();
 

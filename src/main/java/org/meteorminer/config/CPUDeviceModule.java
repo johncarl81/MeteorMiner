@@ -1,7 +1,6 @@
 package org.meteorminer.config;
 
 import com.google.inject.AbstractModule;
-import org.meteorminer.config.binding.AsyncPreferred;
 import org.meteorminer.domain.CPUDevice;
 import org.meteorminer.domain.Device;
 import org.meteorminer.hash.HashScanner;
@@ -25,7 +24,7 @@ public class CPUDeviceModule extends AbstractModule {
 
         bind(Device.class).toInstance(new CPUDevice(cpuNumber));
 
-        bind(HashScanner.class).annotatedWith(AsyncPreferred.class).to(ScanHash.class);
+        bind(HashScanner.class).to(ScanHash.class);
 
         bind(Statistics.class).asEagerSingleton();
     }
