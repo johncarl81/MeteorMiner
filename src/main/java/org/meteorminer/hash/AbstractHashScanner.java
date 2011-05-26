@@ -27,6 +27,7 @@ public abstract class AbstractHashScanner implements HashScanner {
 
     @Override
     public void scan(Work work, WorkFoundCallback workFoundCallback) {
+        localController.reset();
         TimerTask hashStatsTimerTask = hashStatisticsOutputTimerTaskFactory.buildStatisticsOutputTimerTask(this);
         TimerTask interuptTimerTask = interuptTimerTaskFactory.buildInteruptTimerTask(localController);
         timer.schedule(hashStatsTimerTask, 1000, 1000);

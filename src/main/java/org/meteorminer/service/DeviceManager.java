@@ -9,9 +9,9 @@ import org.meteorminer.hash.MinerController;
 public class DeviceManager implements Runnable {
 
     @Inject
-    private WorkProducerFactory workProducerFactory;
+    private WorkProducerMultiplex workProducer;
     @Inject
-    private WorkConsumerFactory workConsumerFactory;
+    private Miner miner;
     @Inject
     private MinerController minerController;
 
@@ -23,11 +23,10 @@ public class DeviceManager implements Runnable {
 
     @Override
     public void run() {
-        while (mining) {
+        do {
             minerController.reset();
-            workConsumerFactory.createWorkConsumer().mine(
-                    workProducerFactory.createWorkProducer().produce());
-        }
+            miner.mine(workProducer.produce());
+        } while (mining);
     }
 
     public boolean isMining() {

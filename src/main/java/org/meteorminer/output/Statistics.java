@@ -21,6 +21,10 @@ public class Statistics {
     private AtomicLong savedTime;
 
     public Statistics() {
+        reset();
+    }
+
+    public void reset() {
         hashCount = new AtomicLong();
         instantHashCount = new AtomicLong();
         workPass = new AtomicLong();

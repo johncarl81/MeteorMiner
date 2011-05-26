@@ -7,7 +7,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.domain.Work;
-import org.meteorminer.hash.HashCacheScanner;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.output.Statistics;
 
@@ -22,18 +21,16 @@ public class WorkSubmit implements Runnable {
     private JsonClient jsonClient;
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private Statistics stats;
-    private HashCacheScanner hashCache;
     private int nonce;
     private CLInterface output;
 
     @Inject
     public WorkSubmit(@Assisted Work work, @Assisted int nonce,
                       JsonClient jsonClient, Statistics stats,
-                      HashCacheScanner hashCache, CLInterface output) {
+                      CLInterface output) {
         this.work = work;
         this.jsonClient = jsonClient;
         this.stats = stats;
-        this.hashCache = hashCache;
         this.nonce = nonce;
         this.output = output;
     }
@@ -47,7 +44,6 @@ public class WorkSubmit implements Runnable {
             if (success) {
                 output.notification("Hash Submitted: %08x", nonce);
                 stats.incrementWorkPass(1);
-                hashCache.add(work, nonce);
 
             } else {
                 output.notification("Hash Rejected: %08x", nonce);

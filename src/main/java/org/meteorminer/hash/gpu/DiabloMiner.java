@@ -102,10 +102,8 @@ public class DiabloMiner {
             kernelContext.getKernel().setArg(22, nonceStart * worksize);
             kernelContext.getKernel().setArg(23, outputBuffer);
 
-            synchronized (kernelContext) {
-                CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
-                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
-            }
+            CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{worksize}, new int[]{localWorkSize});
+            result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
 
         } catch (Exception e) {
             e.printStackTrace();

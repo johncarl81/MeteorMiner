@@ -25,7 +25,7 @@ public class GpuHashScanner extends AbstractHashScanner {
     private CLInterface output;
 
     private long nonceCount;
-    static final int workgroupSize = 3000000;
+    static final int workgroupSize = 240000;
     static final int localWorkSize = 64;
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback) {
@@ -34,6 +34,7 @@ public class GpuHashScanner extends AbstractHashScanner {
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
 
+        nonceCount = 0;
         long startTime = System.currentTimeMillis();
 
         DiabloMiner diabloMiner = diabloMinerFactory.createDiabloMiner(work);
@@ -55,5 +56,9 @@ public class GpuHashScanner extends AbstractHashScanner {
     @Override
     public long getNonceCount() {
         return nonceCount * workgroupSize;
+    }
+
+    public static int getWorkgroupSize() {
+        return workgroupSize;
     }
 }

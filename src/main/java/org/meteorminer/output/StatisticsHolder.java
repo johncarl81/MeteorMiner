@@ -24,4 +24,10 @@ public class StatisticsHolder {
             statistics.updateInstants();
         }
     }
+
+    public void reset() {
+        for (Statistics statistics : statisticsMap.values()) {
+            statistics.reset();
+        }
+    }
 }

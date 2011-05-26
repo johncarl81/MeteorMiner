@@ -27,4 +27,8 @@ public class LocalMinerController {
     public boolean haltProduction() {
         return stop || minerController.haultProduction();
     }
+
+    public void reset() {
+        stop = false;
+    }
 }

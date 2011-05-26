@@ -25,9 +25,6 @@ public class DeviceModule extends AbstractModule {
                 .build(WorkProducerFactory.class));
 
         install(factoryModuleBuilder
-                .build((WorkConsumerFactory.class)));
-
-        install(factoryModuleBuilder
                 .implement(Runnable.class, LongPollWorker.class)
                 .build((LongPollWorkerFactory.class)));
 
@@ -37,9 +34,12 @@ public class DeviceModule extends AbstractModule {
         install(factoryModuleBuilder
                 .build((JsonCommandFactory.class)));
 
+        bind(Miner.class).asEagerSingleton();
+
         bind(LongPollAdaptor.class).asEagerSingleton();
         bind(MinerController.class).asEagerSingleton();
         bind(DelayedWorkProducer.class).asEagerSingleton();
         bind(LongPollWorkProducer.class).asEagerSingleton();
+        bind(WorkProducerMultiplex.class).asEagerSingleton();
     }
 }

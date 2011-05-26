@@ -1,11 +1,12 @@
 package org.meteorminer.hash;
 
 import com.google.inject.assistedinject.Assisted;
-import junit.framework.Assert;
 import org.meteorminer.domain.Work;
 import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author John Ericksen
@@ -22,7 +23,7 @@ public class WorkFoundCallbackTester implements WorkFoundCallback {
 
     public void found(Work work, int nonce) {
         found = true;
-        Assert.assertEquals(expectedNonce, nonce);
+        assertEquals(expectedNonce, nonce);
     }
 
     public boolean isFound() {

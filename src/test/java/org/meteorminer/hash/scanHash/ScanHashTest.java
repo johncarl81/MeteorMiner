@@ -4,7 +4,6 @@ package org.meteorminer.hash.scanHash;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.util.Modules;
-import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.config.CPUDeviceModule;
@@ -17,6 +16,8 @@ import org.meteorminer.hash.WorkFoundCallbackTester;
 import org.meteorminer.hash.WorkFoundCallbackTesterFactory;
 
 import java.net.MalformedURLException;
+
+import static junit.framework.Assert.*;
 
 public class ScanHashTest {
 
@@ -45,7 +46,7 @@ public class ScanHashTest {
         WorkFoundCallbackTester tester = callbackFactory.buildCallback(0);
         scanHash.innerScan(work, tester, 1, 0xffff);
 
-        Assert.assertFalse("No match for casial hash", tester.isFound());
+        assertFalse("No match for casial hash", tester.isFound());
     }
 
     @Test
@@ -60,8 +61,8 @@ public class ScanHashTest {
 
         scanHash.innerScan(work, tester, 0x1d70bd0, 0xffffff);
 
-        Assert.assertTrue("Known sol'n", tester.isFound());
-        Assert.assertEquals(
+        assertTrue("Known sol'n", tester.isFound());
+        assertEquals(
                 "Known sol'n",
                 work.getDataString(),
                 "0000000114cbad4d7252a937cb65437645722fa3c6cf16cfd3eaa3fc0001e6f6000000008249f5c8ee2f04f0cdca30b97949373d00db1b34d45253407567df2ce552a9ed4d1d5c9c1b04864c00000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000");
@@ -79,7 +80,7 @@ public class ScanHashTest {
         //solution is 563799816
         scanHash.innerScan(work, tester, 563700000, 563799817);
 
-        Assert.assertTrue("Known sol'n", tester.isFound());
+        assertTrue("Known sol'n", tester.isFound());
 
     }
 }

@@ -56,7 +56,7 @@ public class MeteorMinerModule extends AbstractModule {
         bind(Integer.class).annotatedWith(CPUCount.class).toInstance(meteorAdvice.getCpuCount());
 
         //additional singletons
-        bind(Timer.class).toInstance(new Timer());
+        bind(Timer.class).toInstance(new Timer(true));
         bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
     }
 

@@ -24,6 +24,7 @@ public class LongPollWorker implements Runnable {
     private MinerController minerController;
     private CLInterface output;
     private LongPollWorkProducer longPollFactory;
+    private boolean running = true;
 
     @Inject
     public LongPollWorker(@Assisted URL longPollWorkerUrl,
@@ -43,7 +44,7 @@ public class LongPollWorker implements Runnable {
     }
 
     public void run() {
-        while (true) {
+        do {
             try {
                 JsonNode responseNode = jsonClient.execute("GetWork - Long Poll", getWorkRequest, longPollWorkerUrl);
 
@@ -56,6 +57,10 @@ public class LongPollWorker implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        } while (running);
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }
