@@ -23,13 +23,13 @@ public abstract class AbstractHashScanner implements HashScanner {
     @Inject
     private HashStatisticsOutputTimerTaskFactory hashStatisticsOutputTimerTaskFactory;
     @Inject
-    private LocalMinerController localController;
+    private MinerController controller;
 
     @Override
     public void scan(Work work, WorkFoundCallback workFoundCallback) {
-        localController.reset();
+        controller.reset();
         TimerTask hashStatsTimerTask = hashStatisticsOutputTimerTaskFactory.buildStatisticsOutputTimerTask(this);
-        TimerTask interuptTimerTask = interuptTimerTaskFactory.buildInteruptTimerTask(localController);
+        TimerTask interuptTimerTask = interuptTimerTaskFactory.buildInteruptTimerTask(controller);
         timer.schedule(hashStatsTimerTask, 1000, 1000);
         timer.schedule(interuptTimerTask, getWorkTimeout * 1000);
 
@@ -39,8 +39,8 @@ public abstract class AbstractHashScanner implements HashScanner {
         interuptTimerTask.cancel();
     }
 
-    public LocalMinerController getLocalController() {
-        return localController;
+    public MinerController getController() {
+        return controller;
     }
 
     public abstract void innerScan(Work work, WorkFoundCallback workFoundCallback);

@@ -5,7 +5,6 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
-import org.meteorminer.config.binding.Authorization;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
@@ -20,9 +19,6 @@ import java.util.zip.InflaterInputStream;
  */
 public class JsonClient {
 
-    @Inject
-    @Authorization
-    private String userPassword;
     @Inject
     private BitcoinConnectionFactory connectionFactory;
     @Inject
@@ -46,7 +42,6 @@ public class JsonClient {
 
         output.verbose("JSON Request " + requestType + " @ " + connection.getURL());
 
-        connection.setRequestProperty("Authorization", userPassword);
         connection.setRequestProperty("Accept-Encoding", "gzip,deflate");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);

@@ -2,6 +2,8 @@ package org.meteorminer.domain;
 
 import org.meteorminer.config.MeteorMinerRuntimeException;
 
+import static org.meteorminer.hash.HexUtil.decode;
+
 /**
  * Contains the data provided from the bitcoin server to be processed.=
  *
@@ -28,28 +30,19 @@ public class Work {
             throw new MeteorMinerRuntimeException("Input Data in wrong format, needs to be of length 256 chars");
         }
 
-        for (int i = 0; i < this.data.length; i++) {
-            String parse = data.substring(i * 8, (i * 8) + 8);
-            this.data[i] = Integer.reverseBytes((int) Long.parseLong(parse, 16));
-        }
+        decode(this.data, data);
 
         if (midstate.length() != 64) {
             throw new MeteorMinerRuntimeException("Input Midstate in wrong format, needs to be of length 64 chars");
         }
 
-        for (int i = 0; i < this.midstate.length; i++) {
-            String parse = midstate.substring(i * 8, (i * 8) + 8);
-            this.midstate[i] = Integer.reverseBytes((int) Long.parseLong(parse, 16));
-        }
+        decode(this.midstate, midstate);
 
         if (target.length() != 64) {
             throw new MeteorMinerRuntimeException("Input Target in wrong format, needs to be of length 64 chars");
         }
 
-        for (int i = 0; i < this.target.length; i++) {
-            String parse = target.substring(i * 8, (i * 8) + 8);
-            this.target[i] = (Long.reverseBytes(Long.parseLong(parse, 16) << 16)) >>> 16;
-        }
+        decode(this.target, target);
     }
 
 

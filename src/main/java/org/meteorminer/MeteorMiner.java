@@ -1,10 +1,7 @@
 package org.meteorminer;
 
 import com.google.inject.Injector;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.*;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.service.MiningService;
@@ -18,13 +15,17 @@ public class MeteorMiner {
     public static void main(String[] args) {
 
         try {
-            CommandLine line = new PosixParser().parse(buildOptions(), args);
+            Options options = buildOptions();
+
+            CommandLine line = new PosixParser().parse(options, args);
 
             MeteorAdvice advice = new MeteorAdvice(line);
 
             if (advice.help()) {
                 //print help
-                //todo:add help
+                HelpFormatter formatter = new HelpFormatter();
+
+                formatter.printHelp("MeteorMiner", options);
             } else {
                 Injector injector = MeteorMinerInjector.buildInjector(advice);
 
@@ -42,14 +43,14 @@ public class MeteorMiner {
 
     public static Options buildOptions() {
         Options options = new Options();
-        options.addOption("u", "user", true, "bitcoin host username");
-        options.addOption("p", "pass", true, "bitcoin host password");
         options.addOption("h", "help", false, "this help");
-        options.addOption("o", "host", true, "bitcoin host IP");
-        options.addOption("r", "port", true, "bitcoin host port");
-        options.addOption("g", "getwork", true, "seconds between getwork refresh");
+        options.addOption("u", "user", true, "optional bitcoin host username");
+        options.addOption("p", "pass", true, "optioanl bitcoin host password");
+        options.addOption("o", "host", true, "optional bitcoin host IP (default: localhost)");
+        options.addOption("r", "port", true, "optioanl bitcoin host port (default: 8332)");
+        options.addOption("g", "getwork", true, "optioanl seconds between getwork refresh (default: 5)");
         options.addOption("v", "verbose", false, "Verbose Output");
-        options.addOption("x", "proxy", true, "optional proxy settings IP:PORT<:username:password>");
+        options.addOption("x", "proxy", true, "optional proxy settings host:port<:username:password>");
         options.addOption("c", "cpu", true, "optional count of mining CPUs");
         /*options.addOption("f", "fps", true, "target execution timing");
         options.addOption("w", "worksize", true, "override worksize");

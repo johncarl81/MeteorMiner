@@ -11,12 +11,12 @@ import java.util.TimerTask;
  */
 public class InteruptTimerTask extends TimerTask {
 
-    private LocalMinerController localController;
+    private MinerController minerController;
     private DelayedWorkProducer workProducer;
 
     @Inject
-    public InteruptTimerTask(@Assisted LocalMinerController localController, DelayedWorkProducer workProducer) {
-        this.localController = localController;
+    public InteruptTimerTask(@Assisted MinerController minerController, DelayedWorkProducer workProducer) {
+        this.minerController = minerController;
         this.workProducer = workProducer;
     }
 
@@ -25,6 +25,6 @@ public class InteruptTimerTask extends TimerTask {
         //request new work..
         workProducer.delayedProduce();
         //and stop production to pick up new work
-        localController.stopProduction();
+        minerController.interruptProduction();
     }
 }

@@ -2,6 +2,7 @@ package org.meteorminer.hash.gpu;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import org.meteorminer.config.binding.Synchronous;
 import org.meteorminer.domain.Work;
 import org.meteorminer.service.WorkFoundCallback;
 
@@ -21,7 +22,7 @@ public class RunnableHashChecker implements Runnable {
     public RunnableHashChecker(@Assisted MinerResult output,
                                @Assisted Work work,
                                @Assisted WorkFoundCallback workFoundCallback,
-                               HashChecker delegate) {
+                               @Synchronous HashChecker delegate) {
         this.output = output;
         this.work = work;
         this.workFoundCallback = workFoundCallback;

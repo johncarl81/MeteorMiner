@@ -1,4 +1,4 @@
-package org.meteorminer.hash.scanHash;
+package org.meteorminer.hash;
 
 
 public class HexUtil {
@@ -24,17 +24,28 @@ public class HexUtil {
         return hex[data];
     }
 
+    public static long[] decode(long[] data, String hex) {
+        int size = Math.min(data.length, (hex.length() / 8));
+
+        for (int i = 0; i < size; i++) {
+            String parse = hex.substring(i * 8, (i * 8) + 8);
+            data[i] = (Long.reverseBytes(Long.parseLong(parse, 16) << 16)) >>> 16;
+        }
+        return data;
+    }
+
     public static int[] decode(int[] data, String hex) {
-        int len = hex.length();
-        for (int i = 0; i < len / 8; i++) {
-            data[i] = decode(hex.charAt(i * 8)) << 4
-                    ^ decode(hex.charAt(i * 8 + 1))
-                    ^ decode(hex.charAt(i * 8 + 2)) << 12
-                    ^ decode(hex.charAt(i * 8 + 3)) << 8
-                    ^ decode(hex.charAt(i * 8 + 4)) << 20
-                    ^ decode(hex.charAt(i * 8 + 5)) << 16
-                    ^ decode(hex.charAt(i * 8 + 6)) << 28
-                    ^ decode(hex.charAt(i * 8 + 7)) << 24;
+        int len = hex.length() / 8;
+        for (int i = 0; i < len; i++) {
+            int at = i * 8;
+            data[i] = decode(hex.charAt(at)) << 4
+                    ^ decode(hex.charAt(at + 1))
+                    ^ decode(hex.charAt(at + 2)) << 12
+                    ^ decode(hex.charAt(at + 3)) << 8
+                    ^ decode(hex.charAt(at + 4)) << 20
+                    ^ decode(hex.charAt(at + 5)) << 16
+                    ^ decode(hex.charAt(at + 6)) << 28
+                    ^ decode(hex.charAt(at + 7)) << 24;
         }
         return data;
     }

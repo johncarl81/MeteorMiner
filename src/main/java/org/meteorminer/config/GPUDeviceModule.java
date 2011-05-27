@@ -5,10 +5,10 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.nativelibs4java.opencl.CLDevice;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.meteorminer.config.binding.AsyncPreferred;
 import org.meteorminer.config.binding.CLIntBufferPool;
 import org.meteorminer.config.binding.IntBufferPool;
 import org.meteorminer.config.binding.SearchKernel;
+import org.meteorminer.config.binding.Synchronous;
 import org.meteorminer.domain.Device;
 import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.hash.HashScanner;
@@ -36,6 +36,9 @@ public class GPUDeviceModule extends AbstractModule {
         install(factoryModuleBuilder
                 .build((DiabloMinerFactory.class)));
 
+        install(factoryModuleBuilder
+                .build((RunnableHashCheckerFactory.class)));
+
         bind(CLDevice.class).toInstance(device);
         bind(Device.class).toInstance(new GPUDevice(device));
 
@@ -43,7 +46,7 @@ public class GPUDeviceModule extends AbstractModule {
 
         bind(KernelContext.class).annotatedWith(SearchKernel.class).toProvider(KernelContextProvider.class).asEagerSingleton();
 
-        bind(HashChecker.class).annotatedWith(AsyncPreferred.class).to(HashCheckerImpl.class);
+        bind(HashChecker.class).annotatedWith(Synchronous.class).to(HashCheckerImpl.class);
 
         bind(Statistics.class).toInstance(new GPUStatistics());
 
@@ -56,7 +59,7 @@ public class GPUDeviceModule extends AbstractModule {
 
         GenericObjectPool.Config config = new GenericObjectPool.Config();
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
-        config.lifo = false;
+        //config.lifo = false;
 
         bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(new GenericObjectPool(intBufferPoolFactory, config));
         bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(new GenericObjectPool(clIntBufferPoolFactory, config));

@@ -7,7 +7,7 @@ import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
 
-import static org.meteorminer.hash.scanHash.HexUtil.decode;
+import static org.meteorminer.hash.HexUtil.decode;
 
 /**
  * @author John Ericksen

@@ -5,7 +5,6 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.meteorminer.hash.HashStatisticsOutputTimerTaskFactory;
 import org.meteorminer.hash.InteruptTimerTaskFactory;
 import org.meteorminer.hash.MinerController;
-import org.meteorminer.hash.gpu.RunnableHashCheckerFactory;
 import org.meteorminer.network.*;
 import org.meteorminer.service.*;
 
@@ -34,9 +33,6 @@ public class DeviceModule extends AbstractModule {
 
         install(factoryModuleBuilder
                 .build((JsonCommandFactory.class)));
-
-        install(factoryModuleBuilder
-                .build((RunnableHashCheckerFactory.class)));
 
         bind(Miner.class).asEagerSingleton();
 

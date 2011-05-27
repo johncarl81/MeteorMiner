@@ -7,5 +7,5 @@ package org.meteorminer.hash;
  */
 public interface InteruptTimerTaskFactory {
 
-    InteruptTimerTask buildInteruptTimerTask(LocalMinerController localController);
+    InteruptTimerTask buildInteruptTimerTask(MinerController localController);
 }

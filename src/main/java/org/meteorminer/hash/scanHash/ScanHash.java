@@ -3,12 +3,13 @@ package org.meteorminer.hash.scanHash;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
 import org.meteorminer.hash.VerifyHash;
+import org.meteorminer.output.Statistics;
 import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
 import java.util.Random;
 
-import static org.meteorminer.hash.scanHash.HexUtil.decode;
+import static org.meteorminer.hash.HexUtil.decode;
 
 
 //4877554
@@ -16,6 +17,8 @@ public class ScanHash extends AbstractHashScanner {
 
     @Inject
     private VerifyHash verifyHash;
+    @Inject
+    private Statistics statistics;
 
     private long nonceCount;
 
@@ -34,6 +37,8 @@ public class ScanHash extends AbstractHashScanner {
     public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, int end) {
         nonceCount = 0;
 
+        long startTime = System.currentTimeMillis();
+
         int[] data = decode(new int[16], work.getDataString().substring(128));
         int[] midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());
         int[] state = new int[midstate.length];
@@ -41,8 +46,7 @@ public class ScanHash extends AbstractHashScanner {
 
 
         int[] hash;
-        for (int nonce = start; nonce != end && !getLocalController().haltProduction(); nonce++, nonceCount++) {
-
+        for (int nonce = start; nonce != end && !getController().haultProduction(); nonce++, nonceCount++) {
             data[3] = nonce;
 
             System.arraycopy(midstate, 0, state, 0, midstate.length);
@@ -55,5 +59,7 @@ public class ScanHash extends AbstractHashScanner {
                 break;
             }
         }
+
+        statistics.addWorkTime(System.currentTimeMillis() - startTime);
     }
 }

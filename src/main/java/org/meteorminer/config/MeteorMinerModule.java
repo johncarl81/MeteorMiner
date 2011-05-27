@@ -3,12 +3,12 @@ package org.meteorminer.config;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.Work;
 
+import java.net.Authenticator;
 import java.net.Proxy;
 import java.net.URL;
 import java.text.DateFormat;
@@ -40,9 +40,6 @@ public class MeteorMinerModule extends AbstractModule {
                 .build((ThreadFactory.class)));
 
         //Annotated @Injections
-        bind(String.class).annotatedWith(Authorization.class)
-                .toInstance("Basic " + Base64.encodeBase64String((meteorAdvice.getUsername() + ":" + meteorAdvice.getPassword()).getBytes()).trim());
-
         bind(URL.class).annotatedWith(BitcoinUrl.class)
                 .toInstance(meteorAdvice.getBitcoinUrl());
 
@@ -58,6 +55,8 @@ public class MeteorMinerModule extends AbstractModule {
         //additional singletons
         bind(Timer.class).toInstance(new Timer(true));
         bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
+
+        Authenticator.setDefault(new ServerAuthenticator(meteorAdvice.getUsername(), meteorAdvice.getPassword(), meteorAdvice.getProxyUsername(), meteorAdvice.getProxyUsername()));
     }
 
     private String createGetWorkMessage() {

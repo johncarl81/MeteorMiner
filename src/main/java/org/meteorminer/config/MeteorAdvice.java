@@ -23,6 +23,8 @@ public class MeteorAdvice {
     private URL bitcoinUrl;
     private String username;
     private String password;
+    private String proxyUsername;
+    private String proxyPassword;
     private Proxy proxy = null;
     private int getWorkTimeout;
     private boolean verbose;
@@ -59,9 +61,9 @@ public class MeteorAdvice {
 
         if (line.hasOption("proxy")) {
             String proxyString = line.getOptionValue("proxy");
-            String[] proxyParts = proxyString.split(":");
+            final String[] proxyParts = proxyString.split(":");
 
-            if (proxyParts.length != 2) {
+            if (proxyParts.length < 2 || proxyParts.length > 4) {
                 throw new MalformedURLException("Proxy provided needs to be of the form domain:port");
             }
 
@@ -72,7 +74,7 @@ public class MeteorAdvice {
         password = line.getOptionValue("pass", null);
         getWorkTimeout = Integer.parseInt(line.getOptionValue("getwork", GET_WORK_TIMEOUT));
         verbose = line.hasOption("verbose");
-        cpuCount = Integer.parseInt(line.getOptionValue("cpuCount", CPU_COUNT));
+        cpuCount = Integer.parseInt(line.getOptionValue("cpu", CPU_COUNT));
 
     }
 
@@ -82,6 +84,14 @@ public class MeteorAdvice {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getProxyUsername() {
+        return proxyUsername;
+    }
+
+    public String getProxyPassword() {
+        return proxyPassword;
     }
 
     public URL getBitcoinUrl() {
