@@ -25,8 +25,7 @@ public class GpuHashScanner extends AbstractHashScanner {
     private CLInterface output;
 
     private long nonceCount;
-    static final int workgroupSize = 3000000;
-    static final int localWorkSize = 64;
+    private DiabloMiner diabloMiner;
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback) {
         innerScan(work, workFoundCallback, 0, 0xFFFFFFFFL);
@@ -37,17 +36,17 @@ public class GpuHashScanner extends AbstractHashScanner {
         nonceCount = 0;
         long startTime = System.currentTimeMillis();
 
-        DiabloMiner diabloMiner = diabloMinerFactory.createDiabloMiner(work);
+        diabloMiner = diabloMinerFactory.createDiabloMiner(work);
 
-        int startNonce = (start / workgroupSize);
-        long nonceEnd = startNonce + (end / workgroupSize) + 1;
+        int startNonce = (start / diabloMiner.getWorkgroupSize());
+        long nonceEnd = startNonce + (end / diabloMiner.getWorkgroupSize()) + 1;
 
-        long loopTime = System.currentTimeMillis();
         for (int nonce = startNonce; nonce < nonceEnd && !getController().haultProduction(); nonce++, nonceCount++) {
-            MinerResult output = diabloMiner.hash(nonce, workgroupSize, localWorkSize);
+            long loopTime = System.currentTimeMillis();
+            MinerResult output = diabloMiner.hash(nonce);
             hashChecker.check(output, work, workFoundCallback);
+            statistics.addWorkTime(System.currentTimeMillis() - loopTime);
         }
-        statistics.addWorkTime(System.currentTimeMillis() - loopTime);
 
         output.verbose("Scan finished after " + (System.currentTimeMillis() - startTime) + "ms");
 
@@ -55,10 +54,16 @@ public class GpuHashScanner extends AbstractHashScanner {
 
     @Override
     public long getNonceCount() {
-        return nonceCount * workgroupSize;
+        if (diabloMiner == null) {
+            return 0;
+        }
+        return nonceCount * diabloMiner.getWorkgroupSize();
     }
 
-    public static int getWorkgroupSize() {
-        return workgroupSize;
+    public int getWorkgroupSize() {
+        if (diabloMiner == null) {
+            return 0;
+        }
+        return diabloMiner.getWorkgroupSize();
     }
 }

@@ -11,6 +11,7 @@ import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.config.binding.CLIntBufferPool;
 import org.meteorminer.config.binding.IntBufferPool;
 import org.meteorminer.config.binding.SearchKernel;
+import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.domain.Work;
 
 import java.net.MalformedURLException;
@@ -26,6 +27,7 @@ public class DiabloMinerTest {
     private KernelContext kernelContext;
     private ObjectPool intBufferPool;
     private ObjectPool clIntBufferPool;
+    private GPUDevice device;
 
     @Before
     public void setup() throws MalformedURLException {
@@ -34,6 +36,7 @@ public class DiabloMinerTest {
         kernelContext = injector.getInstance(Key.get(KernelContext.class, SearchKernel.class));
         intBufferPool = injector.getInstance(Key.get(ObjectPool.class, IntBufferPool.class));
         clIntBufferPool = injector.getInstance(Key.get(ObjectPool.class, CLIntBufferPool.class));
+        device = injector.getInstance(GPUDevice.class);
     }
 
     @Test
@@ -46,9 +49,9 @@ public class DiabloMinerTest {
 
         int nonce = 563799816;
 
-        DiabloMiner miner = new DiabloMiner(work, kernelContext, clIntBufferPool, intBufferPool);
+        DiabloMiner miner = new DiabloMiner(work, device, kernelContext, clIntBufferPool, intBufferPool);
 
-        MinerResult result = miner.hash(nonce, 1, 1);
+        MinerResult result = miner.hash(nonce / miner.getWorkgroupSize());
         result.getEvent().waitFor();
 
         IntBuffer buffer = result.getBuffer();

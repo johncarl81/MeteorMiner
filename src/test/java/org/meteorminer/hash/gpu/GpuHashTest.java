@@ -86,7 +86,7 @@ public class GpuHashTest {
 
         assertTrue("Known sol'n", tester.isFound());
 
-        assertEquals(GpuHashScanner.getWorkgroupSize(), scanHash.getNonceCount());
+        assertEquals(scanHash.getWorkgroupSize(), scanHash.getNonceCount());
 
     }
 }

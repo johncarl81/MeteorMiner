@@ -40,7 +40,9 @@ public class GPUDeviceModule extends AbstractModule {
                 .build((RunnableHashCheckerFactory.class)));
 
         bind(CLDevice.class).toInstance(device);
-        bind(Device.class).toInstance(new GPUDevice(device));
+        GPUDevice gpuDevice = new GPUDevice(device);
+        bind(Device.class).toInstance(gpuDevice);
+        bind(GPUDevice.class).toInstance(gpuDevice);
 
         bind(HashScanner.class).to(GpuHashScanner.class);
 

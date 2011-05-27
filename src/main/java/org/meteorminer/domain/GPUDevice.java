@@ -17,4 +17,8 @@ public class GPUDevice implements Device {
     public String getName() {
         return device.getName();
     }
+
+    public CLDevice getCLDevice() {
+        return device;
+    }
 }

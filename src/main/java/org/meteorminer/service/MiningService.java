@@ -13,10 +13,7 @@ import org.meteorminer.output.LoggingTimerTask;
 import org.meteorminer.output.Statistics;
 import org.meteorminer.output.StatisticsHolder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Timer;
+import java.util.*;
 
 /**
  * @author John Ericksen
@@ -38,7 +35,14 @@ public class MiningService {
     private int cpuCount;
 
     public void start() {
-        timer.schedule(loggingTimerTask, 1000, 1000);
+        timer.schedule(loggingTimerTask, 5000, 1000);
+        //warm up period
+        timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        statisticsHolder.reset();
+                    }
+                }, 2000);
 
         //gpu setup
         for (CLDevice gpuDevice : getAllDevices()) {
@@ -54,7 +58,7 @@ public class MiningService {
             setupDevice(cpuDeviceInjector);
         }
 
-        statisticsHolder.reset();
+
     }
 
     private void setupDevice(Injector deviceInjector) {

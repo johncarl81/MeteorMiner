@@ -7,7 +7,6 @@ import org.meteorminer.output.Statistics;
 import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
-import java.util.Random;
 
 import static org.meteorminer.hash.HexUtil.decode;
 
@@ -23,10 +22,7 @@ public class ScanHash extends AbstractHashScanner {
     private long nonceCount;
 
     public void innerScan(Work work, WorkFoundCallback workFoundCallback) {
-        Random rand = new Random(System.currentTimeMillis());
-        int start = rand.nextInt(Integer.MAX_VALUE);
-
-        innerScan(work, workFoundCallback, start, start - 1);
+        innerScan(work, workFoundCallback, 0, -1);
     }
 
     @Override
