@@ -19,6 +19,8 @@ public class MeteorAdvice {
     private static final String PORT = "8332";
     private static final String GET_WORK_TIMEOUT = "5";
     private static final String CPU_COUNT = "0";
+    private static final String INTENSITY = "5";
+    private static final String WORK_SIZE = "-1";
 
     private URL bitcoinUrl;
     private String username;
@@ -30,6 +32,8 @@ public class MeteorAdvice {
     private boolean verbose;
     private int cpuCount;
     private boolean help;
+    private int intensity;
+    private int worksize;
 
     /**
      * Sets up default parameters
@@ -40,6 +44,8 @@ public class MeteorAdvice {
             this.bitcoinUrl = new URL("http://" + LOCALHOST + ":" + PORT);
             this.getWorkTimeout = Integer.parseInt(GET_WORK_TIMEOUT);
             this.verbose = false;
+            this.intensity = 10;
+            this.worksize = -1;
         } catch (MalformedURLException e) {
             throw new MeteorMinerRuntimeException("Error setting up default configuration");
         }
@@ -67,6 +73,11 @@ public class MeteorAdvice {
                 throw new MalformedURLException("Proxy provided needs to be of the form domain:port");
             }
 
+            if (proxyParts.length >= 3) {
+                proxyUsername = proxyParts[2];
+                proxyPassword = proxyParts[3];
+            }
+
             proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyParts[0], Integer.parseInt(proxyParts[1])));
         }
 
@@ -75,6 +86,8 @@ public class MeteorAdvice {
         getWorkTimeout = Integer.parseInt(line.getOptionValue("getwork", GET_WORK_TIMEOUT));
         verbose = line.hasOption("verbose");
         cpuCount = Integer.parseInt(line.getOptionValue("cpu", CPU_COUNT));
+        intensity = Integer.parseInt(line.getOptionValue("intensity", INTENSITY));
+        worksize = Integer.parseInt(line.getOptionValue("worksize", WORK_SIZE));
 
     }
 
@@ -116,5 +129,13 @@ public class MeteorAdvice {
 
     public boolean help() {
         return help;
+    }
+
+    public int getIntensity() {
+        return intensity;
+    }
+
+    public int getWorksize() {
+        return worksize;
     }
 }

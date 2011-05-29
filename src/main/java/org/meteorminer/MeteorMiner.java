@@ -52,6 +52,8 @@ public class MeteorMiner {
         options.addOption("v", "verbose", false, "Verbose Output");
         options.addOption("x", "proxy", true, "optional proxy settings host:port<:username:password>");
         options.addOption("c", "cpu", true, "optional count of mining CPUs");
+        options.addOption("i", "intensity", true, "optional intensity value (1-10)");
+        options.addOption("w", "worksize", true, "optional worksize override (> 0)");
         /*options.addOption("f", "fps", true, "target execution timing");
         options.addOption("w", "worksize", true, "override worksize");
         options.addOption("z", "loops", true, "kernel loops (power of two, 0 is off)");

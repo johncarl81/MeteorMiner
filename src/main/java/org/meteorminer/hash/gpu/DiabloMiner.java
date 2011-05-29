@@ -4,9 +4,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLIntBuffer;
 import org.apache.commons.pool.ObjectPool;
-import org.meteorminer.config.binding.CLIntBufferPool;
-import org.meteorminer.config.binding.IntBufferPool;
-import org.meteorminer.config.binding.SearchKernel;
+import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.domain.Work;
 
@@ -48,12 +46,18 @@ public class DiabloMiner {
     @Inject
     public DiabloMiner(@Assisted Work work,
                        GPUDevice device,
+                       @Intensity int intensity,
+                       @WorkSize int worksize,
                        @SearchKernel KernelContext kernelContext,
                        @CLIntBufferPool ObjectPool clIntBufferPool,
                        @IntBufferPool ObjectPool intBufferPool) {
 
-        localWorkSize = kernelContext.getKernel().getWorkGroupSize().get(device.getCLDevice()).intValue();
-        workgroupSize = localWorkSize * localWorkSize * 32;
+        if (worksize == -1) {
+            localWorkSize = kernelContext.getKernel().getWorkGroupSize().get(device.getCLDevice()).intValue();
+        } else {
+            localWorkSize = worksize;
+        }
+        this.workgroupSize = localWorkSize * new Double(localWorkSize * intensity / 10.0).intValue() * 32;
 
         this.kernelContext = kernelContext;
         this.clIntBufferPool = clIntBufferPool;
