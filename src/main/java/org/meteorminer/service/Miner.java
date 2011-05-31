@@ -13,12 +13,11 @@ import org.meteorminer.network.LongPollWorkerFactory;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author John Ericksen
@@ -35,10 +34,12 @@ public class Miner implements Runnable {
     private AsynchronousFactory asynchronousFactory;
     private LongPollWorkerFactory longPollWorkerFactory;
     private boolean longPollEnabled = false;
-
     private Set<HashScanner> scanners;
+    private Set<HashScannerCallable> wrappedScanners;
 
     private boolean mining = true;
+
+    private ExecutorService executor;
 
     @Inject
     public Miner(@Assisted Set<HashScanner> scanners,
@@ -49,50 +50,58 @@ public class Miner implements Runnable {
         this.nonceSource = nonceSource;
         this.output = output;
         this.scanners = scanners;
+        this.wrappedScanners = new HashSet<HashScannerCallable>();
+
+        for (HashScanner scanner : scanners) {
+            this.wrappedScanners.add(new HashScannerCallable(scanner));
+        }
+
         this.interruptTimerTaskFactory = interruptTimerTaskFactory;
         this.timer = timer;
         this.getWorkTimeout = getWorkTimeout;
         this.longPollAdaptor = longPollAdaptor;
         this.asynchronousFactory = asynchronousFactory;
         this.longPollWorkerFactory = longPollWorkerFactory;
+        this.executor = Executors.newFixedThreadPool(scanners.size());
     }
 
     public void run() {
+        try {
+            do {
+                nonceSource.reset();
+                Work work = workProducer.produce();
 
-        do {
-            nonceSource.reset();
-            Work work = workProducer.produce();
-
-            //setup long poll
-            if (!longPollEnabled && longPollAdaptor.getLongPollURL() != null) {
-                longPollEnabled = true;
-                LongPollWorker longPollWorker = longPollWorkerFactory.buildLongPollWorker(longPollAdaptor.getLongPollURL(), scanners);
-                asynchronousFactory.startRunnable(longPollWorker);
-            }
-
-            InterruptTimerTask interruptTimerTask = interruptTimerTaskFactory.buildInteruptTimerTask(scanners, workProducer.getDelayedWorkProducer());
-
-            ExecutorService executor = Executors.newFixedThreadPool(scanners.size());
-
-            if (work != null) {
-                output.verbose("Starting mine: " + work.getDataString());
-                CyclicBarrier barrier = new CyclicBarrier(scanners.size() + 1);
-                timer.schedule(interruptTimerTask, getWorkTimeout * 1000);
-                for (HashScanner hashScanner : scanners) {
-                    //asynchronousFactory.startRunnable(new HashScannerRunnable(hashScanner, work, barrier));
-                    executor.execute(new HashScannerRunnable(hashScanner, work));
+                //setup long poll once available
+                if (!longPollEnabled && longPollAdaptor.getLongPollURL() != null) {
+                    longPollEnabled = true;
+                    LongPollWorker longPollWorker = longPollWorkerFactory.buildLongPollWorker(longPollAdaptor.getLongPollURL(), scanners);
+                    asynchronousFactory.startRunnable(longPollWorker);
                 }
 
-                try {
-                    executor.shutdown();
-                    executor.awaitTermination(1, TimeUnit.DAYS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+                InterruptTimerTask interruptTimerTask = interruptTimerTaskFactory.buildInteruptTimerTask(scanners, workProducer.getDelayedWorkProducer());
 
-            interruptTimerTask.cancel();
-        } while (mining);
+                if (work != null) {
+                    output.verbose("Starting mine: " + work.getDataString());
+
+                    //setup getwork timeout
+                    timer.schedule(interruptTimerTask, getWorkTimeout * 1000);
+
+                    executor.invokeAll(updateWrappedScanners(work));
+                }
+
+                interruptTimerTask.cancel();
+            } while (mining);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Set<HashScannerCallable> updateWrappedScanners(Work work) {
+        for (HashScannerCallable hashScannerCallable : wrappedScanners) {
+            hashScannerCallable.setWork(work);
+        }
+
+        return wrappedScanners;
     }
 
     public void setMining(boolean mining) {

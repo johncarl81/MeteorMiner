@@ -3,26 +3,28 @@ package org.meteorminer.service;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.HashScanner;
 
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Callable;
 
 /**
  * @author John Ericksen
  */
-public class HashScannerRunnable implements Runnable {
+public class HashScannerCallable implements Callable<Void> {
 
     private HashScanner hashScanner;
     private Work work;
-    private CyclicBarrier barrier;
 
-    public HashScannerRunnable(HashScanner hashScanner, Work work) {
+    public HashScannerCallable(HashScanner hashScanner) {
         this.hashScanner = hashScanner;
-        this.work = work;
-        this.barrier = barrier;
     }
 
 
     @Override
-    public void run() {
+    public Void call() throws Exception {
         hashScanner.scan(work);
+        return null;
+    }
+
+    public void setWork(Work work) {
+        this.work = work;
     }
 }

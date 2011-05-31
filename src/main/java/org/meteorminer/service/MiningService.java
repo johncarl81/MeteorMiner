@@ -36,8 +36,6 @@ public class MiningService {
     @Inject
     private StatisticsHolder statisticsHolder;
     @Inject
-    private AsynchronousFactory asyncFactory;
-    @Inject
     @CPUCount
     private int cpuCount;
     @Inject
@@ -50,6 +48,7 @@ public class MiningService {
         List<CLDevice> gpuDevices = getAllDevices();
 
         //output gpus found
+        System.out.println("GPU devices found:");
         System.out.println("Id\tName");
         for (int i = 0; i < gpuDevices.size(); i++) {
             System.out.println(i + ":\t" + gpuDevices.get(i));
