@@ -1,11 +1,11 @@
 package org.meteorminer.hash.scanHash;
 
-import com.google.inject.Inject;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.VerifyHash;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.service.WorkFoundCallback;
 
+import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,9 +17,11 @@ public class DigestProcessHashImpl implements VerifyHash {
 
     @Inject
     private CLInterface output;
+    @Inject
+    private WorkFoundCallback workFoundCallback;
 
     @Override
-    public void verify(Work work, int nonce, WorkFoundCallback workFoundCallback) {
+    public void verify(Work work, int nonce) {
         try {
             final ByteBuffer digestInput = ByteBuffer.allocate(80);
 

@@ -2,11 +2,12 @@ package org.meteorminer.hash.gpu;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
+import org.meteorminer.hash.NonceIteratorFactory;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.output.Statistics;
-import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
+import java.util.Iterator;
 
 /**
  * HashScanner that utilizes the GPU through the DiabloMiner implementation
@@ -23,29 +24,26 @@ public class GpuHashScanner extends AbstractHashScanner {
     private Statistics statistics;
     @Inject
     private CLInterface output;
+    @Inject
+    private NonceIteratorFactory nonceIteratorFactory;
 
     private long nonceCount;
     private DiabloMiner diabloMiner;
 
-    public void innerScan(Work work, WorkFoundCallback workFoundCallback) {
-        innerScan(work, workFoundCallback, 0, 0xFFFFFFFFL);
-    }
-
-    public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, long end) {
+    public void innerScan(Work work) {
 
         nonceCount = 0;
         long startTime = System.currentTimeMillis();
 
         diabloMiner = diabloMinerFactory.createDiabloMiner(work);
+        Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(diabloMiner.getWorkgroupSize());
 
-        int startNonce = (start / diabloMiner.getWorkgroupSize());
-        long nonceEnd = startNonce + (end / diabloMiner.getWorkgroupSize()) + 1;
-
-        for (int nonce = startNonce; nonce < nonceEnd && !getController().haultProduction(); nonce++, nonceCount++) {
+        while (nonceIterator.hasNext() && !isStop()) {
             long loopTime = System.currentTimeMillis();
-            MinerResult output = diabloMiner.hash(nonce);
-            hashChecker.check(output, work, workFoundCallback);
+            MinerResult output = diabloMiner.hash(nonceIterator.next());
+            hashChecker.check(output, work);
             statistics.addWorkTime(System.currentTimeMillis() - loopTime);
+            ++nonceCount;
         }
 
         output.verbose("Scan finished after " + (System.currentTimeMillis() - startTime) + "ms");

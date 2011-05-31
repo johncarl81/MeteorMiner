@@ -6,6 +6,8 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Advice class decomposing the given CL input into defaulted and provided parameters.
@@ -34,6 +36,8 @@ public class MeteorAdvice {
     private boolean help;
     private int intensity;
     private int worksize;
+    private boolean tandem;
+    private List<Integer> gpuIds = new ArrayList<Integer>();
 
     /**
      * Sets up default parameters
@@ -46,6 +50,7 @@ public class MeteorAdvice {
             this.verbose = false;
             this.intensity = 10;
             this.worksize = -1;
+            this.gpuIds.add(0);
         } catch (MalformedURLException e) {
             throw new MeteorMinerRuntimeException("Error setting up default configuration");
         }
@@ -88,6 +93,20 @@ public class MeteorAdvice {
         cpuCount = Integer.parseInt(line.getOptionValue("cpu", CPU_COUNT));
         intensity = Integer.parseInt(line.getOptionValue("intensity", INTENSITY));
         worksize = Integer.parseInt(line.getOptionValue("worksize", WORK_SIZE));
+
+        tandem = line.hasOption("tandem");
+
+        if (line.hasOption("gpu")) {
+            String[] gpuIdParts = line.getOptionValue("gpu").split(",");
+
+            for (String gpuIdString : gpuIdParts) {
+                int gpuId = Integer.parseInt(gpuIdString);
+                gpuIds.add(gpuId);
+            }
+        } else {
+            //default
+            gpuIds.add(0);
+        }
 
     }
 
@@ -137,5 +156,13 @@ public class MeteorAdvice {
 
     public int getWorksize() {
         return worksize;
+    }
+
+    public List<Integer> getGpuIds() {
+        return gpuIds;
+    }
+
+    public boolean isTandem() {
+        return tandem;
     }
 }

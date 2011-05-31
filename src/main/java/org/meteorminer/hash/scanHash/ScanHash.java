@@ -2,11 +2,12 @@ package org.meteorminer.hash.scanHash;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
+import org.meteorminer.hash.NonceIteratorFactory;
 import org.meteorminer.hash.VerifyHash;
 import org.meteorminer.output.Statistics;
-import org.meteorminer.service.WorkFoundCallback;
 
 import javax.inject.Inject;
+import java.util.Iterator;
 
 import static org.meteorminer.hash.HexUtil.decode;
 
@@ -14,48 +15,56 @@ import static org.meteorminer.hash.HexUtil.decode;
 //4877554
 public class ScanHash extends AbstractHashScanner {
 
+    private static final int NONCE_BUFFER = 1000;
+
     @Inject
     private VerifyHash verifyHash;
     @Inject
     private Statistics statistics;
+    @Inject
+    private NonceIteratorFactory nonceIteratorFactory;
 
     private long nonceCount;
 
-    public void innerScan(Work work, WorkFoundCallback workFoundCallback) {
-        innerScan(work, workFoundCallback, 0, -1);
-    }
-
-    @Override
-    public long getNonceCount() {
-        return nonceCount;
-    }
-
-    public void innerScan(Work work, WorkFoundCallback workFoundCallback, int start, int end) {
+    public void innerScan(Work work) {
         nonceCount = 0;
 
-        long startTime = System.currentTimeMillis();
+        Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(NONCE_BUFFER);
 
         int[] data = decode(new int[16], work.getDataString().substring(128));
         int[] midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());
         int[] state = new int[midstate.length];
         int[] buff = new int[64];
 
-
         int[] hash;
-        for (int nonce = start; nonce != end && !getController().haultProduction(); nonce++, nonceCount++) {
-            data[3] = nonce;
+        while (nonceIterator.hasNext() && !isStop()) {
+            int nonce = nonceIterator.next();
+            int nonceEnd = nonce + NONCE_BUFFER;
+            long nonceTime = System.currentTimeMillis();
+            for (; nonce < nonceEnd; nonce++) {
 
-            System.arraycopy(midstate, 0, state, 0, midstate.length);
-            SHA256.processBlock(state, buff, data);
-            hash = SHA256.initState();
-            SHA256.processBlock(hash, buff, state);
+                data[3] = nonce;
 
-            if (hash[7] == 0 && hash[6] < work.getTarget()[6]) {
-                verifyHash.verify(work, nonce, workFoundCallback);
-                break;
+                System.arraycopy(midstate, 0, state, 0, midstate.length);
+                SHA256.processBlock(state, buff, data);
+                hash = SHA256.initState();
+                SHA256.processBlock(hash, buff, state);
+
+                if (hash[7] == 0 && hash[6] < work.getTarget()[6]) {
+                    verifyHash.verify(work, nonce);
+                    break;
+                }
+
             }
+            statistics.addWorkTime(System.currentTimeMillis() - nonceTime);
+            nonceCount += NONCE_BUFFER;
         }
 
-        statistics.addWorkTime(System.currentTimeMillis() - startTime);
+
+    }
+
+    @Override
+    public long getNonceCount() {
+        return nonceCount;
     }
 }

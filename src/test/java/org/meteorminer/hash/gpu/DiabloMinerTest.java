@@ -31,8 +31,9 @@ public class DiabloMinerTest {
 
     @Before
     public void setup() throws MalformedURLException {
-        MeteorMinerInjector.buildInjector(new MeteorAdvice());
-        Injector injector = MeteorMinerInjector.buildGPUDeviceInjector(JavaCL.getBestDevice());
+        MeteorAdvice advice = new MeteorAdvice();
+        MeteorMinerInjector.buildInjector(advice);
+        Injector injector = MeteorMinerInjector.buildGPUDeviceInjector(JavaCL.getBestDevice(), 0);
         kernelContext = injector.getInstance(Key.get(KernelContext.class, SearchKernel.class));
         intBufferPool = injector.getInstance(Key.get(ObjectPool.class, IntBufferPool.class));
         clIntBufferPool = injector.getInstance(Key.get(ObjectPool.class, CLIntBufferPool.class));
@@ -51,7 +52,7 @@ public class DiabloMinerTest {
 
         DiabloMiner miner = new DiabloMiner(work, device, 10, -1, kernelContext, clIntBufferPool, intBufferPool);
 
-        MinerResult result = miner.hash(nonce / miner.getWorkgroupSize());
+        MinerResult result = miner.hash(nonce);
         result.getEvent().waitFor();
 
         IntBuffer buffer = result.getBuffer();

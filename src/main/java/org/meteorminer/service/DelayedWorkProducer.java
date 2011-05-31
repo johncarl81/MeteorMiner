@@ -1,7 +1,8 @@
 package org.meteorminer.service;
 
-import com.google.inject.Inject;
 import org.meteorminer.domain.Work;
+
+import javax.inject.Inject;
 
 /**
  * @author John Ericksen

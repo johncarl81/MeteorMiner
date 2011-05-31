@@ -4,7 +4,6 @@ import com.nativelibs4java.opencl.CLEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.domain.Work;
-import org.meteorminer.service.WorkFoundCallback;
 
 import static org.easymock.EasyMock.*;
 
@@ -19,7 +18,6 @@ public class AsynchronousHashCheckerTest {
 
     private MinerResult output;
     private Work work;
-    private WorkFoundCallback workFoundCallback;
     private CLEvent event;
 
     @Before
@@ -28,7 +26,6 @@ public class AsynchronousHashCheckerTest {
 
         hashCheckerFactory = createMock(RunnableHashCheckerFactory.class);
         runnableHashChecker = createMock(RunnableHashChecker.class);
-        workFoundCallback = createMock(WorkFoundCallback.class);
         work = new Work(
                 "00000001c9d358447ba95319a19300bfc94a286ed6a12856f8e4775e00005de6000000009c64db358b88376c70d0101aafaace8c46fb7988e9e3f070c234903fa7ed5aa24dd341741a6a93b300000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000",
                 "c94675051186fcd6fb7f92f20c7248da15efcc56924c77712220240573183c17",
@@ -43,16 +40,16 @@ public class AsynchronousHashCheckerTest {
 
     @Test
     public void testCheck() {
-        reset(hashCheckerFactory, runnableHashChecker, output, workFoundCallback);
+        reset(hashCheckerFactory, runnableHashChecker, output);
 
-        expect(hashCheckerFactory.createHashChecker(eq(output), eq(work), eq(workFoundCallback))).andReturn(runnableHashChecker);
+        expect(hashCheckerFactory.createHashChecker(eq(output), eq(work))).andReturn(runnableHashChecker);
         expect(output.getEvent()).andReturn(event);
         event.invokeUponCompletion(runnableHashChecker);
 
-        replay(hashCheckerFactory, runnableHashChecker, output, workFoundCallback);
+        replay(hashCheckerFactory, runnableHashChecker, output);
 
-        hashChecker.check(output, work, workFoundCallback);
+        hashChecker.check(output, work);
 
-        verify(hashCheckerFactory, runnableHashChecker, output, workFoundCallback);
+        verify(hashCheckerFactory, runnableHashChecker, output);
     }
 }

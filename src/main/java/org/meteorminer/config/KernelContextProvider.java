@@ -1,10 +1,10 @@
 package org.meteorminer.config;
 
-import com.google.inject.Inject;
 import com.nativelibs4java.opencl.CLBuildException;
 import com.nativelibs4java.opencl.CLDevice;
 import org.meteorminer.hash.gpu.KernelContext;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 

@@ -3,7 +3,6 @@ package org.meteorminer.hash.gpu;
 import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.domain.Work;
-import org.meteorminer.service.WorkFoundCallback;
 
 import static org.easymock.EasyMock.*;
 
@@ -16,7 +15,6 @@ public class RunnableHashCheckerTest {
 
     private MinerResult output;
     private Work work;
-    private WorkFoundCallback workFoundCallback;
     private HashChecker delegate;
 
     @Before
@@ -24,22 +22,21 @@ public class RunnableHashCheckerTest {
 
         output = createMock(MinerResult.class);
         work = createMock(Work.class);
-        workFoundCallback = createMock(WorkFoundCallback.class);
         delegate = createMock(HashChecker.class);
 
-        hashChecker = new RunnableHashChecker(output, work, workFoundCallback, delegate);
+        hashChecker = new RunnableHashChecker(output, work, delegate);
     }
 
     @Test
     public void testRun() {
-        reset(output, work, workFoundCallback, delegate);
+        reset(output, work, delegate);
 
-        delegate.check(output, work, workFoundCallback);
+        delegate.check(output, work);
 
-        replay(output, work, workFoundCallback, delegate);
+        replay(output, work, delegate);
 
         hashChecker.run();
 
-        verify(output, work, workFoundCallback, delegate);
+        verify(output, work, delegate);
     }
 }

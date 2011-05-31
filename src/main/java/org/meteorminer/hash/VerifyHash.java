@@ -3,7 +3,6 @@ package org.meteorminer.hash;
 import com.google.inject.ImplementedBy;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.scanHash.DigestProcessHashImpl;
-import org.meteorminer.service.WorkFoundCallback;
 
 /**
  * @author John Ericksen
@@ -11,6 +10,6 @@ import org.meteorminer.service.WorkFoundCallback;
 @ImplementedBy(DigestProcessHashImpl.class)
 public interface VerifyHash {
 
-    void verify(Work work, int nonce, WorkFoundCallback callback);
+    void verify(Work work, int nonce);
 
 }

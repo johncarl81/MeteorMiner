@@ -22,9 +22,11 @@ import org.meteorminer.output.Statistics;
 public class GPUDeviceModule extends AbstractModule {
 
     private CLDevice device;
+    private int id;
 
-    public GPUDeviceModule(CLDevice device) {
+    public GPUDeviceModule(CLDevice device, int id) {
         this.device = device;
+        this.id = id;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class GPUDeviceModule extends AbstractModule {
                 .build((RunnableHashCheckerFactory.class)));
 
         bind(CLDevice.class).toInstance(device);
-        GPUDevice gpuDevice = new GPUDevice(device);
+        GPUDevice gpuDevice = new GPUDevice(device, id);
         bind(Device.class).toInstance(gpuDevice);
         bind(GPUDevice.class).toInstance(gpuDevice);
 

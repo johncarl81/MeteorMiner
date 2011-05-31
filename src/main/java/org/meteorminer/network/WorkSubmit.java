@@ -1,6 +1,5 @@
 package org.meteorminer.network;
 
-import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -10,6 +9,7 @@ import org.meteorminer.domain.Work;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.output.Statistics;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
 /**

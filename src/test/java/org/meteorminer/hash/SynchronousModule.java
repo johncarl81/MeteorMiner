@@ -1,7 +1,7 @@
 package org.meteorminer.hash;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
+import org.meteorminer.service.WorkFoundCallback;
 
 /**
  * @author John Ericksen
@@ -10,10 +10,12 @@ public class SynchronousModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
+        WorkFoundCallbackTester callbackTester = new WorkFoundCallbackTester();
+        bind(WorkFoundCallback.class).toInstance(callbackTester);
+        bind(WorkFoundCallbackTester.class).toInstance(callbackTester);
 
-        install(factoryModuleBuilder
-                .implement(org.meteorminer.hash.WorkFoundCallbackTester.class, org.meteorminer.hash.WorkFoundCallbackTester.class)
-                .build(WorkFoundCallbackTesterFactory.class));
+        MockNonceIteratorFactory nonceIteratorFactory = new MockNonceIteratorFactory();
+        bind(NonceIteratorFactory.class).toInstance(nonceIteratorFactory);
+        bind(MockNonceIteratorFactory.class).toInstance(nonceIteratorFactory);
     }
 }

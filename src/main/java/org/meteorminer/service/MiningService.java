@@ -1,19 +1,24 @@
 package org.meteorminer.service;
 
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.nativelibs4java.opencl.CLDevice;
 import com.nativelibs4java.opencl.CLPlatform;
 import com.nativelibs4java.opencl.JavaCL;
 import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.config.binding.CPUCount;
+import org.meteorminer.config.binding.GPUIds;
 import org.meteorminer.domain.Device;
+import org.meteorminer.hash.HashScanner;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.output.LoggingTimerTask;
 import org.meteorminer.output.Statistics;
 import org.meteorminer.output.StatisticsHolder;
 
-import java.util.*;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Timer;
 
 /**
  * @author John Ericksen
@@ -22,6 +27,8 @@ public class MiningService {
 
     @Inject
     private LoggingTimerTask loggingTimerTask;
+    @Inject
+    private StatisticsWarmupTimerTask statisticsWarmupTimerTask;
     @Inject
     private Timer timer;
     @Inject
@@ -33,22 +40,33 @@ public class MiningService {
     @Inject
     @CPUCount
     private int cpuCount;
+    @Inject
+    @GPUIds
+    private List<Integer> activatedGpus;
+    @Inject
+    private MinerStrategy minerStrategy;
 
     public void start() {
+        List<CLDevice> gpuDevices = getAllDevices();
+
+        //output gpus found
+        System.out.println("Id\tName");
+        for (int i = 0; i < gpuDevices.size(); i++) {
+            System.out.println(i + ":\t" + gpuDevices.get(i));
+        }
+
         timer.schedule(loggingTimerTask, 5000, 1000);
         //warm up period
-        timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        statisticsHolder.reset();
-                    }
-                }, 2000);
+        timer.schedule(statisticsWarmupTimerTask, 2000);
 
         //gpu setup
-        for (CLDevice gpuDevice : getAllDevices()) {
-            Injector gpuDeviceInjector = MeteorMinerInjector.buildGPUDeviceInjector(gpuDevice);
-
-            setupDevice(gpuDeviceInjector);
+        for (Integer id : activatedGpus) {
+            if (id < gpuDevices.size()) {
+                Injector gpuDeviceInjector = MeteorMinerInjector.buildGPUDeviceInjector(gpuDevices.get(id), id);
+                setupDevice(gpuDeviceInjector);
+            } else {
+                output.notification("GPU Device not found: " + id);
+            }
         }
 
         //cpu setup
@@ -58,17 +76,19 @@ public class MiningService {
             setupDevice(cpuDeviceInjector);
         }
 
+        minerStrategy.start();
+
 
     }
 
     private void setupDevice(Injector deviceInjector) {
-        DeviceManager deviceManager = deviceInjector.getInstance(DeviceManager.class);
+        HashScanner hashScanner = deviceInjector.getInstance(HashScanner.class);
         Statistics statistics = deviceInjector.getInstance(Statistics.class);
         Device device = deviceInjector.getInstance(Device.class);
 
         statisticsHolder.getStatistics().put(device, statistics);
 
-        asyncFactory.startRunnable(deviceManager);
+        minerStrategy.add(hashScanner);
     }
 
     public List<CLDevice> getAllDevices() {

@@ -1,12 +1,10 @@
 package org.meteorminer.hash;
 
-import com.google.inject.Inject;
 import org.meteorminer.config.binding.GetWorkTimeout;
 import org.meteorminer.domain.Work;
-import org.meteorminer.service.WorkFoundCallback;
 
+import javax.inject.Inject;
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author John Ericksen
@@ -19,31 +17,30 @@ public abstract class AbstractHashScanner implements HashScanner {
     @GetWorkTimeout
     private int getWorkTimeout;
     @Inject
-    private InteruptTimerTaskFactory interuptTimerTaskFactory;
+    private InterruptTimerTaskFactory interruptTimerTaskFactory;
     @Inject
     private HashStatisticsOutputTimerTaskFactory hashStatisticsOutputTimerTaskFactory;
-    @Inject
-    private MinerController controller;
+
+    private boolean stop;
 
     @Override
-    public void scan(Work work, WorkFoundCallback workFoundCallback) {
-        controller.reset();
-        TimerTask hashStatsTimerTask = hashStatisticsOutputTimerTaskFactory.buildStatisticsOutputTimerTask(this);
-        TimerTask interuptTimerTask = interuptTimerTaskFactory.buildInteruptTimerTask(controller);
+    public void scan(Work work) {
+        stop = false;
+        HashStatisticsOutputTimerTask hashStatsTimerTask = hashStatisticsOutputTimerTaskFactory.buildStatisticsOutputTimerTask(this);
         timer.schedule(hashStatsTimerTask, 1000, 1000);
-        timer.schedule(interuptTimerTask, getWorkTimeout * 1000);
 
-        innerScan(work, workFoundCallback);
+        innerScan(work);
 
         hashStatsTimerTask.cancel();
-        interuptTimerTask.cancel();
     }
 
-    public MinerController getController() {
-        return controller;
+    public void stop() {
+        stop = true;
     }
 
-    public abstract void innerScan(Work work, WorkFoundCallback workFoundCallback);
+    public boolean isStop() {
+        return stop;
+    }
 
-    public abstract long getNonceCount();
+    public abstract void innerScan(Work work);
 }

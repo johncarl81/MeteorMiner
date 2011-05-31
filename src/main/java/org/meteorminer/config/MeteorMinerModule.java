@@ -6,15 +6,20 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.config.binding.*;
-import org.meteorminer.domain.Work;
+import org.meteorminer.hash.InterruptTimerTaskFactory;
+import org.meteorminer.network.LongPollWorker;
+import org.meteorminer.network.LongPollWorkerFactory;
+import org.meteorminer.service.MinerFactory;
+import org.meteorminer.service.MinerStrategy;
+import org.meteorminer.service.ParallelMinerStrategy;
+import org.meteorminer.service.TandemMinerStrategy;
 
 import java.net.Authenticator;
 import java.net.Proxy;
 import java.net.URL;
 import java.text.DateFormat;
+import java.util.List;
 import java.util.Timer;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -39,12 +44,27 @@ public class MeteorMinerModule extends AbstractModule {
         install(factoryModuleBuilder
                 .build((ThreadFactory.class)));
 
+        install(factoryModuleBuilder
+                .build((MinerFactory.class)));
+
+        install(factoryModuleBuilder
+                .build((InterruptTimerTaskFactory.class)));
+
+        install(factoryModuleBuilder
+                .implement(Runnable.class, LongPollWorker.class)
+                .build((LongPollWorkerFactory.class)));
+
+        bind(MeteorAdvice.class).toInstance(meteorAdvice);
+
         //Annotated @Injections
         bind(URL.class).annotatedWith(BitcoinUrl.class)
                 .toInstance(meteorAdvice.getBitcoinUrl());
 
-        bind(new TypeLiteral<BlockingQueue<Work>>() {
-        }).toInstance(new SynchronousQueue<Work>());
+        if (meteorAdvice.isTandem()) {
+            bind(MinerStrategy.class).to(TandemMinerStrategy.class);
+        } else {
+            bind(MinerStrategy.class).to(ParallelMinerStrategy.class);
+        }
 
         bind(Proxy.class).annotatedWith(BitcoinProxy.class).toProvider(new ProxyProvider(meteorAdvice.getProxy()));
         bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(createGetWorkMessage());
@@ -53,6 +73,8 @@ public class MeteorMinerModule extends AbstractModule {
         bind(Integer.class).annotatedWith(CPUCount.class).toInstance(meteorAdvice.getCpuCount());
         bind(Integer.class).annotatedWith(Intensity.class).toInstance(meteorAdvice.getIntensity());
         bind(Integer.class).annotatedWith(WorkSize.class).toInstance(meteorAdvice.getWorksize());
+        bind(new TypeLiteral<List<Integer>>() {
+        }).annotatedWith(GPUIds.class).toInstance(meteorAdvice.getGpuIds());
 
         //additional singletons
         bind(Timer.class).toInstance(new Timer(true));

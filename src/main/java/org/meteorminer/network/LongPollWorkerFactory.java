@@ -1,6 +1,9 @@
 package org.meteorminer.network;
 
+import org.meteorminer.hash.HashScanner;
+
 import java.net.URL;
+import java.util.Set;
 
 /**
  * Assisted Injection LongPollWorker Factory
@@ -9,6 +12,6 @@ import java.net.URL;
  */
 public interface LongPollWorkerFactory {
 
-    Runnable buildLongPollWorker(URL bitcoindLongpoll);
+    LongPollWorker buildLongPollWorker(URL bitcoindLongpoll, Set<HashScanner> hashScanners);
 
 }

@@ -16,9 +16,11 @@ public class ProcessHashImpl implements VerifyHash {
 
     @Inject
     private CLInterface output;
+    @Inject
+    private WorkFoundCallback callback;
 
     @Override
-    public void verify(Work work, int nonce, WorkFoundCallback callback) {
+    public void verify(Work work, int nonce) {
 
         int[] data = decode(new int[16], work.getDataString().substring(128));
         int[] midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());

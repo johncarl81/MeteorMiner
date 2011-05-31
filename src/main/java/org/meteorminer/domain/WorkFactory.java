@@ -1,9 +1,9 @@
 package org.meteorminer.domain;
 
-import com.google.inject.Inject;
 import org.codehaus.jackson.JsonNode;
 import org.meteorminer.output.CLInterface;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**

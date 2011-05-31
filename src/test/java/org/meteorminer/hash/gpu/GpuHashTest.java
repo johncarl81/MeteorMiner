@@ -13,9 +13,9 @@ import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerModule;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.GPUSynchronousModule;
+import org.meteorminer.hash.MockNonceIteratorFactory;
 import org.meteorminer.hash.SynchronousModule;
 import org.meteorminer.hash.WorkFoundCallbackTester;
-import org.meteorminer.hash.WorkFoundCallbackTesterFactory;
 
 import java.net.MalformedURLException;
 
@@ -24,18 +24,21 @@ import static junit.framework.Assert.*;
 public class GpuHashTest {
 
     private GpuHashScanner scanHash;
-    private WorkFoundCallbackTesterFactory callbackFactory;
+    private WorkFoundCallbackTester callbackTester;
+    private MockNonceIteratorFactory nonceFactory;
 
     @Before
     public void setup() throws MalformedURLException {
+        MeteorAdvice advice = new MeteorAdvice();
         Injector injector = Guice.createInjector(
-                Modules.override(new MeteorMinerModule(new MeteorAdvice()),
+                Modules.override(new MeteorMinerModule(advice),
                         new DeviceModule(),
-                        new GPUDeviceModule(JavaCL.getBestDevice())).with(
+                        new GPUDeviceModule(JavaCL.getBestDevice(), 0)).with(
                         new SynchronousModule(),
                         new GPUSynchronousModule()));
         scanHash = injector.getInstance(GpuHashScanner.class);
-        callbackFactory = injector.getInstance(WorkFoundCallbackTesterFactory.class);
+        callbackTester = injector.getInstance(WorkFoundCallbackTester.class);
+        nonceFactory = injector.getInstance(MockNonceIteratorFactory.class);
     }
 
     @Test
@@ -46,10 +49,11 @@ public class GpuHashTest {
                 "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
-        WorkFoundCallbackTester tester = callbackFactory.buildCallback(0);
-        scanHash.innerScan(work, tester, 1, 0xffffL);
+        callbackTester.setExpectedNonce(0);
+        nonceFactory.setRange(1, 0xffff);
+        scanHash.innerScan(work);
 
-        assertFalse("No match for casial hash", tester.isFound());
+        assertFalse("No match for casial hash", callbackTester.isFound());
     }
 
     @Test
@@ -60,11 +64,11 @@ public class GpuHashTest {
                 "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
-        WorkFoundCallbackTester tester = callbackFactory.buildCallback(30911318);
+        callbackTester.setExpectedNonce(30911318);
+        nonceFactory.setRange(0x1d70bd0, 0xffff);
+        scanHash.innerScan(work);
 
-        scanHash.innerScan(work, tester, 0x1d70bd0, 0xffffL);
-
-        assertTrue("Known sol'n", tester.isFound());
+        assertTrue("Known sol'n", callbackTester.isFound());
         assertEquals(
                 "Known sol'n",
                 work.getDataString(),
@@ -79,12 +83,13 @@ public class GpuHashTest {
                 "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000");
 
-        WorkFoundCallbackTester tester = callbackFactory.buildCallback(563799816);
+        callbackTester.setExpectedNonce(563799816);
         //solution is 563799816
         //            110297600
-        scanHash.innerScan(work, tester, 563799000, 1);
+        nonceFactory.setRange(563799000, 1);
+        scanHash.innerScan(work);
 
-        assertTrue("Known sol'n", tester.isFound());
+        assertTrue("Known sol'n", callbackTester.isFound());
 
         assertEquals(scanHash.getWorkgroupSize(), scanHash.getNonceCount());
 

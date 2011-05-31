@@ -5,12 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
-import org.meteorminer.hash.MinerController;
+import org.meteorminer.hash.HashScanner;
 import org.meteorminer.output.CLInterface;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -27,7 +28,7 @@ public class LongPollWorkerTest {
     private JsonClient jsonClient;
     private String getWorkRequest;
     private WorkFactory workFactory;
-    private MinerController minerController;
+    private HashScanner hashScanner;
     private CLInterface output;
     private LongPollWorkProducer longPollFactory;
     private Work work;
@@ -42,17 +43,17 @@ public class LongPollWorkerTest {
         longPollFactory = new LongPollWorkProducer();
 
         workFactory = createMock(WorkFactory.class);
-        minerController = createMock(MinerController.class);
+        hashScanner = createMock(HashScanner.class);
         output = createMock(CLInterface.class);
         work = createMock(Work.class);
         jsonNode = createMock(JsonNode.class);
 
-        longPollWorker = new LongPollWorker(longPollWorkerUrl, jsonClient, getWorkRequest, workFactory, minerController, output, longPollFactory);
+        longPollWorker = new LongPollWorker(longPollWorkerUrl, Collections.singleton(hashScanner), jsonClient, getWorkRequest, workFactory, output, longPollFactory);
     }
 
     @Test
     public void testExecution() throws IOException {
-        reset(jsonClient, workFactory, minerController, output);
+        reset(jsonClient, workFactory, output, hashScanner);
 
         expect(jsonClient.execute(anyObject(String.class), eq(getWorkRequest), anyObject(URL.class))).andReturn(jsonNode);
         output.notification(anyObject(String.class));
@@ -60,9 +61,9 @@ public class LongPollWorkerTest {
 
         expect(workFactory.buildWork(jsonNode)).andReturn(work);
 
-        minerController.interruptProduction();
+        hashScanner.stop();
 
-        replay(jsonClient, workFactory, minerController, output);
+        replay(jsonClient, workFactory, output, hashScanner);
 
         longPollWorker.setRunning(false); // will only execute once
         longPollWorker.run();
@@ -70,7 +71,7 @@ public class LongPollWorkerTest {
         assertTrue(longPollFactory.hasWork());
         assertEquals(work, longPollFactory.produce());
 
-        verify(jsonClient, workFactory, minerController, output);
+        verify(jsonClient, workFactory, output, hashScanner);
     }
 
     //todo: test jsonclient throwing exception

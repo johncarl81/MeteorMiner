@@ -8,9 +8,11 @@ import com.nativelibs4java.opencl.CLDevice;
 public class GPUDevice implements Device {
 
     private CLDevice device;
+    private int id;
 
-    public GPUDevice(CLDevice device) {
+    public GPUDevice(CLDevice device, int id) {
         this.device = device;
+        this.id = id;
     }
 
     @Override
@@ -20,5 +22,9 @@ public class GPUDevice implements Device {
 
     public CLDevice getCLDevice() {
         return device;
+    }
+
+    public int getId() {
+        return id;
     }
 }

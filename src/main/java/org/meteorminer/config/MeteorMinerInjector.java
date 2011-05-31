@@ -27,8 +27,8 @@ public class MeteorMinerInjector {
         return applicationInjector;
     }
 
-    public synchronized static Injector buildGPUDeviceInjector(CLDevice device) {
-        return getApplicationInjector().createChildInjector(new DeviceModule(), new GPUDeviceModule(device));
+    public synchronized static Injector buildGPUDeviceInjector(CLDevice device, int id) {
+        return getApplicationInjector().createChildInjector(new DeviceModule(), new GPUDeviceModule(device, id));
     }
 
     public synchronized static Injector buildCPUDeviceInjector(int cpuNumber) {

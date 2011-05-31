@@ -2,7 +2,6 @@ package org.meteorminer.hash.gpu;
 
 import com.google.inject.ImplementedBy;
 import org.meteorminer.domain.Work;
-import org.meteorminer.service.WorkFoundCallback;
 
 /**
  * Interface used to check the given output contains a valid hash, if so, use teh workFoundCallback to submit the work
@@ -12,6 +11,6 @@ import org.meteorminer.service.WorkFoundCallback;
 @ImplementedBy(AsynchronousHashChecker.class)
 public interface HashChecker {
 
-    void check(MinerResult output, Work work, WorkFoundCallback workFoundCallback);
+    void check(MinerResult output, Work work);
 
 }

@@ -123,7 +123,7 @@ public class DiabloMiner {
                         midstate2[5],
                         midstate2[6],
                         midstate2[7],
-                        nonceStart * workgroupSize,
+                        nonceStart,
                         outputBuffer);
 
                 CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{workgroupSize}, new int[]{localWorkSize});

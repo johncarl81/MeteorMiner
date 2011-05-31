@@ -1,9 +1,10 @@
 package org.meteorminer.service;
 
-import com.google.inject.Inject;
 import org.meteorminer.domain.Work;
 import org.meteorminer.network.LongPollWorkProducer;
 import org.meteorminer.output.CLInterface;
+
+import javax.inject.Inject;
 
 /**
  * @author John Ericksen
@@ -31,5 +32,9 @@ public class WorkProducerMultiplex implements WorkProducer {
 
         output.verbose("Producing from Standard work result");
         return workProducer.produce();
+    }
+
+    public DelayedWorkProducer getDelayedWorkProducer() {
+        return delayedWorkProducer;
     }
 }

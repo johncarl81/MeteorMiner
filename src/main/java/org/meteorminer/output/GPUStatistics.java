@@ -18,7 +18,7 @@ public class GPUStatistics extends Statistics {
     @Inject
     @CLIntBufferPool
     private ObjectPool clIntBufferPool;
-    @com.google.inject.Inject
+    @Inject
     @Verbose
     private boolean verbose;
 

@@ -4,19 +4,20 @@ import com.google.inject.assistedinject.Assisted;
 import org.meteorminer.service.DelayedWorkProducer;
 
 import javax.inject.Inject;
+import java.util.Set;
 import java.util.TimerTask;
 
 /**
  * @author John Ericksen
  */
-public class InteruptTimerTask extends TimerTask {
+public class InterruptTimerTask extends TimerTask {
 
-    private MinerController minerController;
+    private Set<HashScanner> hashScanners;
     private DelayedWorkProducer workProducer;
 
     @Inject
-    public InteruptTimerTask(@Assisted MinerController minerController, DelayedWorkProducer workProducer) {
-        this.minerController = minerController;
+    public InterruptTimerTask(@Assisted Set<HashScanner> hashScanners, @Assisted DelayedWorkProducer workProducer) {
+        this.hashScanners = hashScanners;
         this.workProducer = workProducer;
     }
 
@@ -25,6 +26,8 @@ public class InteruptTimerTask extends TimerTask {
         //request new work..
         workProducer.delayedProduce();
         //and stop production to pick up new work
-        minerController.interruptProduction();
+        for (HashScanner scanner : hashScanners) {
+            scanner.stop();
+        }
     }
 }

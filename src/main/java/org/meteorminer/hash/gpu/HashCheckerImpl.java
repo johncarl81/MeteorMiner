@@ -1,14 +1,13 @@
 package org.meteorminer.hash.gpu;
 
-import com.google.inject.Inject;
 import org.apache.commons.pool.ObjectPool;
 import org.meteorminer.config.binding.CLIntBufferPool;
 import org.meteorminer.config.binding.IntBufferPool;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.VerifyHash;
 import org.meteorminer.output.CLInterface;
-import org.meteorminer.service.WorkFoundCallback;
 
+import javax.inject.Inject;
 import java.nio.IntBuffer;
 
 /**
@@ -28,7 +27,7 @@ public class HashCheckerImpl implements HashChecker {
     private VerifyHash verifyHash;
 
     @Override
-    public void check(MinerResult output, Work work, WorkFoundCallback workFoundCallback) {
+    public void check(MinerResult output, Work work) {
         IntBuffer buffer = output.getBuffer();
         try {
             clIntBufferPool.returnObject(output.getClBuffer());
@@ -37,7 +36,7 @@ public class HashCheckerImpl implements HashChecker {
 
                 if (buffer.get(i) > 0) {
                     this.output.verbose("Found Hash, proceeding to local verification");
-                    verifyHash.verify(work, buffer.get(i), workFoundCallback);
+                    verifyHash.verify(work, buffer.get(i));
                 }
             }
 
