@@ -9,7 +9,6 @@ import org.meteorminer.config.binding.*;
 import org.meteorminer.hash.InterruptTimerTaskFactory;
 import org.meteorminer.network.LongPollWorker;
 import org.meteorminer.network.LongPollWorkerFactory;
-import org.meteorminer.service.MinerFactory;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
 import org.meteorminer.service.TandemMinerStrategy;
@@ -43,9 +42,6 @@ public class MeteorMinerModule extends AbstractModule {
 
         install(factoryModuleBuilder
                 .build((ThreadFactory.class)));
-
-        install(factoryModuleBuilder
-                .build((MinerFactory.class)));
 
         install(factoryModuleBuilder
                 .build((InterruptTimerTaskFactory.class)));

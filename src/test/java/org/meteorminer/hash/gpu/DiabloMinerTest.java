@@ -6,7 +6,6 @@ import com.nativelibs4java.opencl.JavaCL;
 import org.apache.commons.pool.ObjectPool;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.config.binding.CLIntBufferPool;
 import org.meteorminer.config.binding.IntBufferPool;
@@ -31,9 +30,7 @@ public class DiabloMinerTest {
 
     @Before
     public void setup() throws MalformedURLException {
-        MeteorAdvice advice = new MeteorAdvice();
-        MeteorMinerInjector.buildInjector(advice);
-        Injector injector = MeteorMinerInjector.buildGPUDeviceInjector(JavaCL.getBestDevice(), 0);
+        Injector injector = MeteorMinerInjector.getGPUDeviceInjector(JavaCL.getBestDevice(), 0);
         kernelContext = injector.getInstance(Key.get(KernelContext.class, SearchKernel.class));
         intBufferPool = injector.getInstance(Key.get(ObjectPool.class, IntBufferPool.class));
         clIntBufferPool = injector.getInstance(Key.get(ObjectPool.class, CLIntBufferPool.class));

@@ -27,7 +27,7 @@ public class MeteorMiner {
 
                 formatter.printHelp("MeteorMiner", options);
             } else {
-                Injector injector = MeteorMinerInjector.buildInjector(advice);
+                Injector injector = MeteorMinerInjector.getInjector(advice);
 
                 MiningService miningService = injector.getInstance(MiningService.class);
 

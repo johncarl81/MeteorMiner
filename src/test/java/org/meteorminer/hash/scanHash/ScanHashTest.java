@@ -27,9 +27,8 @@ public class ScanHashTest {
 
     @Before
     public void setup() throws MalformedURLException {
-        MeteorAdvice advice = new MeteorAdvice();
         Injector injector = Guice.createInjector(
-                Modules.override(new MeteorMinerModule(advice),
+                Modules.override(new MeteorMinerModule(new MeteorAdvice()),
                         new DeviceModule(),
                         new CPUDeviceModule(0)).with(
                         new SynchronousModule()));

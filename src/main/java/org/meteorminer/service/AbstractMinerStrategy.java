@@ -1,5 +1,6 @@
 package org.meteorminer.service;
 
+import org.meteorminer.config.MeteorMinerInjector;
 import org.meteorminer.hash.HashScanner;
 
 import javax.inject.Inject;
@@ -13,8 +14,6 @@ public abstract class AbstractMinerStrategy implements MinerStrategy {
 
     @Inject
     private AsynchronousFactory asynchronousFactory;
-    @Inject
-    private MinerFactory minerFactory;
 
     private Set<HashScanner> scanners = new HashSet<HashScanner>();
 
@@ -29,7 +28,7 @@ public abstract class AbstractMinerStrategy implements MinerStrategy {
     }
 
     public MinerFactory getMinerFactory() {
-        return minerFactory;
+        return MeteorMinerInjector.getMinerInjector().getInstance(MinerFactory.class);
     }
 
     public Set<HashScanner> getScanners() {

@@ -61,7 +61,7 @@ public class MiningService {
         //gpu setup
         for (Integer id : activatedGpus) {
             if (id < gpuDevices.size()) {
-                Injector gpuDeviceInjector = MeteorMinerInjector.buildGPUDeviceInjector(gpuDevices.get(id), id);
+                Injector gpuDeviceInjector = MeteorMinerInjector.getGPUDeviceInjector(gpuDevices.get(id), id);
                 setupDevice(gpuDeviceInjector);
             } else {
                 output.notification("GPU Device not found: " + id);
@@ -70,7 +70,7 @@ public class MiningService {
 
         //cpu setup
         for (int i = 0; i < cpuCount; i++) {
-            Injector cpuDeviceInjector = MeteorMinerInjector.buildCPUDeviceInjector(i);
+            Injector cpuDeviceInjector = MeteorMinerInjector.getCPUDeviceInjector(i);
 
             setupDevice(cpuDeviceInjector);
         }

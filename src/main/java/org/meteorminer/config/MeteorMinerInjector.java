@@ -10,8 +10,9 @@ import com.nativelibs4java.opencl.CLDevice;
 public class MeteorMinerInjector {
 
     private static Injector applicationInjector;
+    private static Injector minerInjector;
 
-    public synchronized static Injector buildInjector(MeteorAdvice advice) {
+    public synchronized static Injector getInjector(MeteorAdvice advice) {
         if (applicationInjector == null) {
             applicationInjector = Guice.createInjector(new MeteorMinerModule(advice));
         }
@@ -21,17 +22,24 @@ public class MeteorMinerInjector {
     public synchronized static Injector getApplicationInjector() {
         if (applicationInjector == null) {
             //setup with default advice
-            buildInjector(new MeteorAdvice());
+            getInjector(new MeteorAdvice());
         }
 
         return applicationInjector;
     }
 
-    public synchronized static Injector buildGPUDeviceInjector(CLDevice device, int id) {
-        return getApplicationInjector().createChildInjector(new DeviceModule(), new GPUDeviceModule(device, id));
+    public synchronized static Injector getGPUDeviceInjector(CLDevice device, int id) {
+        return getMinerInjector().createChildInjector(new DeviceModule(), new GPUDeviceModule(device, id));
     }
 
-    public synchronized static Injector buildCPUDeviceInjector(int cpuNumber) {
-        return getApplicationInjector().createChildInjector(new DeviceModule(), new CPUDeviceModule(cpuNumber));
+    public synchronized static Injector getCPUDeviceInjector(int cpuNumber) {
+        return getMinerInjector().createChildInjector(new DeviceModule(), new CPUDeviceModule(cpuNumber));
+    }
+
+    public synchronized static Injector getMinerInjector() {
+        if (minerInjector == null) {
+            minerInjector = getApplicationInjector().createChildInjector(new MinerModule());
+        }
+        return minerInjector;
     }
 }
