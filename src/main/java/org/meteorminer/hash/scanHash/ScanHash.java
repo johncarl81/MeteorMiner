@@ -4,6 +4,7 @@ import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
 import org.meteorminer.hash.NonceIteratorFactory;
 import org.meteorminer.hash.VerifyHash;
+import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.output.Statistics;
 
 import javax.inject.Inject;
@@ -23,11 +24,16 @@ public class ScanHash extends AbstractHashScanner {
     private Statistics statistics;
     @Inject
     private NonceIteratorFactory nonceIteratorFactory;
+    @Inject
+    private WorkConsumer workSource;
 
     private long nonceCount;
 
-    public void innerScan(Work work) {
+    public void innerScan() {
         nonceCount = 0;
+
+        Work work = workSource.getWork();
+        Work prevWork = work;
 
         Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(NONCE_BUFFER);
 
@@ -38,6 +44,15 @@ public class ScanHash extends AbstractHashScanner {
 
         int[] hash;
         while (nonceIterator.hasNext() && !isStop()) {
+            work = workSource.getWork();
+            if (prevWork != work) {
+                //update
+                prevWork = work;
+                data = decode(new int[16], work.getDataString().substring(128));
+                midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());
+                state = new int[midstate.length];
+                buff = new int[64];
+            }
             int nonce = nonceIterator.next();
             int nonceEnd = nonce + NONCE_BUFFER;
             long nonceTime = System.currentTimeMillis();

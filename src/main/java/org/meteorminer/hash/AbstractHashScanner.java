@@ -1,8 +1,5 @@
 package org.meteorminer.hash;
 
-import org.meteorminer.config.binding.GetWorkTimeout;
-import org.meteorminer.domain.Work;
-
 import javax.inject.Inject;
 import java.util.Timer;
 
@@ -11,25 +8,22 @@ import java.util.Timer;
  */
 public abstract class AbstractHashScanner implements HashScanner {
 
+    private static final long STATS_UPDATE = 1000;
+
     @Inject
     private Timer timer;
-    @Inject
-    @GetWorkTimeout
-    private int getWorkTimeout;
-    @Inject
-    private InterruptTimerTaskFactory interruptTimerTaskFactory;
     @Inject
     private HashStatisticsOutputTimerTaskFactory hashStatisticsOutputTimerTaskFactory;
 
     private boolean stop;
 
     @Override
-    public void scan(Work work) {
+    public void run() {
         stop = false;
         HashStatisticsOutputTimerTask hashStatsTimerTask = hashStatisticsOutputTimerTaskFactory.buildStatisticsOutputTimerTask(this);
-        timer.schedule(hashStatsTimerTask, 1000, 1000);
+        timer.schedule(hashStatsTimerTask, STATS_UPDATE, STATS_UPDATE);
 
-        innerScan(work);
+        innerScan();
 
         hashStatsTimerTask.cancel();
     }
@@ -42,5 +36,5 @@ public abstract class AbstractHashScanner implements HashScanner {
         return stop;
     }
 
-    public abstract void innerScan(Work work);
+    public abstract void innerScan();
 }

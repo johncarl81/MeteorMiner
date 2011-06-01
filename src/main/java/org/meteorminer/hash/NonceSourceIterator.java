@@ -9,27 +9,26 @@ import java.util.Iterator;
 /**
  * @author John Ericksen
  */
-public class SynchronizedNonceIterator implements Iterator<Integer> {
+public class NonceSourceIterator implements Iterator<Integer> {
 
-    private NonceSource nonceSource;
+    private WorkConsumer workSource;
     private int workSize;
     private Integer nonce;
 
     @Inject
-    public SynchronizedNonceIterator(@Assisted int workSize, NonceSource nonceSource) {
-        this.nonceSource = nonceSource;
+    public NonceSourceIterator(@Assisted int workSize, WorkConsumer workSource) {
+        this.workSource = workSource;
         this.workSize = workSize;
     }
 
     @Override
     public boolean hasNext() {
-        nonce = nonceSource.reserveNext(workSize);
-        return nonce != null;
+        return true;
     }
 
     @Override
     public Integer next() {
-        return nonce;
+        return workSource.reserveNext(workSize);
     }
 
     @Override

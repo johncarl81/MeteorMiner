@@ -17,7 +17,6 @@ public abstract class AbstractMinerStrategy implements MinerStrategy {
 
     private Set<HashScanner> scanners = new HashSet<HashScanner>();
 
-
     @Override
     public void add(HashScanner hashScanner) {
         scanners.add(hashScanner);

@@ -1,6 +1,5 @@
 package org.meteorminer.hash.gpu;
 
-import com.google.inject.assistedinject.Assisted;
 import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLIntBuffer;
 import org.apache.commons.pool.ObjectPool;
@@ -44,8 +43,7 @@ public class DiabloMiner {
     private Work work;
 
     @Inject
-    public DiabloMiner(@Assisted Work work,
-                       GPUDevice device,
+    public DiabloMiner(GPUDevice device,
                        @Intensity int intensity,
                        @WorkSize int worksize,
                        @SearchKernel KernelContext kernelContext,
@@ -62,9 +60,50 @@ public class DiabloMiner {
         this.kernelContext = kernelContext;
         this.clIntBufferPool = clIntBufferPool;
         this.intBufferPool = intBufferPool;
+    }
+
+    /**
+     * Execute the hash search using the given nonceStart starting value, worsize and localworksize
+     * <p/>
+     * Returns a MinerResult which contains the CLEvent, CLIntBuffer and IntBuffer for waiting and closing
+     * asynchronously:
+     * <p/>
+     * CLEvent - Wait on this to finish
+     * CLIntBuffer - Return to @CLIntBufferPool ObjectPool when event finishes
+     * IntBuffer - Contains result.  Return to @IntBufferPool ObjectPool when finished using
+     *
+     * @param nonceStart
+     * @return MinerResult
+     */
+    public MinerResult hash(int nonceStart, Work work) {
+
+        if (this.work != work) {
+            updateCommonVariables(work);
+        }
+
+        MinerResult result = null;
+        try {
+            CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
+            IntBuffer output = (IntBuffer) intBufferPool.borrowObject();
+
+            synchronized (kernelContext) {
+
+                kernelContext.getKernel().setArg(22, nonceStart);
+                kernelContext.getKernel().setArg(23, outputBuffer);
+
+                CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{workgroupSize}, new int[]{localWorkSize});
+                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+
+    }
+
+    private void updateCommonVariables(Work work) {
         this.work = work;
-
-
         midstate2 = Arrays.copyOf(work.getMidstate(), 8);
 
         sharound(midstate2, 0, 1, 2, 3, 4, 5, 6, 7, work.getData()[16], 0x428A2F98);
@@ -84,57 +123,22 @@ public class DiabloMiner {
                 (midstate2[3] ^ (midstate2[1] & (midstate2[2] ^ midstate2[3]))) + 0xe9b5dba5;
         fcty_e2 = (rot(midstate2[5], 2) ^ rot(midstate2[5], 13) ^ rot(midstate2[5], 22)) + ((midstate2[5] & midstate2[6]) |
                 (midstate2[7] & (midstate2[5] | midstate2[6])));
-    }
 
-    /**
-     * Execute the hash search using the given nonceStart starting value, worsize and localworksize
-     * <p/>
-     * Returns a MinerResult which contains the CLEvent, CLIntBuffer and IntBuffer for waiting and closing
-     * asynchronously:
-     * <p/>
-     * CLEvent - Wait on this to finish
-     * CLIntBuffer - Return to @CLIntBufferPool ObjectPool when event finishes
-     * IntBuffer - Contains result.  Return to @IntBufferPool ObjectPool when finished using
-     *
-     * @param nonceStart
-     * @return MinerResult
-     */
-    public MinerResult hash(int nonceStart) {
-
-        MinerResult result = null;
-        try {
-            CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
-            IntBuffer output = (IntBuffer) intBufferPool.borrowObject();
-
-            synchronized (kernelContext) {
-
-                kernelContext.getKernel().setArgs(fW0, fW1, fW2, fW3, fW15, fW01r, fcty_e, fcty_e2,
-                        work.getMidstate()[0],
-                        work.getMidstate()[1],
-                        work.getMidstate()[2],
-                        work.getMidstate()[3],
-                        work.getMidstate()[4],
-                        work.getMidstate()[5],
-                        work.getMidstate()[6],
-                        work.getMidstate()[7],
-                        midstate2[1],
-                        midstate2[2],
-                        midstate2[3],
-                        midstate2[5],
-                        midstate2[6],
-                        midstate2[7],
-                        nonceStart,
-                        outputBuffer);
-
-                CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{workgroupSize}, new int[]{localWorkSize});
-                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
+        kernelContext.getKernel().setArgs(fW0, fW1, fW2, fW3, fW15, fW01r, fcty_e, fcty_e2,
+                work.getMidstate()[0],
+                work.getMidstate()[1],
+                work.getMidstate()[2],
+                work.getMidstate()[3],
+                work.getMidstate()[4],
+                work.getMidstate()[5],
+                work.getMidstate()[6],
+                work.getMidstate()[7],
+                midstate2[1],
+                midstate2[2],
+                midstate2[3],
+                midstate2[5],
+                midstate2[6],
+                midstate2[7]);
     }
 
     private static int rot(int x, int y) {

@@ -5,7 +5,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.meteorminer.hash.HashStatisticsOutputTimerTaskFactory;
 import org.meteorminer.hash.NonceIteratorFactory;
-import org.meteorminer.hash.SynchronizedNonceIterator;
+import org.meteorminer.hash.NonceSourceIterator;
 import org.meteorminer.network.JsonCommandFactory;
 
 import java.util.Iterator;
@@ -27,7 +27,7 @@ public class DeviceModule extends AbstractModule {
 
         install(factoryModuleBuilder
                 .implement(new TypeLiteral<Iterator<Integer>>() {
-                        }, SynchronizedNonceIterator.class)
+                        }, NonceSourceIterator.class)
                 .build(NonceIteratorFactory.class));
     }
 }

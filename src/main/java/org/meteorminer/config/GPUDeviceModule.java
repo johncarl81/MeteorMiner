@@ -13,6 +13,8 @@ import org.meteorminer.domain.Device;
 import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.gpu.*;
+import org.meteorminer.hash.gpu.buffer.CLIntBufferPoolFactory;
+import org.meteorminer.hash.gpu.buffer.IntBufferPoolFactory;
 import org.meteorminer.output.GPUStatistics;
 import org.meteorminer.output.Statistics;
 
@@ -34,9 +36,6 @@ public class GPUDeviceModule extends AbstractModule {
 
         //Assisted injection factories
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
-
-        install(factoryModuleBuilder
-                .build((DiabloMinerFactory.class)));
 
         install(factoryModuleBuilder
                 .build((RunnableHashCheckerFactory.class)));

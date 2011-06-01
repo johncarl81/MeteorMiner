@@ -3,6 +3,7 @@ package org.meteorminer.hash.gpu;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
 import org.meteorminer.hash.NonceIteratorFactory;
+import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.output.Statistics;
 
@@ -16,8 +17,8 @@ import java.util.Iterator;
  */
 public class GpuHashScanner extends AbstractHashScanner {
 
-    @Inject
-    private DiabloMinerFactory diabloMinerFactory;
+    public static final int NONCE_BUFFER = 10;
+
     @Inject
     private HashChecker hashChecker;
     @Inject
@@ -26,28 +27,34 @@ public class GpuHashScanner extends AbstractHashScanner {
     private CLInterface output;
     @Inject
     private NonceIteratorFactory nonceIteratorFactory;
+    @Inject
+    private DiabloMiner diabloMiner;
+    @Inject
+    private WorkConsumer workSource;
 
     private long nonceCount;
-    private DiabloMiner diabloMiner;
 
-    public void innerScan(Work work) {
+    public void innerScan() {
 
         nonceCount = 0;
         long startTime = System.currentTimeMillis();
+        Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(diabloMiner.getWorkgroupSize() * NONCE_BUFFER);
 
-        diabloMiner = diabloMinerFactory.createDiabloMiner(work);
-        Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(diabloMiner.getWorkgroupSize());
-
+        Work work;
         while (nonceIterator.hasNext() && !isStop()) {
+            work = workSource.getWork();
             long loopTime = System.currentTimeMillis();
-            MinerResult output = diabloMiner.hash(nonceIterator.next());
-            hashChecker.check(output, work);
+            int nonce = nonceIterator.next();
+            int nonceEnd = nonce + diabloMiner.getWorkgroupSize() * NONCE_BUFFER;
+            for (; nonce < nonceEnd; nonce += diabloMiner.getWorkgroupSize()) {
+                MinerResult output = diabloMiner.hash(nonce, work);
+                hashChecker.check(output, work);
+            }
             statistics.addWorkTime(System.currentTimeMillis() - loopTime);
-            ++nonceCount;
+            nonceCount += NONCE_BUFFER;
         }
 
         output.verbose("Scan finished after " + (System.currentTimeMillis() - startTime) + "ms");
-
     }
 
     @Override

@@ -82,7 +82,7 @@ public class MeteorAdviceTest {
     public void testWorkTimeout() throws MalformedURLException, ParseException {
         MeteorAdvice advice = buildAdvice("-getwork", WORK_TIMEOUT);
 
-        assertEquals(Integer.parseInt(WORK_TIMEOUT), advice.getGetWorkTimeout());
+        assertEquals(Long.parseLong(WORK_TIMEOUT) * 1000, advice.getGetWorkTimeout());
     }
 
     @Test

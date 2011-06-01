@@ -2,6 +2,7 @@ package org.meteorminer.network;
 
 import org.meteorminer.config.binding.BitcoinUrl;
 import org.meteorminer.output.CLInterface;
+import org.meteorminer.service.AsynchronousFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,24 +21,27 @@ public class LongPollAdaptor {
     private URL bitcoind;
     @Inject
     private CLInterface output;
+    @Inject
+    private LongPollWorkerFactory longPollWorkerFactory;
+    @Inject
+    private AsynchronousFactory asynchronousFactory;
 
-    private URL bitcoindLongpoll;
+    private Thread longPollThread = null;
 
     public synchronized void setupLongpoll(HttpURLConnection connection) throws MalformedURLException {
-        if (bitcoindLongpoll == null) {
+        if (longPollThread == null) {
             String xlongpolling = connection.getHeaderField("X-Long-Polling");
 
             if (xlongpolling != null) {
 
-                bitcoindLongpoll = parseLongPollURL(xlongpolling);
+                URL bitcoindLongpoll = parseLongPollURL(xlongpolling);
+
+                longPollThread = new Thread(longPollWorkerFactory.buildLongPollWorker(bitcoindLongpoll));
+                longPollThread.start();
 
                 output.notification("Long poll support enabled: " + bitcoindLongpoll);
             }
         }
-    }
-
-    public URL getLongPollURL() {
-        return bitcoindLongpoll;
     }
 
     private URL parseLongPollURL(String xlongpolling) throws MalformedURLException {

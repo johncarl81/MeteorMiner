@@ -28,8 +28,6 @@ public class MiningService {
     @Inject
     private LoggingTimerTask loggingTimerTask;
     @Inject
-    private StatisticsWarmupTimerTask statisticsWarmupTimerTask;
-    @Inject
     private Timer timer;
     @Inject
     private CLInterface output;
@@ -55,8 +53,6 @@ public class MiningService {
         }
 
         timer.schedule(loggingTimerTask, 5000, 1000);
-        //warm up period
-        timer.schedule(statisticsWarmupTimerTask, 2000);
 
         //gpu setup
         for (Integer id : activatedGpus) {
@@ -76,8 +72,6 @@ public class MiningService {
         }
 
         minerStrategy.start();
-
-
     }
 
     private void setupDevice(Injector deviceInjector) {

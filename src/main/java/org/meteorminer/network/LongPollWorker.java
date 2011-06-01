@@ -5,13 +5,12 @@ import org.codehaus.jackson.JsonNode;
 import org.meteorminer.config.binding.GetWorkMessage;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
-import org.meteorminer.hash.HashScanner;
+import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
 
 /**
  * @author John Ericksen
@@ -23,26 +22,21 @@ public class LongPollWorker implements Runnable {
     private String getWorkRequest;
     private WorkFactory workFactory;
     private CLInterface output;
-    private LongPollWorkProducer longPollFactory;
+    private WorkConsumer workSource;
     private boolean running = true;
-
-    private Set<HashScanner> hashScanners;
 
     @Inject
     public LongPollWorker(@Assisted URL longPollWorkerUrl,
-                          @Assisted Set<HashScanner> hashScanners,
                           JsonClient jsonClient,
                           @GetWorkMessage String getWorkRequest,
                           WorkFactory workFactory,
-                          CLInterface output,
-                          LongPollWorkProducer longPollFactory) {
+                          CLInterface output, WorkConsumer workSource) {
         this.longPollWorkerUrl = longPollWorkerUrl;
         this.jsonClient = jsonClient;
         this.getWorkRequest = getWorkRequest;
         this.workFactory = workFactory;
         this.output = output;
-        this.longPollFactory = longPollFactory;
-        this.hashScanners = hashScanners;
+        this.workSource = workSource;
     }
 
     public void run() {
@@ -53,10 +47,7 @@ public class LongPollWorker implements Runnable {
                 output.notification("Long poll received.");
 
                 final Work work = workFactory.buildWork(responseNode);
-                longPollFactory.putWork(work);
-                for (HashScanner scanner : hashScanners) {
-                    scanner.stop();
-                }
+                workSource.setWork(work);
 
             } catch (IOException e) {
                 e.printStackTrace();

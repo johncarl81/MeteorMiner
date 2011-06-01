@@ -2,7 +2,9 @@ package org.meteorminer.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import org.meteorminer.hash.NonceSource;
+import org.meteorminer.hash.WorkConsumer;
+import org.meteorminer.network.LongPollWorker;
+import org.meteorminer.network.LongPollWorkerFactory;
 import org.meteorminer.service.MinerFactory;
 
 /**
@@ -17,6 +19,10 @@ public class MinerModule extends AbstractModule {
         install(factoryModuleBuilder
                 .build((MinerFactory.class)));
 
-        bind(NonceSource.class).asEagerSingleton();
+        install(factoryModuleBuilder
+                .implement(Runnable.class, LongPollWorker.class)
+                .build((LongPollWorkerFactory.class)));
+
+        bind(WorkConsumer.class).asEagerSingleton();
     }
 }

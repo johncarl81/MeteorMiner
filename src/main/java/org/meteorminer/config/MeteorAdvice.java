@@ -19,7 +19,7 @@ public class MeteorAdvice {
     //defaults
     private static final String LOCALHOST = "localhost";
     private static final String PORT = "8332";
-    private static final String GET_WORK_TIMEOUT = "5";
+    private static final String GET_WORK_TIMEOUT = "10";
     private static final String CPU_COUNT = "0";
     private static final String INTENSITY = "5";
     private static final String WORK_SIZE = "-1";
@@ -30,7 +30,7 @@ public class MeteorAdvice {
     private String proxyUsername;
     private String proxyPassword;
     private Proxy proxy = null;
-    private int getWorkTimeout;
+    private long getWorkTimeout;
     private boolean verbose;
     private int cpuCount;
     private boolean help;
@@ -46,7 +46,7 @@ public class MeteorAdvice {
         //defaults
         try {
             this.bitcoinUrl = new URL("http://" + LOCALHOST + ":" + PORT);
-            this.getWorkTimeout = Integer.parseInt(GET_WORK_TIMEOUT);
+            this.getWorkTimeout = Long.parseLong(GET_WORK_TIMEOUT) * 1000;
             this.verbose = false;
             this.intensity = 10;
             this.worksize = -1;
@@ -88,7 +88,7 @@ public class MeteorAdvice {
 
         username = line.getOptionValue("user", null);
         password = line.getOptionValue("pass", null);
-        getWorkTimeout = Integer.parseInt(line.getOptionValue("getwork", GET_WORK_TIMEOUT));
+        getWorkTimeout = Long.parseLong(line.getOptionValue("getwork", GET_WORK_TIMEOUT)) * 1000;
         verbose = line.hasOption("verbose");
         cpuCount = Integer.parseInt(line.getOptionValue("cpu", CPU_COUNT));
         intensity = Integer.parseInt(line.getOptionValue("intensity", INTENSITY));
@@ -134,7 +134,7 @@ public class MeteorAdvice {
         return proxy;
     }
 
-    public int getGetWorkTimeout() {
+    public long getGetWorkTimeout() {
         return getWorkTimeout;
     }
 
@@ -164,5 +164,9 @@ public class MeteorAdvice {
 
     public boolean isTandem() {
         return tandem;
+    }
+
+    public void setWorksize(int worksize) {
+        this.worksize = worksize;
     }
 }

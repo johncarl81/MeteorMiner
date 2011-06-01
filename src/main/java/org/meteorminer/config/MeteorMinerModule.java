@@ -6,9 +6,6 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.config.binding.*;
-import org.meteorminer.hash.InterruptTimerTaskFactory;
-import org.meteorminer.network.LongPollWorker;
-import org.meteorminer.network.LongPollWorkerFactory;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
 import org.meteorminer.service.TandemMinerStrategy;
@@ -43,12 +40,6 @@ public class MeteorMinerModule extends AbstractModule {
         install(factoryModuleBuilder
                 .build((ThreadFactory.class)));
 
-        install(factoryModuleBuilder
-                .build((InterruptTimerTaskFactory.class)));
-
-        install(factoryModuleBuilder
-                .implement(Runnable.class, LongPollWorker.class)
-                .build((LongPollWorkerFactory.class)));
 
         bind(MeteorAdvice.class).toInstance(meteorAdvice);
 
@@ -64,7 +55,7 @@ public class MeteorMinerModule extends AbstractModule {
 
         bind(Proxy.class).annotatedWith(BitcoinProxy.class).toProvider(new ProxyProvider(meteorAdvice.getProxy()));
         bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(createGetWorkMessage());
-        bind(Integer.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
+        bind(Long.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
         bind(Boolean.class).annotatedWith(Verbose.class).toInstance(meteorAdvice.isVerbose());
         bind(Integer.class).annotatedWith(CPUCount.class).toInstance(meteorAdvice.getCpuCount());
         bind(Integer.class).annotatedWith(Intensity.class).toInstance(meteorAdvice.getIntensity());

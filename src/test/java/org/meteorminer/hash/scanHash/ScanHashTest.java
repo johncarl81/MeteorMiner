@@ -6,13 +6,11 @@ import com.google.inject.Injector;
 import com.google.inject.util.Modules;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.CPUDeviceModule;
-import org.meteorminer.config.DeviceModule;
-import org.meteorminer.config.MeteorAdvice;
-import org.meteorminer.config.MeteorMinerModule;
+import org.meteorminer.config.*;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.MockNonceIteratorFactory;
 import org.meteorminer.hash.SynchronousModule;
+import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.hash.WorkFoundCallbackTester;
 
 import java.net.MalformedURLException;
@@ -24,17 +22,20 @@ public class ScanHashTest {
     private ScanHash scanHash;
     private WorkFoundCallbackTester callbackTester;
     private MockNonceIteratorFactory nonceFactory;
+    private WorkConsumer workSource;
 
     @Before
     public void setup() throws MalformedURLException {
         Injector injector = Guice.createInjector(
                 Modules.override(new MeteorMinerModule(new MeteorAdvice()),
+                        new MinerModule(),
                         new DeviceModule(),
                         new CPUDeviceModule(0)).with(
                         new SynchronousModule()));
         scanHash = injector.getInstance(ScanHash.class);
         callbackTester = injector.getInstance(WorkFoundCallbackTester.class);
         nonceFactory = injector.getInstance(MockNonceIteratorFactory.class);
+        workSource = injector.getInstance(WorkConsumer.class);
     }
 
     @Test
@@ -47,7 +48,8 @@ public class ScanHashTest {
 
         callbackTester.setExpectedNonce(0);
         nonceFactory.setRange(1, 0xffff);
-        scanHash.innerScan(work);
+        workSource.setWork(work);
+        scanHash.innerScan();
 
         assertFalse("No match for casial hash", callbackTester.isFound());
     }
@@ -62,7 +64,8 @@ public class ScanHashTest {
 
         callbackTester.setExpectedNonce(30911318);
         nonceFactory.setRange(0x1d70bd0, 0xffff);
-        scanHash.innerScan(work);
+        workSource.setWork(work);
+        scanHash.innerScan();
 
         assertTrue("Known sol'n", callbackTester.isFound());
         assertEquals(
@@ -82,7 +85,8 @@ public class ScanHashTest {
         callbackTester.setExpectedNonce(563799816);
         //solution is 563799816
         nonceFactory.setRange(563799000, 817);
-        scanHash.innerScan(work);
+        workSource.setWork(work);
+        scanHash.innerScan();
 
         assertTrue("Known sol'n", callbackTester.isFound());
 

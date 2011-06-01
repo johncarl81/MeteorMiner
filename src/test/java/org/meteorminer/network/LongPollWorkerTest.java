@@ -6,15 +6,13 @@ import org.junit.Test;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.HashScanner;
+import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.output.CLInterface;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.easymock.EasyMock.*;
 
 /**
@@ -33,6 +31,7 @@ public class LongPollWorkerTest {
     private LongPollWorkProducer longPollFactory;
     private Work work;
     private JsonNode jsonNode;
+    private WorkConsumer workSource;
 
     @Before
     public void setup() throws MalformedURLException {
@@ -47,8 +46,9 @@ public class LongPollWorkerTest {
         output = createMock(CLInterface.class);
         work = createMock(Work.class);
         jsonNode = createMock(JsonNode.class);
+        workSource = createMock(WorkConsumer.class);
 
-        longPollWorker = new LongPollWorker(longPollWorkerUrl, Collections.singleton(hashScanner), jsonClient, getWorkRequest, workFactory, output, longPollFactory);
+        longPollWorker = new LongPollWorker(longPollWorkerUrl, jsonClient, getWorkRequest, workFactory, output, workSource);
     }
 
     @Test
@@ -60,16 +60,12 @@ public class LongPollWorkerTest {
         expectLastCall().anyTimes();
 
         expect(workFactory.buildWork(jsonNode)).andReturn(work);
-
-        hashScanner.stop();
+        workSource.setWork(work);
 
         replay(jsonClient, workFactory, output, hashScanner);
 
         longPollWorker.setRunning(false); // will only execute once
         longPollWorker.run();
-
-        assertTrue(longPollFactory.hasWork());
-        assertEquals(work, longPollFactory.produce());
 
         verify(jsonClient, workFactory, output, hashScanner);
     }
