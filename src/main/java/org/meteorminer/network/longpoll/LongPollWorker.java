@@ -1,4 +1,4 @@
-package org.meteorminer.network;
+package org.meteorminer.network.longpoll;
 
 import com.google.inject.assistedinject.Assisted;
 import org.codehaus.jackson.JsonNode;
@@ -7,6 +7,7 @@ import org.meteorminer.config.binding.NetworkErrorPause;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.WorkConsumer;
+import org.meteorminer.network.JsonClient;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;

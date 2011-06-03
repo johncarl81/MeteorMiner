@@ -1,4 +1,4 @@
-package org.meteorminer.network;
+package org.meteorminer.network.longpoll;
 
 import org.meteorminer.domain.Work;
 import org.meteorminer.service.WorkProducer;

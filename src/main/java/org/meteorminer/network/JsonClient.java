@@ -5,6 +5,9 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
+import org.meteorminer.network.failover.HostFailoverAdaptor;
+import org.meteorminer.network.failover.MaintanenceSwitchAdaptor;
+import org.meteorminer.network.longpoll.LongPollAdaptor;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
@@ -25,6 +28,10 @@ public class JsonClient {
     private ObjectMapper mapper;
     @Inject
     private LongPollAdaptor longPollAdaptor;
+    @Inject
+    private HostFailoverAdaptor hostFailoverAdaptor;
+    @Inject
+    private MaintanenceSwitchAdaptor maintanenceSwitchAdaptor;
     @Inject
     private CLInterface output;
 
@@ -59,6 +66,8 @@ public class JsonClient {
 
         try {
             longPollAdaptor.setupLongpoll(connection);
+            hostFailoverAdaptor.setupFailover(connection);
+            maintanenceSwitchAdaptor.setupMaintanenceSwitch(connection);
 
             responseStream = unboxStream(connection, new StreamExecution() {
                 public InputStream getInputStream(HttpURLConnection connection) throws IOException {

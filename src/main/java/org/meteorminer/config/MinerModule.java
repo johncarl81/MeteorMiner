@@ -5,8 +5,8 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.WorkConsumer;
-import org.meteorminer.network.LongPollWorker;
-import org.meteorminer.network.LongPollWorkerFactory;
+import org.meteorminer.network.longpoll.LongPollWorker;
+import org.meteorminer.network.longpoll.LongPollWorkerFactory;
 import org.meteorminer.service.MinerFactory;
 
 import java.util.concurrent.ArrayBlockingQueue;

@@ -1,7 +1,6 @@
 package org.meteorminer.network;
 
 import org.meteorminer.config.binding.BitcoinProxy;
-import org.meteorminer.config.binding.BitcoinUrl;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -16,15 +15,15 @@ import java.net.URL;
 public class BitcoinConnectionFactory {
 
     @Inject
-    @BitcoinUrl
-    private URL bitcoind;
+    private BitcoinUrlFactory bitcoinUrlFactory;
+
     @Inject
     @Nullable
     @BitcoinProxy
     private Proxy proxy;
 
     public HttpURLConnection getBitcoinConnection() throws IOException {
-        return getBitcoinConnection(bitcoind);
+        return getBitcoinConnection(bitcoinUrlFactory.getUrl());
     }
 
     public HttpURLConnection getBitcoinConnection(URL url) throws IOException {

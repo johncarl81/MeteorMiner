@@ -1,4 +1,4 @@
-package org.meteorminer.network;
+package org.meteorminer.network.longpoll;
 
 import java.net.URL;
 

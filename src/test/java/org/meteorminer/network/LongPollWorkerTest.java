@@ -7,6 +7,8 @@ import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.WorkConsumer;
+import org.meteorminer.network.longpoll.LongPollWorkProducer;
+import org.meteorminer.network.longpoll.LongPollWorker;
 import org.meteorminer.output.CLInterface;
 
 import java.io.IOException;
