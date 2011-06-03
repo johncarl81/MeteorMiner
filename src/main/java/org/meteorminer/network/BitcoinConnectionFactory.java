@@ -32,4 +32,8 @@ public class BitcoinConnectionFactory {
         else
             return (HttpURLConnection) url.openConnection(proxy);
     }
+
+    public void errorUpdate() {
+        bitcoinUrlFactory.errorUpdate();
+    }
 }

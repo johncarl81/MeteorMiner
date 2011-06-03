@@ -35,6 +35,6 @@ public class FailoverServer {
 
     @Override
     public String toString() {
-        return "FailoverServer{" + host + ':' + port + ", ttr=" + timeToReturn + '}';
+        return '{' + host + ':' + port + ", ttr=" + timeToReturn + '}';
     }
 }

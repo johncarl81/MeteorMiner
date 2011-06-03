@@ -27,7 +27,7 @@ public class MaintanenceSwitchAdaptor {
 
             if (failoverServer != null) {
                 bitcoinUrlFactory.pushFailoverDecoratorFactory(new FailoverServerMaintenanceDecorator(failoverServer));
-                output.notification("Maintenance server provided: " + failoverServer.getUrl());
+                output.notification("Maintenance Server: Enabled, Provided: " + failoverServer.getUrl());
             }
         }
     }

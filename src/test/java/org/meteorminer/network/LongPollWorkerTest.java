@@ -7,7 +7,6 @@ import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.WorkConsumer;
-import org.meteorminer.network.longpoll.LongPollWorkProducer;
 import org.meteorminer.network.longpoll.LongPollWorker;
 import org.meteorminer.output.CLInterface;
 
@@ -30,7 +29,6 @@ public class LongPollWorkerTest {
     private WorkFactory workFactory;
     private HashScanner hashScanner;
     private CLInterface output;
-    private LongPollWorkProducer longPollFactory;
     private Work work;
     private JsonNode jsonNode;
     private WorkConsumer workSource;
@@ -41,7 +39,6 @@ public class LongPollWorkerTest {
         longPollWorkerUrl = new URL("http://localhost");
         getWorkRequest = "GetWork";
         jsonClient = createMock(JsonClient.class);
-        longPollFactory = new LongPollWorkProducer();
 
         workFactory = createMock(WorkFactory.class);
         hashScanner = createMock(HashScanner.class);

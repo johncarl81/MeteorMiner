@@ -32,7 +32,7 @@ public class HostFailoverAdaptor {
 
                 if (servers != null && !servers.isEmpty()) {
                     bitcoinUrlFactory.pushFailoverDecoratorFactory(new FailoverServerSwitcherDecorator(servers));
-                    output.notification("Failover servers provided: ", servers);
+                    output.notification("Failover Servers Extension: Enabled, Provided: ", servers);
                     hostsDefined = true;
                 }
             }

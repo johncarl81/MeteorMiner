@@ -75,14 +75,18 @@ public class JsonClient {
                 }
             });
 
-            if (responseStream == null)
+            if (responseStream == null) {
+                connectionFactory.errorUpdate();
                 throw new IOException("Drop to error handler");
+            }
 
             responseMessage = (ObjectNode) mapper.readTree(responseStream);
 
         } catch (JsonProcessingException e) {
+            connectionFactory.errorUpdate();
             throw new IOException("Bitcoin returned unparsable JSON");
         } catch (IOException e) {
+            connectionFactory.errorUpdate();
             readError(connection);
         } finally {
             if (responseStream != null) {
@@ -90,8 +94,10 @@ public class JsonClient {
             }
         }
 
-        if (responseMessage == null || !responseMessage.has("result"))
+        if (responseMessage == null || !responseMessage.has("result")) {
+            connectionFactory.errorUpdate();
             throw new IOException("Bitcoin did not return a result or an error");
+        }
 
 
         return responseMessage.get("result");

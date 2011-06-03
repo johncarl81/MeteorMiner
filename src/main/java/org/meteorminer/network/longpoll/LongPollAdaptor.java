@@ -2,7 +2,6 @@ package org.meteorminer.network.longpoll;
 
 import org.meteorminer.config.binding.BitcoinUrl;
 import org.meteorminer.output.CLInterface;
-import org.meteorminer.service.AsynchronousFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,8 +22,6 @@ public class LongPollAdaptor {
     private CLInterface output;
     @Inject
     private LongPollWorkerFactory longPollWorkerFactory;
-    @Inject
-    private AsynchronousFactory asynchronousFactory;
 
     private Thread longPollThread = null;
 
@@ -39,7 +36,7 @@ public class LongPollAdaptor {
                 longPollThread = new Thread(longPollWorkerFactory.buildLongPollWorker(bitcoindLongpoll));
                 longPollThread.start();
 
-                output.notification("Long poll support enabled: " + bitcoindLongpoll);
+                output.notification("Long Poll Extension: Enabled");
             }
         }
     }
