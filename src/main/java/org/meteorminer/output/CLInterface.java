@@ -27,6 +27,8 @@ public class CLInterface {
     @Inject
     @Verbose
     private boolean verbose;
+    @Inject
+    private CLInterface output;
 
     private BufferedWriter out;
 
@@ -65,7 +67,7 @@ public class CLInterface {
             out.write(StringUtils.leftPad(main, prevMainSize - main.length() + 1));
             out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            output.error(e);
         }
     }
 
@@ -77,7 +79,7 @@ public class CLInterface {
             out.write(main);
             out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            output.error(e);
         }
     }
 
@@ -85,5 +87,9 @@ public class CLInterface {
         if (verbose) {
             notification(input, args);
         }
+    }
+
+    public void error(Exception e) {
+        notification("Error: " + e.getMessage());
     }
 }

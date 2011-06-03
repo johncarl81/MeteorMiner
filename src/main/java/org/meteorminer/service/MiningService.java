@@ -45,6 +45,8 @@ public class MiningService {
     public void start() {
         List<CLDevice> gpuDevices = getAllDevices();
 
+        statisticsHolder.reset();
+
         //output gpus found
         System.out.println("GPU devices found:");
         System.out.println("Id\tName");

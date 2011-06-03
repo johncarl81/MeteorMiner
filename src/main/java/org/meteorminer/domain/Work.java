@@ -19,12 +19,16 @@ public class Work {
     private final int[] midstate = new int[8];
     private final long[] target = new long[8];
 
+    private long created;
+    private boolean stale;
+
     public Work(String data, String midstate, String hash1, String target) {
         this.hash1 = hash1;
 
         this.dataString = data;
         this.midstateString = midstate;
         this.targetString = target;
+        this.stale = false;
 
         if (data.length() != 256) {
             throw new MeteorMinerRuntimeException("Input Data in wrong format, needs to be of length 256 chars");
@@ -43,6 +47,8 @@ public class Work {
         }
 
         decode(this.target, target);
+
+        this.created = System.currentTimeMillis();
     }
 
 
@@ -68,5 +74,21 @@ public class Work {
 
     public String getMidstateString() {
         return midstateString;
+    }
+
+    public boolean isStale() {
+        return stale;
+    }
+
+    public void setStale(boolean stale) {
+        this.stale = stale;
+    }
+
+    public long getCreated() {
+        return created;
+    }
+
+    public void updateTime() {
+        created = System.currentTimeMillis();
     }
 }

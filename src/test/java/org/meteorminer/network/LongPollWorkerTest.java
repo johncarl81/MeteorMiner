@@ -48,7 +48,7 @@ public class LongPollWorkerTest {
         jsonNode = createMock(JsonNode.class);
         workSource = createMock(WorkConsumer.class);
 
-        longPollWorker = new LongPollWorker(longPollWorkerUrl, jsonClient, getWorkRequest, workFactory, output, workSource);
+        longPollWorker = new LongPollWorker(longPollWorkerUrl, jsonClient, getWorkRequest, workFactory, output, workSource, 10);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class LongPollWorkerTest {
         expectLastCall().anyTimes();
 
         expect(workFactory.buildWork(jsonNode)).andReturn(work);
-        workSource.setWork(work);
+        workSource.pushWork(work);
 
         replay(jsonClient, workFactory, output, hashScanner);
 

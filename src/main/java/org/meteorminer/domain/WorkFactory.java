@@ -34,7 +34,6 @@ public class WorkFactory {
                     responseNode.get("midstate").getValueAsText(),
                     responseNode.get("hash1").getValueAsText(),
                     responseNode.get("target").getValueAsText());
-            output.verbose("Work built: " + work.getDataString());
         }
 
         return work;

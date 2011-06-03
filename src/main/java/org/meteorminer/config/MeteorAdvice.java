@@ -19,7 +19,7 @@ public class MeteorAdvice {
     //defaults
     private static final String LOCALHOST = "localhost";
     private static final String PORT = "8332";
-    private static final String GET_WORK_TIMEOUT = "10";
+    private static final String GET_WORK_TIMEOUT = "5";
     private static final String CPU_COUNT = "0";
     private static final String INTENSITY = "5";
     private static final String WORK_SIZE = "-1";
@@ -38,6 +38,7 @@ public class MeteorAdvice {
     private int worksize;
     private boolean tandem;
     private List<Integer> gpuIds = new ArrayList<Integer>();
+    private Long networkErrorPause = 5000L;
 
     /**
      * Sets up default parameters
@@ -168,5 +169,9 @@ public class MeteorAdvice {
 
     public void setWorksize(int worksize) {
         this.worksize = worksize;
+    }
+
+    public Long getNetworkErrorPause() {
+        return networkErrorPause;
     }
 }

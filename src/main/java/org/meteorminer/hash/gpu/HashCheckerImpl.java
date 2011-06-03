@@ -27,10 +27,10 @@ public class HashCheckerImpl implements HashChecker {
     private VerifyHash verifyHash;
 
     @Override
-    public void check(MinerResult output, Work work) {
-        IntBuffer buffer = output.getBuffer();
+    public void check(MinerResult result, Work work) {
+        IntBuffer buffer = result.getBuffer();
         try {
-            clIntBufferPool.returnObject(output.getClBuffer());
+            clIntBufferPool.returnObject(result.getClBuffer());
 
             for (int i = 0; i < 0xF; i++) {
 
@@ -42,7 +42,7 @@ public class HashCheckerImpl implements HashChecker {
 
             intBufferPool.returnObject(buffer);
         } catch (Exception e) {
-            e.printStackTrace();
+            output.error(e);
         }
     }
 }

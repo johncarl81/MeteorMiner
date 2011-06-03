@@ -47,7 +47,7 @@ public class GpuHashTest {
 
         callbackTester.setExpectedNonce(0);
         nonceFactory.setRange(1, 0xffff);
-        workSource.setWork(work);
+        workSource.pushWork(work);
         scanHash.innerScan();
 
         assertFalse("No match for casial hash", callbackTester.isFound());
@@ -63,7 +63,7 @@ public class GpuHashTest {
 
         callbackTester.setExpectedNonce(30911318);
         nonceFactory.setRange(0x1d70bd0, 0xffff);
-        workSource.setWork(work);
+        workSource.pushWork(work);
         scanHash.innerScan();
 
         assertTrue("Known sol'n", callbackTester.isFound());
@@ -85,7 +85,7 @@ public class GpuHashTest {
         //solution is 563799816
         //            110297600
         nonceFactory.setRange(563799000, 1);
-        workSource.setWork(work);
+        workSource.pushWork(work);
         scanHash.innerScan();
 
         assertTrue("Known sol'n", callbackTester.isFound());

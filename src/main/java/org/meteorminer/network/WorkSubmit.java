@@ -42,22 +42,26 @@ public class WorkSubmit implements Runnable {
         try {
             output.verbose("Work passed local verification.  Proceeding to submit.");
 
-            boolean success = parseJsonResult(jsonClient.execute("SendWork", buildSubmitMessage(work)));
+            //last chance to check for stale work
+            if (!work.isStale()) {
+                boolean success = parseJsonResult(jsonClient.execute("SendWork", buildSubmitMessage(work)));
 
-            if (success) {
-                output.notification("Hash Submitted: %08x", nonce);
-                stats.incrementWorkPass(1);
-                workSource.updateWork();
 
-            } else {
-                output.notification("Hash Rejected: %08x", nonce);
-                stats.incrementWorkFail(1);
+                if (success) {
+                    output.notification("Hash Submitted: %08x", nonce);
+                    stats.incrementWorkPass(1);
+                    workSource.updateWork();
+
+                } else {
+                    output.notification("Hash Rejected: %08x", nonce);
+                    stats.incrementWorkFail(1);
+                }
             }
 
         } catch (IOException e) {
             output.notification("Exception while submitting the following work:");
             output.notification(work.toString());
-            e.printStackTrace();
+            output.error(e);
         }
     }
 

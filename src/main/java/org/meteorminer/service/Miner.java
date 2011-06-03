@@ -3,6 +3,7 @@ package org.meteorminer.service;
 import com.google.inject.assistedinject.Assisted;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.WorkConsumer;
+import org.meteorminer.network.WorkQueueProducer;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -16,19 +17,25 @@ public class Miner implements Runnable {
 
     private WorkConsumer workSource;
     private Set<HashScanner> scanners;
+    private WorkQueueProducer workQueueProducer;
+    private AsynchronousFactory asynchronousFactory;
 
     private ExecutorService executor;
 
     @Inject
     public Miner(@Assisted Set<HashScanner> scanners,
-                 WorkConsumer workSource) {
+                 WorkConsumer workSource, WorkQueueProducer workQueueProducer, AsynchronousFactory asynchronousFactory) {
 
         this.workSource = workSource;
         this.scanners = scanners;
+        this.workQueueProducer = workQueueProducer;
+        this.asynchronousFactory = asynchronousFactory;
         this.executor = Executors.newFixedThreadPool(scanners.size());
     }
 
     public void run() {
+
+        asynchronousFactory.startRunnable(workQueueProducer);
         //initial production
         workSource.updateWork();
 

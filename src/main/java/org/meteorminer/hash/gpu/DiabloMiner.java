@@ -6,6 +6,7 @@ import org.apache.commons.pool.ObjectPool;
 import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.domain.Work;
+import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
 import java.nio.IntBuffer;
@@ -30,6 +31,7 @@ public class DiabloMiner {
 
     private int localWorkSize;
     private int workgroupSize;
+    private CLInterface output;
 
     private int[] midstate2;
     private int fW0;
@@ -48,7 +50,8 @@ public class DiabloMiner {
                        @WorkSize int worksize,
                        @SearchKernel KernelContext kernelContext,
                        @CLIntBufferPool ObjectPool clIntBufferPool,
-                       @IntBufferPool ObjectPool intBufferPool) {
+                       @IntBufferPool ObjectPool intBufferPool, CLInterface output) {
+        this.output = output;
 
         if (worksize == -1) {
             localWorkSize = kernelContext.getKernel().getWorkGroupSize().get(device.getCLDevice()).intValue();
@@ -95,7 +98,7 @@ public class DiabloMiner {
                 result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            output.error(e);
         }
 
         return result;

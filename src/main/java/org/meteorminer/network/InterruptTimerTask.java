@@ -21,6 +21,6 @@ public class InterruptTimerTask extends TimerTask {
         //request new work..
         workSource.updateWork();
 
-        output.verbose("Interrupt Timer Task produced work");
+        output.verbose("Interrupt stale work");
     }
 }

@@ -55,7 +55,7 @@ public class DigestProcessHashImpl implements VerifyHash {
                 output.verbose("Hash failed internal validation.");
             }
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            output.error(e);
         }
     }
 }
