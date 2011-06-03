@@ -43,14 +43,12 @@ public class GpuHashScanner extends AbstractHashScanner {
         Work work;
         while (nonceIterator.hasNext() && !isStop()) {
             work = workSource.getWork();
-            long loopTime = System.currentTimeMillis();
             int nonce = nonceIterator.next();
             int nonceEnd = nonce + diabloMiner.getWorkgroupSize() * NONCE_BUFFER;
             for (; nonce < nonceEnd; nonce += diabloMiner.getWorkgroupSize()) {
                 MinerResult output = diabloMiner.hash(nonce, work);
                 hashChecker.check(output, work);
             }
-            statistics.addWorkTime(System.currentTimeMillis() - loopTime);
             nonceCount += NONCE_BUFFER;
         }
 

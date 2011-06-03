@@ -55,7 +55,6 @@ public class ScanHash extends AbstractHashScanner {
             }
             int nonce = nonceIterator.next();
             int nonceEnd = nonce + NONCE_BUFFER;
-            long nonceTime = System.currentTimeMillis();
             for (; nonce < nonceEnd; nonce++) {
 
                 data[3] = nonce;
@@ -71,7 +70,6 @@ public class ScanHash extends AbstractHashScanner {
                 }
 
             }
-            statistics.addWorkTime(System.currentTimeMillis() - nonceTime);
             nonceCount += NONCE_BUFFER;
         }
 

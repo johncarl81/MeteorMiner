@@ -12,12 +12,10 @@ public class Statistics {
     private AtomicLong instantHashCount;
     private long previousHashTime;
     private long startHashTime;
-    private long lastWorkUpdate;
     private long previousHashCount;
     private double instantHashRate;
     private AtomicLong workPass;
     private AtomicLong workFail;
-    private AtomicLong workTime;
     private AtomicLong savedTime;
 
     public Statistics() {
@@ -29,7 +27,6 @@ public class Statistics {
         instantHashCount = new AtomicLong();
         workPass = new AtomicLong();
         workFail = new AtomicLong();
-        workTime = new AtomicLong();
         previousHashTime = System.currentTimeMillis();
         startHashTime = System.currentTimeMillis();
         savedTime = new AtomicLong();
@@ -48,10 +45,6 @@ public class Statistics {
         workFail.addAndGet(increment);
     }
 
-    public void incrementSavedTime(long increment) {
-        savedTime.addAndGet(increment);
-    }
-
     public double getInstantHashRate() {
         return instantHashRate;
     }
@@ -65,21 +58,8 @@ public class Statistics {
     }
 
 
-    public double getLongHashRate() {
+    public double getHashRate() {
         return (hashCount.get() / 1000.0) / (System.currentTimeMillis() - startHashTime);
-    }
-
-    public void addWorkTime(long incremenet) {
-        workTime.addAndGet(incremenet);
-        lastWorkUpdate = System.currentTimeMillis();
-    }
-
-    public long getWorkTime() {
-        return workTime.get();
-    }
-
-    public double getWorkRatio() {
-        return (getWorkTime() * 100.0) / (lastWorkUpdate - startHashTime);
     }
 
     public long getSavedTime() {
@@ -87,8 +67,8 @@ public class Statistics {
     }
 
     public String toString() {
-        return new Formatter().format("%1.2f(%1.2f)mh/s %1d pass %1d fail %1.4f",
-                getInstantHashRate(), getLongHashRate(), getWorkPassed(), getWorkFailed(), getWorkRatio()).toString();
+        return new Formatter().format("%1.2f(%1.2f)mh/s %1d pass %1d fail",
+                getInstantHashRate(), getHashRate(), getWorkPassed(), getWorkFailed()).toString();
     }
 
     public void updateInstants() {

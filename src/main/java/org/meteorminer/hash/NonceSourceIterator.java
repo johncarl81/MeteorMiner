@@ -13,7 +13,6 @@ public class NonceSourceIterator implements Iterator<Integer> {
 
     private WorkConsumer workSource;
     private int workSize;
-    private Integer nonce;
 
     @Inject
     public NonceSourceIterator(@Assisted int workSize, WorkConsumer workSource) {
