@@ -1,6 +1,7 @@
 package org.meteorminer.network.failover;
 
 import org.meteorminer.network.BitcoinUrlFactory;
+import org.meteorminer.network.RPCExtension;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
@@ -9,7 +10,7 @@ import java.net.HttpURLConnection;
 /**
  * @author John Ericksen
  */
-public class MaintanenceSwitchAdaptor {
+public class MaintanenceSwitchExtension implements RPCExtension {
 
     @Inject
     private FailoverServerFactory failoverServerFactory;
@@ -18,7 +19,8 @@ public class MaintanenceSwitchAdaptor {
     @Inject
     private CLInterface output;
 
-    public void setupMaintanenceSwitch(HttpURLConnection connection) {
+    @Override
+    public void setup(HttpURLConnection connection) {
         String switchTo = connection.getHeaderField("X-Switch-To");
 
         if (switchTo != null) {

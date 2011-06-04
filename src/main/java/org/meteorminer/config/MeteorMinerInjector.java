@@ -14,7 +14,8 @@ public class MeteorMinerInjector {
 
     public synchronized static Injector getInjector(MeteorAdvice advice) {
         if (applicationInjector == null) {
-            applicationInjector = Guice.createInjector(new MeteorMinerModule(advice));
+            applicationInjector = Guice.createInjector(
+                    new MeteorMinerModule(advice));
         }
         return applicationInjector;
     }
@@ -38,7 +39,9 @@ public class MeteorMinerInjector {
 
     public synchronized static Injector getMinerInjector() {
         if (minerInjector == null) {
-            minerInjector = getApplicationInjector().createChildInjector(new MinerModule());
+            minerInjector = getApplicationInjector().createChildInjector(new MinerModule(),
+                    new FailoverExtensionModule(),
+                    new LongPollExtensionModule());
         }
         return minerInjector;
     }

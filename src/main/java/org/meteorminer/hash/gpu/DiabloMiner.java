@@ -79,17 +79,16 @@ public class DiabloMiner {
      * @return MinerResult
      */
     public MinerResult hash(int nonceStart, Work work) {
-
-        if (this.work != work) {
-            updateCommonVariables(work);
-        }
-
         MinerResult result = null;
         try {
             CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
             IntBuffer output = (IntBuffer) intBufferPool.borrowObject();
 
             synchronized (kernelContext) {
+
+                if (this.work != work) {
+                    updateCommonVariables(work);
+                }
 
                 kernelContext.getKernel().setArg(22, nonceStart);
                 kernelContext.getKernel().setArg(23, outputBuffer);

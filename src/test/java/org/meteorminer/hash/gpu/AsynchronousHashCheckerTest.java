@@ -43,7 +43,7 @@ public class AsynchronousHashCheckerTest {
         reset(hashCheckerFactory, runnableHashChecker, output);
 
         expect(hashCheckerFactory.createHashChecker(eq(output), eq(work))).andReturn(runnableHashChecker);
-        expect(output.getEvent()).andReturn(event);
+        expect(output.getEvent()).andReturn(event).anyTimes();
         event.invokeUponCompletion(runnableHashChecker);
 
         replay(hashCheckerFactory, runnableHashChecker, output);

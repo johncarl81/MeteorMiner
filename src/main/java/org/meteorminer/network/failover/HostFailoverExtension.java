@@ -2,6 +2,7 @@ package org.meteorminer.network.failover;
 
 import com.google.inject.Inject;
 import org.meteorminer.network.BitcoinUrlFactory;
+import org.meteorminer.network.RPCExtension;
 import org.meteorminer.output.CLInterface;
 
 import java.net.HttpURLConnection;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * @author John Ericksen
  */
-public class HostFailoverAdaptor {
+public class HostFailoverExtension implements RPCExtension {
 
     private static final String X_HOST_LIST_FIELD = "X-Host-List";
 
@@ -23,7 +24,8 @@ public class HostFailoverAdaptor {
 
     private boolean hostsDefined = false;
 
-    public void setupFailover(HttpURLConnection connection) {
+    @Override
+    public void setup(HttpURLConnection connection) {
         if (!hostsDefined) {
             String hostList = connection.getHeaderField(X_HOST_LIST_FIELD);
             if (hostList != null) {

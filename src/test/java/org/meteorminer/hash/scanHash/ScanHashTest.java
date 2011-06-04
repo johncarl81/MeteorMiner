@@ -29,6 +29,8 @@ public class ScanHashTest {
         Injector injector = Guice.createInjector(
                 Modules.override(new MeteorMinerModule(new MeteorAdvice()),
                         new MinerModule(),
+                        new FailoverExtensionModule(),
+                        new LongPollExtensionModule(),
                         new DeviceModule(),
                         new CPUDeviceModule(0)).with(
                         new SynchronousModule()));

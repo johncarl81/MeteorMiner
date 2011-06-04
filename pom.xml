@@ -27,6 +27,11 @@
             <version>3.0</version>
         </dependency>
         <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.nativelibs4java</groupId>
             <artifactId>javacl</artifactId>
             <version>1.0-beta-6</version>

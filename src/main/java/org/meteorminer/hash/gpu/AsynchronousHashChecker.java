@@ -16,7 +16,9 @@ public class AsynchronousHashChecker implements HashChecker {
 
     @Override
     public void check(MinerResult output, Work work) {
-        output.getEvent().invokeUponCompletion(runnableHashCheckerFactory.createHashChecker(output, work));
+        if (output.getEvent() != null) {
+            output.getEvent().invokeUponCompletion(runnableHashCheckerFactory.createHashChecker(output, work));
+        }
     }
 
     public void setRunnableHashCheckerFactory(RunnableHashCheckerFactory runnableHashCheckerFactory) {

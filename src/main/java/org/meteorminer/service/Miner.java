@@ -42,5 +42,6 @@ public class Miner implements Runnable {
         for (HashScanner scanner : scanners) {
             executor.execute(scanner);
         }
+        //todo: poll for errored scanners to restart
     }
 }

@@ -5,8 +5,6 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.WorkConsumer;
-import org.meteorminer.network.longpoll.LongPollWorker;
-import org.meteorminer.network.longpoll.LongPollWorkerFactory;
 import org.meteorminer.service.MinerFactory;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -23,10 +21,6 @@ public class MinerModule extends AbstractModule {
 
         install(factoryModuleBuilder
                 .build((MinerFactory.class)));
-
-        install(factoryModuleBuilder
-                .implement(Runnable.class, LongPollWorker.class)
-                .build((LongPollWorkerFactory.class)));
 
         bind(new TypeLiteral<BlockingQueue<Work>>() {
         }).toInstance(new ArrayBlockingQueue<Work>(1));

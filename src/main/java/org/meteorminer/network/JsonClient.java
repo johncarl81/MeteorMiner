@@ -5,15 +5,16 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
-import org.meteorminer.network.failover.HostFailoverAdaptor;
-import org.meteorminer.network.failover.MaintanenceSwitchAdaptor;
-import org.meteorminer.network.longpoll.LongPollAdaptor;
+import org.meteorminer.network.failover.HostFailoverExtension;
+import org.meteorminer.network.failover.MaintanenceSwitchExtension;
+import org.meteorminer.network.longpoll.LongPollExtension;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -27,13 +28,15 @@ public class JsonClient {
     @Inject
     private ObjectMapper mapper;
     @Inject
-    private LongPollAdaptor longPollAdaptor;
+    private LongPollExtension longPollAdaptor;
     @Inject
-    private HostFailoverAdaptor hostFailoverAdaptor;
+    private HostFailoverExtension hostFailoverExtension;
     @Inject
-    private MaintanenceSwitchAdaptor maintanenceSwitchAdaptor;
+    private MaintanenceSwitchExtension maintanenceSwitchAdaptor;
     @Inject
     private CLInterface output;
+    @Inject
+    private Set<RPCExtension> extensions;
 
     public JsonNode execute(String requestType, String requestMessage, URL url) throws IOException {
         return execute(requestType, requestMessage, connectionFactory.getBitcoinConnection(url));
@@ -65,9 +68,9 @@ public class JsonClient {
         InputStream responseStream = null;
 
         try {
-            longPollAdaptor.setupLongpoll(connection);
-            hostFailoverAdaptor.setupFailover(connection);
-            maintanenceSwitchAdaptor.setupMaintanenceSwitch(connection);
+            for (RPCExtension extension : extensions) {
+                extension.setup(connection);
+            }
 
             responseStream = unboxStream(connection, new StreamExecution() {
                 public InputStream getInputStream(HttpURLConnection connection) throws IOException {

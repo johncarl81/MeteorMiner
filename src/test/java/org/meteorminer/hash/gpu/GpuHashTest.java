@@ -27,6 +27,8 @@ public class GpuHashTest {
         Injector injector = Guice.createInjector(
                 Modules.override(new MeteorMinerModule(new MeteorAdvice()),
                         new MinerModule(),
+                        new FailoverExtensionModule(),
+                        new LongPollExtensionModule(),
                         new DeviceModule(),
                         new GPUDeviceModule(JavaCL.getBestDevice(), 0)).with(
                         new SynchronousModule(),
