@@ -4,6 +4,7 @@ import com.google.inject.Injector;
 import org.apache.commons.cli.*;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
+import org.meteorminer.output.ShutdownDetection;
 import org.meteorminer.service.MiningService;
 
 import java.net.MalformedURLException;
@@ -28,6 +29,8 @@ public class MeteorMiner {
                 formatter.printHelp("MeteorMiner", options);
             } else {
                 Injector injector = MeteorMinerInjector.getInjector(advice);
+
+                Runtime.getRuntime().addShutdownHook(injector.getInstance(ShutdownDetection.class));
 
                 MiningService miningService = injector.getInstance(MiningService.class);
 

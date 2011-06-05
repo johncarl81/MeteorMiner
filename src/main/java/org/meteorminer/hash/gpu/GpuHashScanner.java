@@ -53,7 +53,7 @@ public class GpuHashScanner extends AbstractHashScanner {
         }
 
         if (isStop()) {
-            output.verbose("Shutting down GPU Hash Scanner.");
+            output.notification("Shutting down GPU Hash Scanner.");
         }
 
         output.verbose("Scan finished after " + (System.currentTimeMillis() - startTime) + "ms");

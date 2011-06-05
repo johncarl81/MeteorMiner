@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.config.binding.*;
+import org.meteorminer.service.GracefulExecutorShutdownFactory;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
 import org.meteorminer.service.TandemMinerStrategy;
@@ -40,6 +41,8 @@ public class MeteorMinerModule extends AbstractModule {
         install(factoryModuleBuilder
                 .build((ThreadFactory.class)));
 
+        install(factoryModuleBuilder
+                .build(GracefulExecutorShutdownFactory.class));
 
         bind(MeteorAdvice.class).toInstance(meteorAdvice);
 

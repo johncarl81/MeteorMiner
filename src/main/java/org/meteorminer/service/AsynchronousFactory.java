@@ -2,9 +2,9 @@ package org.meteorminer.service;
 
 import com.google.inject.Singleton;
 
+import javax.inject.Inject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author John Ericksen
@@ -12,23 +12,16 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class AsynchronousFactory {
 
-    ExecutorService executor;
-    ExecutorService gracefulShutdownExecutor;
+    @Inject
+    private GracefulExecutorShutdownFactory gracefulExecutorShutdownFactory;
+    private boolean shutdownHookAdded = false;
+
+    private ExecutorService executor;
+    private ExecutorService gracefulShutdownExecutor;
 
     public AsynchronousFactory() {
         executor = Executors.newCachedThreadPool();
         gracefulShutdownExecutor = Executors.newCachedThreadPool();
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                gracefulShutdownExecutor.shutdown();
-                try {
-                    gracefulShutdownExecutor.awaitTermination(1, TimeUnit.MINUTES);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     public void startRunnable(Runnable runnable) {
@@ -36,6 +29,11 @@ public class AsynchronousFactory {
     }
 
     public void startRunnableWithGracefulShutdown(Runnable runnable) {
+        if (!shutdownHookAdded) {
+            shutdownHookAdded = true;
+            Runtime.getRuntime().addShutdownHook(
+                    gracefulExecutorShutdownFactory.buildGracefulExecutorShutdown(gracefulShutdownExecutor));
+        }
         gracefulShutdownExecutor.execute(runnable);
     }
 }

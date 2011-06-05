@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author John Ericksen
@@ -21,19 +20,21 @@ public class Miner implements Runnable {
     private Set<HashScanner> scanners;
     private WorkQueueProducer workQueueProducer;
     private AsynchronousFactory asynchronousFactory;
-    private CLInterface output;
+    private ScannerShutdownFactory scannerShutdownFactory;
 
     private ExecutorService executor;
 
+    private boolean shutdownHookAdded = false;
+
     @Inject
     public Miner(@Assisted Set<HashScanner> scanners,
-                 WorkConsumer workSource, WorkQueueProducer workQueueProducer, AsynchronousFactory asynchronousFactory, CLInterface output) {
+                 WorkConsumer workSource, WorkQueueProducer workQueueProducer, AsynchronousFactory asynchronousFactory, CLInterface output, ScannerShutdownFactory scannerShutdownFactory) {
 
         this.workSource = workSource;
         this.scanners = scanners;
         this.workQueueProducer = workQueueProducer;
         this.asynchronousFactory = asynchronousFactory;
-        this.output = output;
+        this.scannerShutdownFactory = scannerShutdownFactory;
         this.executor = Executors.newFixedThreadPool(scanners.size());
     }
 
@@ -47,21 +48,9 @@ public class Miner implements Runnable {
             executor.execute(scanner);
         }
 
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                output.notification("Shutting Down Executor");
-                executor.shutdown();
-
-                for (HashScanner scanner : scanners) {
-                    scanner.stop();
-                }
-                try {
-                    executor.awaitTermination(1, TimeUnit.MINUTES);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        if (!shutdownHookAdded) {
+            shutdownHookAdded = true;
+            Runtime.getRuntime().addShutdownHook(scannerShutdownFactory.buildScannerShutdown(executor, scanners));
+        }
     }
 }

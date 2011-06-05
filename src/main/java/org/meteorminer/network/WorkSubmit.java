@@ -20,7 +20,7 @@ public class WorkSubmit implements Runnable {
 
     private Work work;
     private JsonClient jsonClient;
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private ObjectMapper mapper;
     private Statistics stats;
     private int nonce;
     private CLInterface output;
@@ -29,13 +29,14 @@ public class WorkSubmit implements Runnable {
     @Inject
     public WorkSubmit(@Assisted Work work, @Assisted int nonce,
                       JsonClient jsonClient, Statistics stats,
-                      CLInterface output, WorkConsumer workSource) {
+                      CLInterface output, WorkConsumer workSource, ObjectMapper mapper) {
         this.work = work;
         this.jsonClient = jsonClient;
         this.stats = stats;
         this.nonce = nonce;
         this.output = output;
         this.workSource = workSource;
+        this.mapper = mapper;
     }
 
     public void run() {
@@ -70,7 +71,7 @@ public class WorkSubmit implements Runnable {
     }
 
     private String buildSubmitMessage(Work work) {
-        ObjectNode sendworkMessage = MAPPER.createObjectNode();
+        ObjectNode sendworkMessage = mapper.createObjectNode();
         sendworkMessage.put("method", "getwork");
         ArrayNode params = sendworkMessage.putArray("params");
         params.add(encodeBlock(work));
