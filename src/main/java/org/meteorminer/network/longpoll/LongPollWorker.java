@@ -65,7 +65,7 @@ public class LongPollWorker implements Runnable {
                 }
                 output.error(e);
             }
-        } while (running);
+        } while (running && !Thread.currentThread().isInterrupted());
     }
 
     public void setRunning(boolean running) {

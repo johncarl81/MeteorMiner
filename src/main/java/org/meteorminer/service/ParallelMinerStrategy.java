@@ -15,7 +15,7 @@ public class ParallelMinerStrategy extends AbstractMinerStrategy {
             //create a new miner for each hashScanner
             Miner miner = getMinerFactory().createMiner(Collections.singleton(hashScanner));
             //kickoff runnable
-            getAsynchronousFactory().startRunnable(miner);
+            getAsynchronousFactory().startRunnableWithGracefulShutdown(miner);
         }
     }
 

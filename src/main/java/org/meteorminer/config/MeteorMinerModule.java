@@ -65,7 +65,16 @@ public class MeteorMinerModule extends AbstractModule {
         }).annotatedWith(GPUIds.class).toInstance(meteorAdvice.getGpuIds());
 
         //additional singletons
-        bind(Timer.class).toInstance(new Timer(true));
+        final Timer timer = new Timer(true);
+        bind(Timer.class).toInstance(timer);
+
+        //runtime shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                timer.cancel();
+            }
+        });
+
         bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
 
         Authenticator.setDefault(new ServerAuthenticator(meteorAdvice.getUsername(), meteorAdvice.getPassword(), meteorAdvice.getProxyUsername(), meteorAdvice.getProxyPassword()));

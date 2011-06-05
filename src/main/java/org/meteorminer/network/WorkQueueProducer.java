@@ -23,7 +23,7 @@ public class WorkQueueProducer implements Runnable {
 
     @Override
     public void run() {
-        while (running) {
+        while (running && !Thread.currentThread().isInterrupted()) {
             try {
                 Work work = workProducer.produce();
                 if (work != null) {

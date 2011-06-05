@@ -10,6 +10,6 @@ public class TandemMinerStrategy extends AbstractMinerStrategy {
         //create a one miner for all hashScanner
         Miner miner = getMinerFactory().createMiner(getScanners());
         //kickoff runnable
-        getAsynchronousFactory().startRunnable(miner);
+        getAsynchronousFactory().startRunnableWithGracefulShutdown(miner);
     }
 }

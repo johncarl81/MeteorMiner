@@ -52,6 +52,10 @@ public class GpuHashScanner extends AbstractHashScanner {
             nonceCount += NONCE_BUFFER;
         }
 
+        if (isStop()) {
+            output.verbose("Shutting down GPU Hash Scanner.");
+        }
+
         output.verbose("Scan finished after " + (System.currentTimeMillis() - startTime) + "ms");
     }
 

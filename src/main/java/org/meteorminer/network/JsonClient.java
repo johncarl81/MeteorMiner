@@ -5,9 +5,6 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
-import org.meteorminer.network.failover.HostFailoverExtension;
-import org.meteorminer.network.failover.MaintanenceSwitchExtension;
-import org.meteorminer.network.longpoll.LongPollExtension;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
@@ -27,12 +24,6 @@ public class JsonClient {
     private BitcoinConnectionFactory connectionFactory;
     @Inject
     private ObjectMapper mapper;
-    @Inject
-    private LongPollExtension longPollAdaptor;
-    @Inject
-    private HostFailoverExtension hostFailoverExtension;
-    @Inject
-    private MaintanenceSwitchExtension maintanenceSwitchAdaptor;
     @Inject
     private CLInterface output;
     @Inject
