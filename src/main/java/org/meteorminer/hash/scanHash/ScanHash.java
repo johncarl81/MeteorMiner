@@ -10,8 +10,6 @@ import org.meteorminer.output.Statistics;
 import javax.inject.Inject;
 import java.util.Iterator;
 
-import static org.meteorminer.hash.HexUtil.decode;
-
 
 //4877554
 public class ScanHash extends AbstractHashScanner {
@@ -32,24 +30,25 @@ public class ScanHash extends AbstractHashScanner {
     public void innerScan() {
         nonceCount = 0;
 
-        Work work = workSource.getWork();
-        Work prevWork = work;
+        Work work;
+        Work prevWork = null;
 
         Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(NONCE_BUFFER);
 
-        int[] data = decode(new int[16], work.getDataString().substring(128));
-        int[] midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());
-        int[] state = new int[midstate.length];
-        int[] buff = new int[64];
+        int[] data = null;
+        int[] midstate = null;
+        int[] state = null;
+        int[] buff = null;
 
         int[] hash;
         while (nonceIterator.hasNext() && !isStop()) {
             work = workSource.getWork();
             if (prevWork != work) {
                 //update
+                ScanHashPreProcessWork preProcessWork = (ScanHashPreProcessWork) work.getPreProcessedWork().get(ScanHashPreProcessWorkFactory.PRE_PROCESS_NAME);
                 prevWork = work;
-                data = decode(new int[16], work.getDataString().substring(128));
-                midstate = decode(decode(new int[16], work.getHash1()), work.getMidstateString());
+                data = preProcessWork.getData();
+                midstate = preProcessWork.getMidstate();
                 state = new int[midstate.length];
                 buff = new int[64];
             }

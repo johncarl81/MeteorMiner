@@ -1,6 +1,10 @@
 package org.meteorminer.domain;
 
 import org.meteorminer.config.MeteorMinerRuntimeException;
+import org.meteorminer.hash.PreProcessWork;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.meteorminer.hash.HexUtil.decode;
 
@@ -18,6 +22,8 @@ public class Work {
     private final int[] data = new int[32];
     private final int[] midstate = new int[8];
     private final long[] target = new long[8];
+
+    private Map<String, PreProcessWork> preProcessedWork = new HashMap<String, PreProcessWork>();
 
     private long created;
     private boolean stale;
@@ -90,5 +96,9 @@ public class Work {
 
     public void updateTime() {
         created = System.currentTimeMillis();
+    }
+
+    public Map<String, PreProcessWork> getPreProcessedWork() {
+        return preProcessedWork;
     }
 }

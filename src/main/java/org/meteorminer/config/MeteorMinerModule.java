@@ -3,9 +3,13 @@ package org.meteorminer.config;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.multibindings.Multibinder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.config.binding.*;
+import org.meteorminer.hash.PreProcessWorkFactory;
+import org.meteorminer.hash.gpu.DiabloPreProcessWorkFactory;
+import org.meteorminer.hash.scanHash.ScanHashPreProcessWorkFactory;
 import org.meteorminer.service.GracefulExecutorShutdownFactory;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
@@ -81,6 +85,11 @@ public class MeteorMinerModule extends AbstractModule {
         bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
 
         Authenticator.setDefault(new ServerAuthenticator(meteorAdvice.getUsername(), meteorAdvice.getPassword(), meteorAdvice.getProxyUsername(), meteorAdvice.getProxyPassword()));
+
+        //is this the right place for these?
+        Multibinder<PreProcessWorkFactory> preProcessedWorkMultibinder = Multibinder.newSetBinder(binder(), PreProcessWorkFactory.class);
+        preProcessedWorkMultibinder.addBinding().to(ScanHashPreProcessWorkFactory.class);
+        preProcessedWorkMultibinder.addBinding().to(DiabloPreProcessWorkFactory.class);
     }
 
     private String createGetWorkMessage() {

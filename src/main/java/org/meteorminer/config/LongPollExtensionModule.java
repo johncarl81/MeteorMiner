@@ -14,8 +14,8 @@ import org.meteorminer.network.longpoll.LongPollWorkerFactory;
 public class LongPollExtensionModule extends AbstractModule {
     @Override
     protected void configure() {
-        Multibinder<RPCExtension> uriBinder = Multibinder.newSetBinder(binder(), RPCExtension.class);
-        uriBinder.addBinding().to(LongPollExtension.class);
+        Multibinder<RPCExtension> rpcExtensionMultibinder = Multibinder.newSetBinder(binder(), RPCExtension.class);
+        rpcExtensionMultibinder.addBinding().to(LongPollExtension.class);
 
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 

@@ -12,8 +12,8 @@ import org.meteorminer.network.failover.MaintanenceSwitchExtension;
 public class FailoverExtensionModule extends AbstractModule {
     @Override
     protected void configure() {
-        Multibinder<RPCExtension> uriBinder = Multibinder.newSetBinder(binder(), RPCExtension.class);
-        uriBinder.addBinding().to(HostFailoverExtension.class);
-        uriBinder.addBinding().to(MaintanenceSwitchExtension.class);
+        Multibinder<RPCExtension> rpcExtensionMultibinder = Multibinder.newSetBinder(binder(), RPCExtension.class);
+        rpcExtensionMultibinder.addBinding().to(HostFailoverExtension.class);
+        rpcExtensionMultibinder.addBinding().to(MaintanenceSwitchExtension.class);
     }
 }
