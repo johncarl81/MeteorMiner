@@ -38,7 +38,7 @@ public class FailoverServerMaintenanceDecorator implements FailoverServerDecorat
 
     @Override
     public FailoverServerDecoratorFactory update() {
-        if (start + server.getTimeToReturn() > System.currentTimeMillis()) {
+        if (start + server.getTimeToReturn() < System.currentTimeMillis()) {
             return decorated.update();
         }
 
