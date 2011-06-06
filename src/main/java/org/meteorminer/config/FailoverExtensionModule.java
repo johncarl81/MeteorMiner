@@ -13,7 +13,7 @@ public class FailoverExtensionModule extends AbstractModule {
     @Override
     protected void configure() {
         Multibinder<RPCExtension> rpcExtensionMultibinder = Multibinder.newSetBinder(binder(), RPCExtension.class);
-        rpcExtensionMultibinder.addBinding().to(HostFailoverExtension.class);
-        rpcExtensionMultibinder.addBinding().to(MaintanenceSwitchExtension.class);
+        rpcExtensionMultibinder.addBinding().to(HostFailoverExtension.class).asEagerSingleton();
+        rpcExtensionMultibinder.addBinding().to(MaintanenceSwitchExtension.class).asEagerSingleton();
     }
 }

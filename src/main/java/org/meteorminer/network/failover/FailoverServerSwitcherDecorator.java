@@ -56,7 +56,7 @@ public class FailoverServerSwitcherDecorator implements FailoverServerDecoratorF
     }
 
     private void updateCurrentServer() {
-        if (currentServerIndex < servers.size()) {
+        if (currentServerIndex < servers.size() - 1) {
             currentServerIndex++;
         } else {
             currentServerIndex = 0;

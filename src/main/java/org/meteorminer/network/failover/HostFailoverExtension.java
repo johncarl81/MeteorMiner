@@ -34,7 +34,10 @@ public class HostFailoverExtension implements RPCExtension {
 
                 if (servers != null && !servers.isEmpty()) {
                     bitcoinUrlFactory.pushFailoverDecoratorFactory(new FailoverServerSwitcherDecorator(servers));
-                    output.notification("Failover Servers Extension: Enabled, Provided: ", servers);
+                    output.notification("Failover Servers Extension: Enabled");
+                    for (FailoverServer failoverServer : servers) {
+                        output.verbose("Added Server: " + failoverServer.toString());
+                    }
                     hostsDefined = true;
                 }
             }

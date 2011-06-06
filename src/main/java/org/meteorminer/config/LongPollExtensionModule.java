@@ -15,7 +15,7 @@ public class LongPollExtensionModule extends AbstractModule {
     @Override
     protected void configure() {
         Multibinder<RPCExtension> rpcExtensionMultibinder = Multibinder.newSetBinder(binder(), RPCExtension.class);
-        rpcExtensionMultibinder.addBinding().to(LongPollExtension.class);
+        rpcExtensionMultibinder.addBinding().to(LongPollExtension.class).asEagerSingleton();
 
         FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
 

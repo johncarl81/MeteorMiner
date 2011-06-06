@@ -29,7 +29,8 @@ public class MaintanenceSwitchExtension implements RPCExtension {
 
             if (failoverServer != null) {
                 bitcoinUrlFactory.pushFailoverDecoratorFactory(new FailoverServerMaintenanceDecorator(failoverServer));
-                output.notification("Maintenance Server: Enabled, Provided: " + failoverServer.getUrl());
+                output.notification("Maintenance Server: Enabled");
+                output.verbose("Maintenance Server: " + failoverServer.toString());
             }
         }
     }

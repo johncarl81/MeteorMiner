@@ -5,6 +5,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.WorkConsumer;
+import org.meteorminer.network.BitcoinUrlFactory;
 import org.meteorminer.service.MinerFactory;
 import org.meteorminer.service.ScannerShutdownFactory;
 
@@ -30,5 +31,7 @@ public class MinerModule extends AbstractModule {
         }).toInstance(new ArrayBlockingQueue<Work>(1));
 
         bind(WorkConsumer.class).asEagerSingleton();
+
+        bind(BitcoinUrlFactory.class).asEagerSingleton();
     }
 }
