@@ -40,7 +40,7 @@ public class Miner implements Runnable {
 
     public void run() {
 
-        asynchronousFactory.startRunnableWithGracefulShutdown(workQueueProducer);
+        asynchronousFactory.startRunnable(workQueueProducer);
         //initial production
         workSource.updateWork();
 
