@@ -9,6 +9,7 @@ import org.meteorminer.output.CLInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public class FailoverServerFactory {
 
         } catch (IOException e) {
             output.error(e);
+            return Collections.emptyList();
         }
 
         return servers;
@@ -59,9 +61,17 @@ public class FailoverServerFactory {
                 node.has("ttr")) {
             server = new FailoverServer(node.get("host").getTextValue(),
                     node.get("port").getIntValue(),
-                    node.get("ttr").getIntValue());
+                    node.get("ttr").getIntValue(), output);
         }
 
         return server;
+    }
+
+    public void setMapper(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    public void setOutput(CLInterface output) {
+        this.output = output;
     }
 }

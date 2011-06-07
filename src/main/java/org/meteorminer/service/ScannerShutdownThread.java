@@ -3,6 +3,7 @@ package org.meteorminer.service;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import org.meteorminer.hash.HashScanner;
+import org.meteorminer.output.CLInterface;
 
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -15,11 +16,13 @@ public class ScannerShutdownThread extends Thread {
 
     private ExecutorService executor;
     private Set<HashScanner> scanners;
+    private CLInterface output;
 
     @Inject
-    public ScannerShutdownThread(@Assisted ExecutorService executor, @Assisted Set<HashScanner> scanners) {
+    public ScannerShutdownThread(@Assisted ExecutorService executor, @Assisted Set<HashScanner> scanners, CLInterface output) {
         this.executor = executor;
         this.scanners = scanners;
+        this.output = output;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class ScannerShutdownThread extends Thread {
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            output.error(e);
         }
     }
 }

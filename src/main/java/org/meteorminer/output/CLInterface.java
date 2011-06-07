@@ -90,6 +90,10 @@ public class CLInterface {
     }
 
     public void error(Exception e) {
-        notification("Error: " + e.getMessage());
+        if (verbose) {
+            e.printStackTrace();
+        } else {
+            notification("Error: " + e.getMessage());
+        }
     }
 }

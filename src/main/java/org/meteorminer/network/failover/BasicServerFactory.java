@@ -33,4 +33,8 @@ public class BasicServerFactory implements FailoverServerDecoratorFactory {
     public void updateError() {
         //noop
     }
+
+    public void setBitcoind(URL bitcoind) {
+        this.bitcoind = bitcoind;
+    }
 }

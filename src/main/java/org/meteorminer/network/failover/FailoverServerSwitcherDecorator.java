@@ -8,15 +8,14 @@ import java.util.List;
  */
 public class FailoverServerSwitcherDecorator implements FailoverServerDecoratorFactory {
 
-    private List<FailoverServer> servers;
+    private CircularIterator<FailoverServer> serversIterator;
+    private FailoverServer currentServer;
     private FailoverServerDecoratorFactory decorated;
     private long lastUpdate;
 
-    private int currentServerIndex;
-
     public FailoverServerSwitcherDecorator(List<FailoverServer> servers) {
-        this.servers = servers;
-        this.currentServerIndex = 0;
+        this.serversIterator = new CircularIterator<FailoverServer>(servers);
+        this.currentServer = this.serversIterator.next();
         this.lastUpdate = System.currentTimeMillis();
     }
 
@@ -28,12 +27,12 @@ public class FailoverServerSwitcherDecorator implements FailoverServerDecoratorF
 
     @Override
     public void updateError() {
-        updateCurrentServer();
+        iterateServer();
     }
 
     @Override
     public URL getUrl() {
-        URL url = getCurrentServer().getUrl();
+        URL url = currentServer.getUrl();
         if (url == null) {
             url = decorated.getUrl();
         }
@@ -43,28 +42,19 @@ public class FailoverServerSwitcherDecorator implements FailoverServerDecoratorF
 
     @Override
     public FailoverServerDecoratorFactory update() {
-
-        FailoverServer currentServer = getCurrentServer();
-
         if (currentServer.getTimeToReturn() > 0 &&
                 currentServer.getTimeToReturn() * 1000 + lastUpdate > System.currentTimeMillis()) {
             //update
-            updateCurrentServer();
+            iterateServer();
         }
 
         return this;
     }
 
-    private void updateCurrentServer() {
-        if (currentServerIndex < servers.size() - 1) {
-            currentServerIndex++;
-        } else {
-            currentServerIndex = 0;
+    private void iterateServer() {
+        if (serversIterator.hasNext()) {
+            currentServer = serversIterator.next();
         }
         lastUpdate = System.currentTimeMillis();
-    }
-
-    private FailoverServer getCurrentServer() {
-        return servers.get(currentServerIndex);
     }
 }
