@@ -10,7 +10,6 @@ import org.meteorminer.config.binding.*;
 import org.meteorminer.hash.PreProcessWorkFactory;
 import org.meteorminer.hash.gpu.DiabloPreProcessWorkFactory;
 import org.meteorminer.hash.scanHash.ScanHashPreProcessWorkFactory;
-import org.meteorminer.service.GracefulExecutorShutdownFactory;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
 import org.meteorminer.service.TandemMinerStrategy;
@@ -44,9 +43,6 @@ public class MeteorMinerModule extends AbstractModule {
 
         install(factoryModuleBuilder
                 .build((ThreadFactory.class)));
-
-        install(factoryModuleBuilder
-                .build(GracefulExecutorShutdownFactory.class));
 
         bind(MeteorAdvice.class).toInstance(meteorAdvice);
 

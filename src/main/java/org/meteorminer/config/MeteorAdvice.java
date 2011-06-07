@@ -21,7 +21,7 @@ public class MeteorAdvice {
     private static final String PORT = "8332";
     private static final String GET_WORK_TIMEOUT = "5";
     private static final String CPU_COUNT = "0";
-    private static final String INTENSITY = "5";
+    private static final String INTENSITY = "12";
     private static final String WORK_SIZE = "-1";
 
     private URL bitcoinUrl;

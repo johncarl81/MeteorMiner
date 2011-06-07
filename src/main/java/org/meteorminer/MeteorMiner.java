@@ -56,7 +56,7 @@ public class MeteorMiner {
         options.addOption("x", "proxy", true, "optional proxy settings host:port<:username:password>");
         options.addOption("c", "cpu", true, "optional count of mining CPUs");
         options.addOption("d", "gpu", true, "optional comma separated list of gpu identifier to use: 0,1,2,3");
-        options.addOption("i", "intensity", true, "optional intensity value (1-10)");
+        options.addOption("i", "intensity", true, "optional intensity value");
         options.addOption("w", "worksize", true, "optional worksize override (> 0)");
         options.addOption("tandem", false, "optional flag to tun on tandem device mining");
 
