@@ -43,7 +43,7 @@ public class FailoverServerSwitcherDecorator implements FailoverServerDecoratorF
     @Override
     public FailoverServerDecoratorFactory update() {
         if (currentServer.getTimeToReturn() > 0 &&
-                currentServer.getTimeToReturn() * 1000 + lastUpdate > System.currentTimeMillis()) {
+                currentServer.getTimeToReturn() * 1000 + lastUpdate < System.currentTimeMillis()) {
             //update
             iterateServer();
         }

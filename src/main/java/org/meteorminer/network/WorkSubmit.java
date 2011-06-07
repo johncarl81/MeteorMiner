@@ -43,10 +43,10 @@ public class WorkSubmit implements Runnable {
         try {
             output.verbose("Work passed local verification.  Proceeding to submit.");
 
+            String submitMessage = buildSubmitMessage(work);
             //last chance to check for stale work
             if (!work.isStale()) {
-                boolean success = parseJsonResult(jsonClient.execute("SendWork", buildSubmitMessage(work)));
-
+                boolean success = parseJsonResult(jsonClient.execute("SendWork", submitMessage));
 
                 if (success) {
                     output.notification("Hash Submitted: %08x", nonce);

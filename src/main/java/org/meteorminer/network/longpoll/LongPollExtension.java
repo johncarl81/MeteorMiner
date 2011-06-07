@@ -50,13 +50,14 @@ public class LongPollExtension implements RPCExtension {
     }
 
     private URL parseLongPollURL(String xlongpolling) throws MalformedURLException {
-        if (xlongpolling.startsWith("http"))
+        if (xlongpolling.startsWith("http")) {
             return new URL(xlongpolling);
-        else if (xlongpolling.startsWith("/"))
+        } else if (xlongpolling.startsWith("/")) {
             return new URL(bitcoind.getProtocol(), bitcoind.getHost(), bitcoind.getPort(),
                     xlongpolling);
-        else
+        } else {
             return new URL(bitcoind.getProtocol(), bitcoind.getHost(), bitcoind.getPort(),
                     (bitcoind.getFile() + "/" + xlongpolling).replace("//", "/"));
+        }
     }
 }

@@ -51,7 +51,7 @@ public class FailoverServerSwitcherDecoratorTest {
         assertEquals(serverTwo.getUrl(), urlTwo);
 
         //server expires, switch to next (original)
-        Thread.sleep(1000);
+        Thread.sleep(1100);
         failoverServerSwitcherDecorator.update();
 
         URL urlThree = failoverServerSwitcherDecorator.getUrl();
