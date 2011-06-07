@@ -1,6 +1,8 @@
 package org.meteorminer.config;
 
 /**
+ * Runtime Exception wrapper for Meteor Miner RuntimeExceptions.
+ *
  * @author John Ericksen
  */
 public class MeteorMinerRuntimeException extends RuntimeException {

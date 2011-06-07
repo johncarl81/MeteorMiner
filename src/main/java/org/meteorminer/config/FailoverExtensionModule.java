@@ -7,6 +7,8 @@ import org.meteorminer.network.failover.HostFailoverExtension;
 import org.meteorminer.network.failover.MaintanenceSwitchExtension;
 
 /**
+ * Module defining the Failover RPC Extension
+ *
  * @author John Ericksen
  */
 public class FailoverExtensionModule extends AbstractModule {

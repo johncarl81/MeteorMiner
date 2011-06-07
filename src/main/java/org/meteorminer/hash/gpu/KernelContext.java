@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 
 /**
- * Contetx / Kernel / Program / Queue container associated with the provided kernel source
+ * Context / Kernel / Program / Queue container associated with the provided kernel source
  *
  * @author John Ericksen
  */

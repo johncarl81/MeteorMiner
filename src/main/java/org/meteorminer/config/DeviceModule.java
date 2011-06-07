@@ -11,6 +11,8 @@ import org.meteorminer.network.JsonCommandFactory;
 import java.util.Iterator;
 
 /**
+ * Module defining general device configuration.  This should be used as a base for all device modules.
+ *
  * @author John Ericksen
  */
 public class DeviceModule extends AbstractModule {

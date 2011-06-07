@@ -8,6 +8,8 @@ import org.meteorminer.hash.scanHash.ScanHash;
 import org.meteorminer.output.Statistics;
 
 /**
+ * Module defining CPU device specific configuration
+ *
  * @author John Ericksen
  */
 public class CPUDeviceModule extends AbstractModule {

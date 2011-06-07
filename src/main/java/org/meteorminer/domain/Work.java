@@ -9,7 +9,7 @@ import java.util.Map;
 import static org.meteorminer.hash.HexUtil.decode;
 
 /**
- * Contains the data provided from the bitcoin server to be processed.=
+ * Contains the data provided from the bitcoin server to be processed.
  *
  * @author John Ericksen
  */

@@ -8,7 +8,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.config.binding.*;
 import org.meteorminer.hash.PreProcessWorkFactory;
-import org.meteorminer.hash.gpu.DiabloPreProcessWorkFactory;
+import org.meteorminer.hash.gpu.GPUPreProcessWorkFactory;
 import org.meteorminer.hash.scanHash.ScanHashPreProcessWorkFactory;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
@@ -27,12 +27,12 @@ import java.util.concurrent.ThreadFactory;
  *
  * @author John Ericksen
  */
-public class MeteorMinerModule extends AbstractModule {
+public class MeteorApplicationModule extends AbstractModule {
 
 
     private MeteorAdvice meteorAdvice;
 
-    public MeteorMinerModule(MeteorAdvice meteorAdvice) {
+    public MeteorApplicationModule(MeteorAdvice meteorAdvice) {
         this.meteorAdvice = meteorAdvice;
     }
 
@@ -85,7 +85,7 @@ public class MeteorMinerModule extends AbstractModule {
         //is this the right place for these?
         Multibinder<PreProcessWorkFactory> preProcessedWorkMultibinder = Multibinder.newSetBinder(binder(), PreProcessWorkFactory.class);
         preProcessedWorkMultibinder.addBinding().to(ScanHashPreProcessWorkFactory.class);
-        preProcessedWorkMultibinder.addBinding().to(DiabloPreProcessWorkFactory.class);
+        preProcessedWorkMultibinder.addBinding().to(GPUPreProcessWorkFactory.class);
     }
 
     private String createGetWorkMessage() {

@@ -9,9 +9,11 @@ import javax.inject.Provider;
 import java.io.IOException;
 
 /**
+ * Search Kernel Context provider, builds and returns the Search Kernel.
+ *
  * @author John Ericksen
  */
-public class KernelContextProvider implements Provider<KernelContext> {
+public class SearchKernelContextProvider implements Provider<KernelContext> {
 
     private static final String SEARCH_KERNEL = "search";
     private static final String SEARCH_KERNEL_FILE = "search.cl";

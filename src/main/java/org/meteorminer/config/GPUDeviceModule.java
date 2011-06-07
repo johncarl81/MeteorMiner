@@ -19,6 +19,8 @@ import org.meteorminer.output.GPUStatistics;
 import org.meteorminer.output.Statistics;
 
 /**
+ * Module defining the GPU device specific configurations.
+ *
  * @author John Ericksen
  */
 public class GPUDeviceModule extends AbstractModule {
@@ -47,7 +49,7 @@ public class GPUDeviceModule extends AbstractModule {
 
         bind(HashScanner.class).to(GpuHashScanner.class);
 
-        bind(KernelContext.class).annotatedWith(SearchKernel.class).toProvider(KernelContextProvider.class).asEagerSingleton();
+        bind(KernelContext.class).annotatedWith(SearchKernel.class).toProvider(SearchKernelContextProvider.class).asEagerSingleton();
 
         bind(HashChecker.class).annotatedWith(Synchronous.class).to(HashCheckerImpl.class);
 

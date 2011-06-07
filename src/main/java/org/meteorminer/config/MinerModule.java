@@ -13,6 +13,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
+ * Miner level configuration module.
+ *
  * @author John Ericksen
  */
 public class MinerModule extends AbstractModule {

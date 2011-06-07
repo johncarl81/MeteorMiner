@@ -4,6 +4,8 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
 /**
+ * Authenticator class for providing server and proxy authentication.
+ *
  * @author John Ericksen
  */
 public class ServerAuthenticator extends Authenticator {

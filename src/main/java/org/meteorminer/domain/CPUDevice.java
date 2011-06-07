@@ -1,6 +1,8 @@
 package org.meteorminer.domain;
 
 /**
+ * Basic CPU Device.
+ *
  * @author John Ericksen
  */
 public class CPUDevice implements Device {

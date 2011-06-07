@@ -9,6 +9,8 @@ import org.meteorminer.network.longpoll.LongPollWorker;
 import org.meteorminer.network.longpoll.LongPollWorkerFactory;
 
 /**
+ * Long Polling RPC extension module.
+ *
  * @author John Ericksen
  */
 public class LongPollExtensionModule extends AbstractModule {

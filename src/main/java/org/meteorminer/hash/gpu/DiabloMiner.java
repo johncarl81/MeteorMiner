@@ -95,7 +95,8 @@ public class DiabloMiner {
 
     private void updateCommonVariables(Work work) {
         this.work = work;
-        DiabloPreProcessWork preProcessWork = (DiabloPreProcessWork) work.getPreProcessedWork().get(DiabloPreProcessWorkFactory.PRE_PROCESS_NAME);
+        //grabs the preprocessed variables
+        GPUPreProcessWork preProcessWork = (GPUPreProcessWork) work.getPreProcessedWork().get(GPUPreProcessWorkFactory.PRE_PROCESS_NAME);
 
         kernelContext.getKernel().setArgs(preProcessWork.getfW0(),
                 preProcessWork.getfW1(),

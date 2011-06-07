@@ -41,9 +41,12 @@ public class GpuHashScanner extends AbstractHashScanner {
         Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(diabloMiner.getWorkgroupSize() * NONCE_BUFFER);
 
         Work work;
+        //outer loop that reserves the nonce ranges.  This eliviates strain on the atomic reference to the
+        //nonce and current work.
         while (nonceIterator.hasNext() && !isStop()) {
             work = workSource.getWork();
             int nonce = nonceIterator.next();
+            //inner loop to iterate over the buffered ranges
             int nonceEnd = nonce + diabloMiner.getWorkgroupSize() * NONCE_BUFFER;
             for (; nonce < nonceEnd; nonce += diabloMiner.getWorkgroupSize()) {
                 MinerResult output = diabloMiner.hash(nonce, work);

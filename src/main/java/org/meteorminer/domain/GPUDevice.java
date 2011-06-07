@@ -3,6 +3,8 @@ package org.meteorminer.domain;
 import com.nativelibs4java.opencl.CLDevice;
 
 /**
+ * Representation of a GPU Device
+ *
  * @author John Ericksen
  */
 public class GPUDevice implements Device {

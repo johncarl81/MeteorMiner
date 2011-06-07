@@ -6,9 +6,12 @@ import org.meteorminer.hash.PreProcessWork;
 import java.util.Arrays;
 
 /**
+ * Preprocessed GPU miner work variables.  This is processed shortly after building the Work object, before the
+ * work is ever submitted to the work queue.
+ *
  * @author John Ericksen
  */
-public class DiabloPreProcessWork implements PreProcessWork {
+public class GPUPreProcessWork implements PreProcessWork {
 
     private int[] midstate2;
     private int fW0;
@@ -20,7 +23,7 @@ public class DiabloPreProcessWork implements PreProcessWork {
     private int fcty_e;
     private int fcty_e2;
 
-    public DiabloPreProcessWork(Work work) {
+    public GPUPreProcessWork(Work work) {
         midstate2 = Arrays.copyOf(work.getMidstate(), 8);
 
         sharound(midstate2, 0, 1, 2, 3, 4, 5, 6, 7, work.getData()[16], 0x428A2F98);

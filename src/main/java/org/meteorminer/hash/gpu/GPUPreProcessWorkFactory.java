@@ -5,15 +5,17 @@ import org.meteorminer.hash.PreProcessWork;
 import org.meteorminer.hash.PreProcessWorkFactory;
 
 /**
+ * Factory to create the GPU Preprocess work.
+ *
  * @author John Ericksen
  */
-public class DiabloPreProcessWorkFactory implements PreProcessWorkFactory {
+public class GPUPreProcessWorkFactory implements PreProcessWorkFactory {
 
     public static final String PRE_PROCESS_NAME = "Diablo";
 
     @Override
     public PreProcessWork buildPreProcessWork(Work work) {
-        return new DiabloPreProcessWork(work);
+        return new GPUPreProcessWork(work);
     }
 
     @Override
