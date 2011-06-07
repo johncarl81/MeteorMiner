@@ -1,11 +1,11 @@
 package org.meteorminer.hash.gpu;
 
+import org.meteorminer.domain.Device;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
 import org.meteorminer.hash.NonceIteratorFactory;
 import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.output.CLInterface;
-import org.meteorminer.output.Statistics;
 
 import javax.inject.Inject;
 import java.util.Iterator;
@@ -22,8 +22,6 @@ public class GpuHashScanner extends AbstractHashScanner {
     @Inject
     private HashChecker hashChecker;
     @Inject
-    private Statistics statistics;
-    @Inject
     private CLInterface output;
     @Inject
     private NonceIteratorFactory nonceIteratorFactory;
@@ -31,13 +29,15 @@ public class GpuHashScanner extends AbstractHashScanner {
     private DiabloMiner diabloMiner;
     @Inject
     private WorkConsumer workSource;
+    @Inject
+    private Device device;
 
     private long nonceCount;
 
     public void innerScan() {
 
         nonceCount = 0;
-        long startTime = System.currentTimeMillis();
+
         Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(diabloMiner.getWorkgroupSize() * NONCE_BUFFER);
 
         Work work;
@@ -52,11 +52,7 @@ public class GpuHashScanner extends AbstractHashScanner {
             nonceCount += NONCE_BUFFER;
         }
 
-        if (isStop()) {
-            output.notification("Shutting down GPU Hash Scanner.");
-        }
-
-        output.verbose("Scan finished after " + (System.currentTimeMillis() - startTime) + "ms");
+        output.notification("Shutdown down GPU Hash Scanner on " + device.getName());
     }
 
     @Override

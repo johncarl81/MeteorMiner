@@ -18,7 +18,7 @@ public class IntBufferPoolFactory extends BasePoolableObjectFactory {
     @SearchKernel
     private KernelContext kernelContext;
 
-    private int size = 0xF;
+    private int size = 0xFF;
 
     public IntBufferPoolFactory() {
         emptyArray = new int[size];

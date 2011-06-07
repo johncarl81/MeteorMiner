@@ -8,7 +8,7 @@ import com.google.inject.ImplementedBy;
 
 import java.net.URL;
 
-@ImplementedBy(FailoverServerDecoratorFactoryImpl.class)
+@ImplementedBy(BasicServerFactory.class)
 public interface FailoverServerDecoratorFactory {
 
     FailoverServerDecoratorFactory decorate(FailoverServerDecoratorFactory failoverServerFactory);

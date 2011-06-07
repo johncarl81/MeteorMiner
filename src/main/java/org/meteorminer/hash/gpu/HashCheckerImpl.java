@@ -28,11 +28,12 @@ public class HashCheckerImpl implements HashChecker {
 
     @Override
     public void check(MinerResult result, Work work) {
+        result.getEvent().waitFor();
         IntBuffer buffer = result.getBuffer();
         try {
             clIntBufferPool.returnObject(result.getClBuffer());
 
-            for (int i = 0; i < 0xF; i++) {
+            for (int i = 0; i < 0xFF; i++) {
 
                 if (buffer.get(i) > 0) {
                     this.output.verbose("Found Hash, proceeding to local verification");

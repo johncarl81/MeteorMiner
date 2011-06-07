@@ -25,7 +25,7 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
     private KernelContext kernelContext;
 
     public CLIntBufferPoolFactory() {
-        int[] emptyArray = new int[0xF];
+        int[] emptyArray = new int[0xFF];
         Arrays.fill(emptyArray, 0);
         emptyBuffer = IntBuffer.wrap(emptyArray);
     }

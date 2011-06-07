@@ -4,6 +4,7 @@ import com.nativelibs4java.opencl.CLEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.domain.Work;
+import org.meteorminer.service.AsynchronousFactory;
 
 import static org.easymock.EasyMock.*;
 
@@ -15,6 +16,7 @@ public class AsynchronousHashCheckerTest {
     private AsynchronousHashChecker hashChecker;
     private RunnableHashCheckerFactory hashCheckerFactory;
     private RunnableHashChecker runnableHashChecker;
+    private AsynchronousFactory asynchronousFactory;
 
     private MinerResult output;
     private Work work;
@@ -26,6 +28,7 @@ public class AsynchronousHashCheckerTest {
 
         hashCheckerFactory = createMock(RunnableHashCheckerFactory.class);
         runnableHashChecker = createMock(RunnableHashChecker.class);
+        asynchronousFactory = createMock(AsynchronousFactory.class);
         work = new Work(
                 "00000001c9d358447ba95319a19300bfc94a286ed6a12856f8e4775e00005de6000000009c64db358b88376c70d0101aafaace8c46fb7988e9e3f070c234903fa7ed5aa24dd341741a6a93b300000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000",
                 "c94675051186fcd6fb7f92f20c7248da15efcc56924c77712220240573183c17",
@@ -36,6 +39,7 @@ public class AsynchronousHashCheckerTest {
         event = createMock(CLEvent.class);
 
         hashChecker.setRunnableHashCheckerFactory(hashCheckerFactory);
+        hashChecker.setAsynchronousFactory(asynchronousFactory);
     }
 
     @Test
@@ -44,7 +48,8 @@ public class AsynchronousHashCheckerTest {
 
         expect(hashCheckerFactory.createHashChecker(eq(output), eq(work))).andReturn(runnableHashChecker);
         expect(output.getEvent()).andReturn(event).anyTimes();
-        event.invokeUponCompletion(runnableHashChecker);
+        //event.invokeUponCompletion(runnableHashChecker);
+        asynchronousFactory.startRunnable(runnableHashChecker);
 
         replay(hashCheckerFactory, runnableHashChecker, output);
 

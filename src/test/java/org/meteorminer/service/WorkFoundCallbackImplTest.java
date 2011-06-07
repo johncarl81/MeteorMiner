@@ -49,7 +49,7 @@ public class WorkFoundCallbackImplTest {
 
         expect(commandFactory.buildWorkSubmit(work, nonce)).andReturn(workSubmit);
 
-        asyncFactory.startRunnableWithGracefulShutdown(workSubmit);
+        asyncFactory.startRunnable(workSubmit);
 
         replay(asyncFactory, commandFactory, workSubmit);
 

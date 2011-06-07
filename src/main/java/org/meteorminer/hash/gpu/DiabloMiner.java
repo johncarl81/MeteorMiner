@@ -71,7 +71,7 @@ public class DiabloMiner {
         MinerResult result = null;
         try {
             CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
-            IntBuffer output = (IntBuffer) intBufferPool.borrowObject();
+            IntBuffer outputBuff = (IntBuffer) intBufferPool.borrowObject();
 
             synchronized (kernelContext) {
 
@@ -83,7 +83,7 @@ public class DiabloMiner {
                 kernelContext.getKernel().setArg(23, outputBuffer);
 
                 CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{workgroupSize}, new int[]{localWorkSize});
-                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xF, output, false, event), output, outputBuffer);
+                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, 0xFF, outputBuff, false, event), outputBuff, outputBuffer);
             }
         } catch (Exception e) {
             output.error(e);

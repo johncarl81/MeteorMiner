@@ -34,6 +34,11 @@ public class AsynchronousFactory {
             Runtime.getRuntime().addShutdownHook(
                     gracefulExecutorShutdownFactory.buildGracefulExecutorShutdown(gracefulShutdownExecutor));
         }
-        gracefulShutdownExecutor.execute(runnable);
+        if (gracefulShutdownExecutor.isShutdown()) {
+            //if the graceful shutdown has occurred, try to execute anyways
+            startRunnable(runnable);
+        } else {
+            gracefulShutdownExecutor.execute(runnable);
+        }
     }
 }

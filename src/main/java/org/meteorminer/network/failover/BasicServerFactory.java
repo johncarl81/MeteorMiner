@@ -8,7 +8,7 @@ import java.net.URL;
 /**
  * @author John Ericksen
  */
-public class FailoverServerDecoratorFactoryImpl implements FailoverServerDecoratorFactory {
+public class BasicServerFactory implements FailoverServerDecoratorFactory {
 
     @Inject
     @BitcoinUrl

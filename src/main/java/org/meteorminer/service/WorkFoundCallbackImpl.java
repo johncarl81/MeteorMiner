@@ -19,7 +19,7 @@ public class WorkFoundCallbackImpl implements WorkFoundCallback {
     public void found(Work work, int nonce) {
         work.getData()[19] = nonce;
         WorkSubmit workSubmit = commandFactory.buildWorkSubmit(work, nonce);
-        asyncFactory.startRunnableWithGracefulShutdown(workSubmit);
+        asyncFactory.startRunnable(workSubmit);
     }
 
     public void setAsyncFactory(AsynchronousFactory asyncFactory) {

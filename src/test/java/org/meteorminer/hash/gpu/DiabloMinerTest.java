@@ -60,6 +60,6 @@ public class DiabloMinerTest {
 
         IntBuffer buffer = result.getBuffer();
 
-        assertEquals(nonce, buffer.get(nonce & 0xF));
+        assertEquals(nonce, buffer.get(nonce & 0xFF));
     }
 }
