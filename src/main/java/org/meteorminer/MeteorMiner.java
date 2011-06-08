@@ -30,7 +30,8 @@ public class MeteorMiner {
             } else {
                 Injector injector = MeteorMinerInjector.getInjector(advice);
 
-                Runtime.getRuntime().addShutdownHook(injector.getInstance(ShutdownDetection.class));
+                Runtime runtime = injector.getInstance(Runtime.class);
+                runtime.addShutdownHook(injector.getInstance(ShutdownDetection.class));
 
                 MiningService miningService = injector.getInstance(MiningService.class);
 

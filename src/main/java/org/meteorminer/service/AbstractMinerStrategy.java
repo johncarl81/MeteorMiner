@@ -16,6 +16,11 @@ public abstract class AbstractMinerStrategy implements MinerStrategy {
     private AsynchronousFactory asynchronousFactory;
 
     private Set<HashScanner> scanners = new HashSet<HashScanner>();
+    private MinerFactory minerFactory;
+
+    public AbstractMinerStrategy() {
+        minerFactory = MeteorMinerInjector.getMinerInjector().getInstance(MinerFactory.class);
+    }
 
     @Override
     public void add(HashScanner hashScanner) {
@@ -26,11 +31,19 @@ public abstract class AbstractMinerStrategy implements MinerStrategy {
         return asynchronousFactory;
     }
 
+    public void setAsynchronousFactory(AsynchronousFactory asynchronousFactory) {
+        this.asynchronousFactory = asynchronousFactory;
+    }
+
     public MinerFactory getMinerFactory() {
-        return MeteorMinerInjector.getMinerInjector().getInstance(MinerFactory.class);
+        return minerFactory;
     }
 
     public Set<HashScanner> getScanners() {
         return scanners;
+    }
+
+    public void setMinerFactory(MinerFactory minerFactory) {
+        this.minerFactory = minerFactory;
     }
 }

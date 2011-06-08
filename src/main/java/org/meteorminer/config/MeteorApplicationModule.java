@@ -20,6 +20,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Timer;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -86,6 +87,10 @@ public class MeteorApplicationModule extends AbstractModule {
         Multibinder<PreProcessWorkFactory> preProcessedWorkMultibinder = Multibinder.newSetBinder(binder(), PreProcessWorkFactory.class);
         preProcessedWorkMultibinder.addBinding().to(ScanHashPreProcessWorkFactory.class);
         preProcessedWorkMultibinder.addBinding().to(GPUPreProcessWorkFactory.class);
+
+        bind(Runtime.class).toInstance(Runtime.getRuntime());
+
+        bind(ExecutorService.class).annotatedWith(CachedThreadPool.class).toProvider(CachedThreadPoolProvider.class);
     }
 
     private String createGetWorkMessage() {

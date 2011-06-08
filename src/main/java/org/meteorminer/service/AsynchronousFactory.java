@@ -1,9 +1,10 @@
 package org.meteorminer.service;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.meteorminer.config.binding.CachedThreadPool;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author John Ericksen
@@ -11,11 +12,9 @@ import java.util.concurrent.Executors;
 @Singleton
 public class AsynchronousFactory {
 
+    @Inject
+    @CachedThreadPool
     private ExecutorService executor;
-
-    public AsynchronousFactory() {
-        executor = Executors.newCachedThreadPool();
-    }
 
     public void startRunnable(Runnable runnable) {
         executor.execute(runnable);
