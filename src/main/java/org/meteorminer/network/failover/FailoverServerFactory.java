@@ -64,7 +64,7 @@ public class FailoverServerFactory {
                 node.has("ttr")) {
             server = new FailoverServer(node.get("host").getTextValue(),
                     node.get("port").getIntValue(),
-                    node.get("ttr").getIntValue(), output, urlFactory);
+                    node.get("ttr").getIntValue() * 60 * 1000, output, urlFactory);
         }
 
         return server;

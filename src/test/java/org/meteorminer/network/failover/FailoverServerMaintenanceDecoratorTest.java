@@ -50,7 +50,7 @@ public class FailoverServerMaintenanceDecoratorTest {
 
         assertEquals(failoverServer.getUrl(), failoverServerMaintenanceDecorator.getUrl());
 
-        Thread.sleep(1000);
+        Thread.sleep(10);
 
         URL testUrl = new URL("http://localhost:8080");
         //should have expired
