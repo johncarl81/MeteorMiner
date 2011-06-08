@@ -6,6 +6,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.output.CLInterface;
+import org.meteorminer.service.URLFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public class FailoverServerFactory {
     private ObjectMapper mapper;
     @Inject
     private CLInterface output;
+    @Inject
+    private URLFactory urlFactory;
 
     public List<FailoverServer> buildFailoverServers(String hostList) {
 
@@ -61,7 +64,7 @@ public class FailoverServerFactory {
                 node.has("ttr")) {
             server = new FailoverServer(node.get("host").getTextValue(),
                     node.get("port").getIntValue(),
-                    node.get("ttr").getIntValue(), output);
+                    node.get("ttr").getIntValue(), output, urlFactory);
         }
 
         return server;
@@ -73,5 +76,9 @@ public class FailoverServerFactory {
 
     public void setOutput(CLInterface output) {
         this.output = output;
+    }
+
+    public void setUrlFactory(URLFactory urlFactory) {
+        this.urlFactory = urlFactory;
     }
 }

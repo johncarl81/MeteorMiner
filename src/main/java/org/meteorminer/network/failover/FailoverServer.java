@@ -1,6 +1,7 @@
 package org.meteorminer.network.failover;
 
 import org.meteorminer.output.CLInterface;
+import org.meteorminer.service.URLFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,12 +17,14 @@ public class FailoverServer {
     private int port;
     private int timeToReturn;
     private CLInterface output;
+    private URLFactory urlFactory;
 
-    public FailoverServer(String host, int port, int timeToReturn, CLInterface output) {
+    public FailoverServer(String host, int port, int timeToReturn, CLInterface output, URLFactory urlFactory) {
         this.host = host;
         this.port = port;
         this.timeToReturn = timeToReturn;
         this.output = output;
+        this.urlFactory = urlFactory;
     }
 
     public int getTimeToReturn() {
@@ -30,7 +33,7 @@ public class FailoverServer {
 
     public URL getUrl() {
         try {
-            return new URL("http://" + host + ":" + port);
+            return urlFactory.buildUrl(host, port);
         } catch (MalformedURLException e) {
             output.error(e);
             return null;

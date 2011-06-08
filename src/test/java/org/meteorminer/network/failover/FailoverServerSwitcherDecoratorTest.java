@@ -2,6 +2,7 @@ package org.meteorminer.network.failover;
 
 import org.junit.Test;
 import org.meteorminer.output.CLInterface;
+import org.meteorminer.service.URLFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,15 +21,17 @@ public class FailoverServerSwitcherDecoratorTest {
     private static final String TEST_HOST = "localhost";
     private static final int TEST_PORT_ONE = 80;
     private static final int TEST_PORT_TWO = 8080;
+    private URLFactory urlFactory = new URLFactory();
 
     @Test
     public void lifecycleTest() throws InterruptedException {
         //setup
         FailoverServerDecoratorFactory decorated = createMock(FailoverServerDecoratorFactory.class);
-        CLInterface output = createMock(CLInterface.class);
+        CLInterface output = new CLInterface();
 
-        FailoverServer serverOne = new FailoverServer(TEST_HOST, TEST_PORT_ONE, 0, output);
-        FailoverServer serverTwo = new FailoverServer(TEST_HOST, TEST_PORT_TWO, 1, output);
+
+        FailoverServer serverOne = new FailoverServer(TEST_HOST, TEST_PORT_ONE, 0, output, urlFactory);
+        FailoverServer serverTwo = new FailoverServer(TEST_HOST, TEST_PORT_TWO, 1, output, urlFactory);
 
         List<FailoverServer> servers = new ArrayList<FailoverServer>();
         servers.add(serverOne);
@@ -70,7 +73,7 @@ public class FailoverServerSwitcherDecoratorTest {
 
         failoverServerSwitcherDecorator.decorate(decorated);
 
-        URL testUrl = new URL("http://" + TEST_HOST + ":" + TEST_PORT_ONE);
+        URL testUrl = urlFactory.buildUrl(TEST_HOST, TEST_PORT_ONE);
 
         reset(decorated, output, serverOne);
 

@@ -1,6 +1,7 @@
 package org.meteorminer.config;
 
 import org.apache.commons.cli.CommandLine;
+import org.meteorminer.service.URLFactory;
 
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -39,6 +40,7 @@ public class MeteorAdvice {
     private boolean tandem;
     private List<Integer> gpuIds = new ArrayList<Integer>();
     private Long networkErrorPause = 5000L;
+    private URLFactory urlFactory = new URLFactory();
 
     /**
      * Sets up default parameters
@@ -46,7 +48,7 @@ public class MeteorAdvice {
     public MeteorAdvice() {
         //defaults
         try {
-            this.bitcoinUrl = new URL("http://" + LOCALHOST + ":" + PORT);
+            this.bitcoinUrl = urlFactory.buildUrl(LOCALHOST, PORT);
             this.getWorkTimeout = Long.parseLong(GET_WORK_TIMEOUT) * 1000;
             this.verbose = false;
             this.intensity = 10;
@@ -69,7 +71,7 @@ public class MeteorAdvice {
         String url = line.getOptionValue("host", LOCALHOST);
         String port = line.getOptionValue("port", PORT);
 
-        bitcoinUrl = new URL("http://" + url + ":" + port);
+        bitcoinUrl = urlFactory.buildUrl(url, port);
 
         if (line.hasOption("proxy")) {
             String proxyString = line.getOptionValue("proxy");

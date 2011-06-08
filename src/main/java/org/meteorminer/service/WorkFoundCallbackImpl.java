@@ -7,6 +7,8 @@ import org.meteorminer.network.WorkSubmit;
 import javax.inject.Inject;
 
 /**
+ * Callback to submit the work found asynchronously through the JsonClient.
+ *
  * @author John Ericksen
  */
 public class WorkFoundCallbackImpl implements WorkFoundCallback {

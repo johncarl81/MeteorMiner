@@ -4,6 +4,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.output.CLInterface;
+import org.meteorminer.service.URLFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -41,14 +42,16 @@ public class FailoverServerFactoryTest {
 
         output = createMock(CLInterface.class);
         mapper = new ObjectMapper();
+        URLFactory urlFactory = new URLFactory();
 
         serverFactory = new FailoverServerFactory();
 
         serverFactory.setMapper(mapper);
         serverFactory.setOutput(output);
+        serverFactory.setUrlFactory(urlFactory);
 
-        urlOne = new URL("http://" + TEST_HOST + ":" + TEST_PORT_ONE);
-        urlTwo = new URL("http://" + TEST_HOST + ":" + TEST_PORT_TWO);
+        urlOne = urlFactory.buildUrl(TEST_HOST, TEST_PORT_ONE);
+        urlTwo = urlFactory.buildUrl(TEST_HOST, TEST_PORT_TWO);
 
         ioException = new IOException("test exception");
     }

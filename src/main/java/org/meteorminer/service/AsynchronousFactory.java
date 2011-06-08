@@ -19,4 +19,8 @@ public class AsynchronousFactory {
     public void startRunnable(Runnable runnable) {
         executor.execute(runnable);
     }
+
+    public void setExecutor(ExecutorService executor) {
+        this.executor = executor;
+    }
 }

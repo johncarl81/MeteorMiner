@@ -17,4 +17,12 @@ public class LoggingTimerTask extends TimerTask {
         statisticsHolder.updateInstants();
         output.outputMain();
     }
+
+    public void setStatisticsHolder(StatisticsHolder statisticsHolder) {
+        this.statisticsHolder = statisticsHolder;
+    }
+
+    public void setOutput(CLInterface output) {
+        this.output = output;
+    }
 }

@@ -10,6 +10,9 @@ import org.meteorminer.service.MiningService;
 import java.net.MalformedURLException;
 
 /**
+ * Command Line interface entry point to the Meteor Miner application.  Provides a simple command line input and
+ * general startup of the application.
+ *
  * @author John Ericksen
  */
 public class MeteorMiner {
