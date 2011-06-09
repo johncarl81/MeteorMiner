@@ -45,12 +45,12 @@ public class IntBufferPoolFactory extends BasePoolableObjectFactory {
     }
 
     /**
-     * Destroys the given object by filling it with the empty array (before discarding it)
+     * Noop destroy
      *
      * @param destroyed
      * @throws Exception
      */
     public void destroyObject(Object destroyed) {
-        ((IntBuffer) destroyed).put(emptyArray);
+        //noop
     }
 }
