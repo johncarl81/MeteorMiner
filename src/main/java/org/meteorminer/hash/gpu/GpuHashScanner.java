@@ -41,7 +41,7 @@ public class GpuHashScanner extends AbstractHashScanner {
         Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(diabloMiner.getWorkgroupSize() * NONCE_BUFFER);
 
         Work work;
-        //outer loop that reserves the nonce ranges.  This eliviates strain on the atomic reference to the
+        //outer loop that reserves the nonce ranges.  This reduces strain on the atomic reference to the
         //nonce and current work.
         while (nonceIterator.hasNext() && !isStop()) {
             work = workSource.getWork();
