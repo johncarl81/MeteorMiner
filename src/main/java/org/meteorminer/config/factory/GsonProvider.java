@@ -1,4 +1,4 @@
-package org.meteorminer.config;
+package org.meteorminer.config.factory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

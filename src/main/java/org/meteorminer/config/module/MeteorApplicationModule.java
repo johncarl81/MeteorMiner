@@ -1,11 +1,15 @@
-package org.meteorminer.config;
+package org.meteorminer.config.module;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
+import org.meteorminer.config.MeteorAdvice;
+import org.meteorminer.config.MeteorMinerRuntimeException;
+import org.meteorminer.config.ServerAuthenticator;
 import org.meteorminer.config.binding.*;
+import org.meteorminer.config.factory.CachedThreadPoolProvider;
 import org.meteorminer.hash.PreProcessWorkFactory;
 import org.meteorminer.hash.gpu.GPUPreProcessWorkFactory;
 import org.meteorminer.hash.scanHash.ScanHashPreProcessWorkFactory;

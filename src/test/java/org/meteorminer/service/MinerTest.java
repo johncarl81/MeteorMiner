@@ -3,7 +3,7 @@ package org.meteorminer.service;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.ThreadPoolFactory;
+import org.meteorminer.config.module.ThreadPoolFactory;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.network.WorkQueueProducer;

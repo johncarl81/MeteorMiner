@@ -7,7 +7,8 @@ import com.google.inject.util.Modules;
 import com.nativelibs4java.opencl.JavaCL;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.*;
+import org.meteorminer.config.MeteorAdvice;
+import org.meteorminer.config.module.*;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.*;
 

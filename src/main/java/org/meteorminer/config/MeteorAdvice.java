@@ -24,7 +24,6 @@ public class MeteorAdvice {
     private static final String CPU_COUNT = "0";
     private static final String INTENSITY = "4";
     private static final String WORK_SIZE = "-1";
-    private static final String LOOP_SIZE = "0";
 
     private URL bitcoinUrl;
     private String username;

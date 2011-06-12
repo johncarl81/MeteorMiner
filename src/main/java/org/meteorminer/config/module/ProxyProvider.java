@@ -1,4 +1,4 @@
-package org.meteorminer.config;
+package org.meteorminer.config.module;
 
 import com.google.inject.Provider;
 

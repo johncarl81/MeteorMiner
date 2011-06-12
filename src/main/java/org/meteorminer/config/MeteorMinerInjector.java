@@ -3,6 +3,7 @@ package org.meteorminer.config;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.nativelibs4java.opencl.CLDevice;
+import org.meteorminer.config.module.*;
 
 /**
  * Injector helper class providing the various Guice injectors.

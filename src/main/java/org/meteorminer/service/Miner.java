@@ -1,7 +1,7 @@
 package org.meteorminer.service;
 
 import com.google.inject.assistedinject.Assisted;
-import org.meteorminer.config.ThreadPoolFactory;
+import org.meteorminer.config.module.ThreadPoolFactory;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.network.WorkQueueProducer;

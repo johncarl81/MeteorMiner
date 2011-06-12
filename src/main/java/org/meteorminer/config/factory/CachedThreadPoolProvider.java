@@ -1,6 +1,7 @@
-package org.meteorminer.config;
+package org.meteorminer.config.factory;
 
 import com.google.inject.Inject;
+import org.meteorminer.config.module.ThreadPoolFactory;
 
 import javax.inject.Provider;
 import java.util.concurrent.ExecutorService;
