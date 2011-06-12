@@ -2,7 +2,6 @@ package org.meteorminer.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -17,11 +16,12 @@ import org.meteorminer.service.TandemMinerStrategy;
 import java.net.Authenticator;
 import java.net.Proxy;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Timer;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Guice module class for Meteor Miner configuration.
@@ -39,11 +39,6 @@ public class MeteorApplicationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-
-        FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
-
-        install(factoryModuleBuilder
-                .build((ThreadFactory.class)));
 
         bind(MeteorAdvice.class).toInstance(meteorAdvice);
 
@@ -91,6 +86,12 @@ public class MeteorApplicationModule extends AbstractModule {
         bind(Runtime.class).toInstance(Runtime.getRuntime());
 
         bind(ExecutorService.class).annotatedWith(CachedThreadPool.class).toProvider(CachedThreadPoolProvider.class);
+
+        try {
+            bind(MessageDigest.class).toInstance(MessageDigest.getInstance("SHA-256"));
+        } catch (NoSuchAlgorithmException e) {
+            throw new MeteorMinerRuntimeException(e);
+        }
     }
 
     private String createGetWorkMessage() {

@@ -41,11 +41,11 @@ public class MiningService {
     private List<Integer> activatedGpus;
     @Inject
     private MinerStrategy minerStrategy;
+    @Inject
+    private StatisticsDelayTimerTask statisticsDelayTimerTask;
 
     public void start() {
         List<CLDevice> gpuDevices = getAllDevices();
-
-        statisticsHolder.reset();
 
         //output gpus found
         System.out.println("GPU devices found:");
@@ -53,8 +53,6 @@ public class MiningService {
         for (int i = 0; i < gpuDevices.size(); i++) {
             System.out.println(i + ":\t" + gpuDevices.get(i));
         }
-
-        timer.schedule(loggingTimerTask, 5000, 1000);
 
         //gpu setup
         for (Integer id : activatedGpus) {
@@ -74,6 +72,8 @@ public class MiningService {
         }
 
         minerStrategy.start();
+        timer.schedule(statisticsDelayTimerTask, 3000);
+        timer.schedule(loggingTimerTask, 6000, 1000);
     }
 
     private void setupDevice(Injector deviceInjector) {

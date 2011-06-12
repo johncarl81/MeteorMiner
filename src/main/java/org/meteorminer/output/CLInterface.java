@@ -44,22 +44,18 @@ public class CLInterface {
 
         builder.append("\r[");
 
-        Map<Device, Statistics> statisticsMap = statisticsHolder.getStatistics();
-
-        if (statisticsMap.size() == 1) {
-            Map.Entry<Device, Statistics> entry = statisticsMap.entrySet().iterator().next();
-            builder.append(entry.getValue().toString());
-        } else {
+        builder.append(statisticsHolder.toString());
+        if (verbose) {
             for (Map.Entry<Device, Statistics> entry : statisticsHolder.getStatistics().entrySet()) {
-                builder.append('[');
+                builder.append(" [");
                 builder.append(entry.getKey().getName());
                 builder.append(':');
                 builder.append(entry.getValue().toString());
-                builder.append("] ");
+                builder.append(']');
             }
         }
 
-        builder.append("]");
+        builder.append(']');
 
         main = builder.toString();
 

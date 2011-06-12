@@ -26,8 +26,8 @@ public class GPUStatistics extends Statistics {
     public String toString() {
         String statsOutput = super.toString();
         if (verbose) {
-            return statsOutput + new Formatter().format(" | buffers: %1d %1d %1d %1d %1d",
-                    intBufferPool.getNumActive(), intBufferPool.getNumIdle(), clIntBufferPool.getNumActive(), clIntBufferPool.getNumIdle(), getSavedTime()).toString();
+            return statsOutput + new Formatter().format(" | buff: %1d %1d %1d %1d",
+                    intBufferPool.getNumActive(), intBufferPool.getNumIdle(), clIntBufferPool.getNumActive(), clIntBufferPool.getNumIdle()).toString();
         } else {
             return statsOutput;
         }

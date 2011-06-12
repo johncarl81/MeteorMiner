@@ -16,10 +16,15 @@ public class Statistics {
     private double instantHashRate;
     private AtomicLong workPass;
     private AtomicLong workFail;
-    private AtomicLong savedTime;
 
     public Statistics() {
         reset();
+    }
+
+    //copy constructor
+    public Statistics(long startTime) {
+        this();
+        this.startHashTime = startTime;
     }
 
     public void reset() {
@@ -29,7 +34,12 @@ public class Statistics {
         workFail = new AtomicLong();
         previousHashTime = System.currentTimeMillis();
         startHashTime = System.currentTimeMillis();
-        savedTime = new AtomicLong();
+    }
+
+    public void add(Statistics stats) {
+        incrementHashCount(stats.getHashCount());
+        incrementWorkFail(stats.getWorkFailed());
+        incrementWorkPass(stats.getWorkPassed());
     }
 
     public void incrementHashCount(long increment) {
@@ -62,13 +72,9 @@ public class Statistics {
         return (hashCount.get() / 1000.0) / (System.currentTimeMillis() - startHashTime);
     }
 
-    public long getSavedTime() {
-        return savedTime.get();
-    }
-
     public String toString() {
-        return new Formatter().format("%1.2f(%1.2f)mh/s %1d pass %1d fail",
-                getInstantHashRate(), getHashRate(), getWorkPassed(), getWorkFailed()).toString();
+        return new Formatter().format("%1.2f(%1.2f)mh/s",
+                getHashRate(), getInstantHashRate(), getWorkPassed(), getWorkFailed()).toString();
     }
 
     public void updateInstants() {
@@ -77,5 +83,14 @@ public class Statistics {
         instantHashRate = ((currentHashCount - previousHashCount) / 1000.0) / (currentHashTime - previousHashTime);
         previousHashCount = currentHashCount;
         previousHashTime = currentHashTime;
+    }
+
+
+    public long getStartTime() {
+        return startHashTime;
+    }
+
+    public long getHashCount() {
+        return hashCount.get();
     }
 }
