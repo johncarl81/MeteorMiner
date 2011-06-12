@@ -60,6 +60,7 @@ public class MeteorApplicationModule extends AbstractModule {
         bind(Integer.class).annotatedWith(Intensity.class).toInstance(meteorAdvice.getIntensity());
         bind(Integer.class).annotatedWith(WorkSize.class).toInstance(meteorAdvice.getWorksize());
         bind(Long.class).annotatedWith(NetworkErrorPause.class).toInstance(meteorAdvice.getNetworkErrorPause());
+        bind(Integer.class).annotatedWith(Vectors.class).toInstance(meteorAdvice.getVectors());
         bind(new TypeLiteral<List<Integer>>() {
         }).annotatedWith(GPUIds.class).toInstance(meteorAdvice.getGpuIds());
 

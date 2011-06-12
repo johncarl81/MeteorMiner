@@ -42,7 +42,7 @@ public class MeteorAdvice {
     private List<Integer> gpuIds = new ArrayList<Integer>();
     private Long networkErrorPause = 5000L;
     private URLFactory urlFactory = new URLFactory();
-    private int loops;
+    private int vectors;
 
     /**
      * Sets up default parameters
@@ -56,7 +56,7 @@ public class MeteorAdvice {
             this.intensity = Integer.parseInt(INTENSITY);
             this.worksize = -1;
             this.gpuIds.add(0);
-            this.loops = 1;
+            this.vectors = 2;
         } catch (MalformedURLException e) {
             throw new MeteorMinerRuntimeException("Error setting up default configuration");
         }
@@ -105,12 +105,6 @@ public class MeteorAdvice {
 
         worksize = Integer.parseInt(line.getOptionValue("worksize", WORK_SIZE));
 
-        loops = Integer.parseInt(line.getOptionValue("loops", LOOP_SIZE));
-
-        if (loops < 1) {
-            loops = 1;
-        }
-
         tandem = line.hasOption("tandem");
 
         if (line.hasOption("gpu")) {
@@ -124,6 +118,25 @@ public class MeteorAdvice {
             //default
             gpuIds.add(0);
         }
+
+        if (line.hasOption("vectors")) {
+            vectors = Integer.parseInt(line.getOptionValue("vectors"));
+
+            boolean supported = false;
+            for (int v : new int[]{2, 4, 8, 16}) {
+                if (vectors == v) {
+                    supported = true;
+                    break;
+                }
+            }
+
+            if (!supported) {
+                throw new MeteorMinerRuntimeException("Only vector values of 2, 4, 8, and 16 are supported.");
+            }
+        } else {
+            vectors = 1; //no vectors case
+        }
+
 
     }
 
@@ -183,15 +196,11 @@ public class MeteorAdvice {
         return tandem;
     }
 
-    public void setWorksize(int worksize) {
-        this.worksize = worksize;
-    }
-
     public Long getNetworkErrorPause() {
         return networkErrorPause;
     }
 
-    public int getLoops() {
-        return loops;
+    public int getVectors() {
+        return vectors;
     }
 }

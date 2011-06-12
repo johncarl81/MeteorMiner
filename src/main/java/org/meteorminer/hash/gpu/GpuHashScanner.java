@@ -1,6 +1,6 @@
 package org.meteorminer.hash.gpu;
 
-import org.meteorminer.config.MeteorAdvice;
+import org.meteorminer.config.binding.Vectors;
 import org.meteorminer.domain.Device;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
@@ -33,7 +33,8 @@ public class GpuHashScanner extends AbstractHashScanner {
     @Inject
     private Device device;
     @Inject
-    private MeteorAdvice advice;
+    @Vectors
+    private int vectors;
 
     private long nonceCount;
 
@@ -41,7 +42,7 @@ public class GpuHashScanner extends AbstractHashScanner {
     public void innerScan() {
 
         nonceCount = 0;
-        int nonceWorkSize = diabloMiner.getWorkgroupSize() * advice.getLoops();
+        int nonceWorkSize = diabloMiner.getWorkgroupSize() * vectors;
 
         Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(NONCE_BUFFER * nonceWorkSize);
 
@@ -68,13 +69,6 @@ public class GpuHashScanner extends AbstractHashScanner {
         if (diabloMiner == null) {
             return 0;
         }
-        return nonceCount * diabloMiner.getWorkgroupSize() * advice.getLoops();
-    }
-
-    public int getWorkgroupSize() {
-        if (diabloMiner == null) {
-            return 0;
-        }
-        return diabloMiner.getWorkgroupSize();
+        return nonceCount * diabloMiner.getWorkgroupSize() * vectors;
     }
 }

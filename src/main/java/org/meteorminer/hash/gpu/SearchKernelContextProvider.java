@@ -1,8 +1,9 @@
-package org.meteorminer.config;
+package org.meteorminer.hash.gpu;
 
 import com.nativelibs4java.opencl.*;
 import org.apache.commons.io.IOUtils;
-import org.meteorminer.hash.gpu.KernelContext;
+import org.meteorminer.config.MeteorAdvice;
+import org.meteorminer.config.MeteorMinerRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -53,21 +54,13 @@ public class SearchKernelContextProvider implements Provider<KernelContext> {
     }
 
     private void addOptions(CLProgram program, CLDevice device, List<String> extensions) {
-        //loops
-        if (advice.getLoops() > 1) {
-            program.addBuildOption("-D DOLOOPS");
-            program.addBuildOption("-D LOOPS=" + advice.getLoops());
-        }
 
         //todo:implement
 //        if(advice.isBFI_INT() && extensions.contains("cl_amd_media_ops")){
 //            program.addBuildOption("-D BITALIGN");
 //        }
-//        program.addBuildOption("-D OUTPUT_MASK=0xFF");
-//
-//        if(advice.isVectors()){
-//            program.addBuildOption("-D VECTORS");
-//        }
+        program.addBuildOption("-D OUTPUT_MASK=0xFF");
+        program.addBuildOption("-D VECTORS" + advice.getVectors());
     }
 
 }

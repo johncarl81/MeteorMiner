@@ -63,7 +63,7 @@ public class MeteorMiner {
         options.addOption("i", "intensity", true, "optional intensity value");
         options.addOption("w", "worksize", true, "optional worksize override (> 0)");
         options.addOption("tandem", false, "optional flag to tun on tandem device mining");
-        options.addOption("l", "loops", true, "optional kernel loop value");
+        options.addOption("vectors", true, "optional kernel vector value (2, 4, 8, or 16)");
 
         return options;
     }
