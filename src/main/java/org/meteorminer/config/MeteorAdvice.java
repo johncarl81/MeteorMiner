@@ -22,8 +22,9 @@ public class MeteorAdvice {
     private static final String PORT = "8332";
     private static final String GET_WORK_TIMEOUT = "5";
     private static final String CPU_COUNT = "0";
-    private static final String INTENSITY = "12";
+    private static final String INTENSITY = "4";
     private static final String WORK_SIZE = "-1";
+    private static final String LOOP_SIZE = "0";
 
     private URL bitcoinUrl;
     private String username;
@@ -41,6 +42,7 @@ public class MeteorAdvice {
     private List<Integer> gpuIds = new ArrayList<Integer>();
     private Long networkErrorPause = 5000L;
     private URLFactory urlFactory = new URLFactory();
+    private int loops;
 
     /**
      * Sets up default parameters
@@ -51,9 +53,10 @@ public class MeteorAdvice {
             this.bitcoinUrl = urlFactory.buildUrl(LOCALHOST, PORT);
             this.getWorkTimeout = Long.parseLong(GET_WORK_TIMEOUT) * 1000;
             this.verbose = false;
-            this.intensity = 10;
+            this.intensity = Integer.parseInt(INTENSITY);
             this.worksize = -1;
             this.gpuIds.add(0);
+            this.loops = 1;
         } catch (MalformedURLException e) {
             throw new MeteorMinerRuntimeException("Error setting up default configuration");
         }
@@ -95,7 +98,18 @@ public class MeteorAdvice {
         verbose = line.hasOption("verbose");
         cpuCount = Integer.parseInt(line.getOptionValue("cpu", CPU_COUNT));
         intensity = Integer.parseInt(line.getOptionValue("intensity", INTENSITY));
+
+        if (intensity < 0 || intensity > 16) {
+            throw new MeteorMinerRuntimeException("Intensity value must be between 0 and 16");
+        }
+
         worksize = Integer.parseInt(line.getOptionValue("worksize", WORK_SIZE));
+
+        loops = Integer.parseInt(line.getOptionValue("loops", LOOP_SIZE));
+
+        if (loops < 1) {
+            loops = 1;
+        }
 
         tandem = line.hasOption("tandem");
 
@@ -175,5 +189,9 @@ public class MeteorAdvice {
 
     public Long getNetworkErrorPause() {
         return networkErrorPause;
+    }
+
+    public int getLoops() {
+        return loops;
     }
 }

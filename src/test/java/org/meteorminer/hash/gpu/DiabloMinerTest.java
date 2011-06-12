@@ -53,7 +53,7 @@ public class DiabloMinerTest {
 
         int nonce = 563799816;
 
-        DiabloMiner miner = new DiabloMiner(device, 10, -1, kernelContext, clIntBufferPool, intBufferPool, output);
+        DiabloMiner miner = new DiabloMiner(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output);
 
         MinerResult result = miner.hash(nonce, work);
         result.getEvent().waitFor();

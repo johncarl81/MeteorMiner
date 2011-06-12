@@ -1,5 +1,6 @@
 package org.meteorminer.hash.gpu;
 
+import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.domain.Device;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.AbstractHashScanner;
@@ -31,14 +32,18 @@ public class GpuHashScanner extends AbstractHashScanner {
     private WorkConsumer workSource;
     @Inject
     private Device device;
+    @Inject
+    private MeteorAdvice advice;
 
     private long nonceCount;
+
 
     public void innerScan() {
 
         nonceCount = 0;
+        int nonceWorkSize = diabloMiner.getWorkgroupSize() * advice.getLoops();
 
-        Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(diabloMiner.getWorkgroupSize() * NONCE_BUFFER);
+        Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(NONCE_BUFFER * nonceWorkSize);
 
         Work work;
         //outer loop that reserves the nonce ranges.  This reduces strain on the atomic reference to the
@@ -47,8 +52,8 @@ public class GpuHashScanner extends AbstractHashScanner {
             work = workSource.getWork();
             int nonce = nonceIterator.next();
             //inner loop to iterate over the buffered ranges
-            int nonceEnd = nonce + diabloMiner.getWorkgroupSize() * NONCE_BUFFER;
-            for (; nonce < nonceEnd; nonce += diabloMiner.getWorkgroupSize()) {
+            int nonceEnd = nonce + NONCE_BUFFER * nonceWorkSize;
+            for (; nonce < nonceEnd; nonce += nonceWorkSize) {
                 MinerResult output = diabloMiner.hash(nonce, work);
                 hashChecker.check(output, work);
             }
@@ -63,7 +68,7 @@ public class GpuHashScanner extends AbstractHashScanner {
         if (diabloMiner == null) {
             return 0;
         }
-        return nonceCount * diabloMiner.getWorkgroupSize();
+        return nonceCount * diabloMiner.getWorkgroupSize() * advice.getLoops();
     }
 
     public int getWorkgroupSize() {

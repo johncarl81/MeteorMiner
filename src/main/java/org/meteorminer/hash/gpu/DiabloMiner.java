@@ -47,7 +47,7 @@ public class DiabloMiner {
         } else {
             localWorkSize = worksize;
         }
-        this.workgroupSize = localWorkSize * new Double(Math.pow(2, intensity)).intValue();
+        this.workgroupSize = new Double(Math.pow(2, 16 + intensity)).intValue();
 
         this.kernelContext = kernelContext;
         this.clIntBufferPool = clIntBufferPool;

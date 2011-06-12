@@ -52,10 +52,10 @@ public class MeteorMiner {
         Options options = new Options();
         options.addOption("h", "help", false, "this help");
         options.addOption("u", "user", true, "optional bitcoin host username");
-        options.addOption("p", "pass", true, "optioanl bitcoin host password");
+        options.addOption("p", "pass", true, "optional bitcoin host password");
         options.addOption("o", "host", true, "optional bitcoin host IP (default: localhost)");
-        options.addOption("r", "port", true, "optioanl bitcoin host port (default: 8332)");
-        options.addOption("g", "getwork", true, "optioanl seconds between getwork refresh (default: 5)");
+        options.addOption("r", "port", true, "optional bitcoin host port (default: 8332)");
+        options.addOption("g", "getwork", true, "optional seconds between getwork refresh (default: 5)");
         options.addOption("v", "verbose", false, "Verbose Output");
         options.addOption("x", "proxy", true, "optional proxy settings host:port<:username:password>");
         options.addOption("c", "cpu", true, "optional count of mining CPUs");
@@ -63,6 +63,7 @@ public class MeteorMiner {
         options.addOption("i", "intensity", true, "optional intensity value");
         options.addOption("w", "worksize", true, "optional worksize override (> 0)");
         options.addOption("tandem", false, "optional flag to tun on tandem device mining");
+        options.addOption("l", "loops", true, "optional kernel loop value");
 
         return options;
     }
