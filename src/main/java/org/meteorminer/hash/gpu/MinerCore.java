@@ -12,7 +12,9 @@ import javax.inject.Inject;
 import java.nio.IntBuffer;
 
 /**
- * Guts of the DiabloMiner, rearranged for use within Meteor Miner.
+ * Guts of the Miner, rearranged for use within Meteor Miner.
+ * <p/>
+ * Inspired by the Diablo miner software:
  * <p/>
  * https://github.com/Diablo-D3/DiabloMiner
  * http://forum.bitcoin.org/?topic=1721.0
@@ -21,7 +23,7 @@ import java.nio.IntBuffer;
  *
  * @author John Ericksen
  */
-public class DiabloMiner {
+public class MinerCore {
 
     private final KernelContext kernelContext;
 
@@ -34,12 +36,12 @@ public class DiabloMiner {
     private Work work;
 
     @Inject
-    public DiabloMiner(GPUDevice device,
-                       @Intensity int intensity,
-                       @WorkSize int worksize,
-                       @SearchKernel KernelContext kernelContext,
-                       @CLIntBufferPool ObjectPool clIntBufferPool,
-                       @IntBufferPool ObjectPool intBufferPool, CLInterface output) {
+    public MinerCore(GPUDevice device,
+                     @Intensity int intensity,
+                     @WorkSize int worksize,
+                     @SearchKernel KernelContext kernelContext,
+                     @CLIntBufferPool ObjectPool clIntBufferPool,
+                     @IntBufferPool ObjectPool intBufferPool, CLInterface output) {
         this.output = output;
 
         if (worksize == -1) {

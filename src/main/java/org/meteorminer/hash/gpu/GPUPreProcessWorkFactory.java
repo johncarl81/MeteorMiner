@@ -11,7 +11,7 @@ import org.meteorminer.hash.PreProcessWorkFactory;
  */
 public class GPUPreProcessWorkFactory implements PreProcessWorkFactory {
 
-    public static final String PRE_PROCESS_NAME = "Diablo";
+    public static final String PRE_PROCESS_NAME = "GPUCore";
 
     @Override
     public PreProcessWork buildPreProcessWork(Work work) {

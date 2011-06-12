@@ -55,11 +55,14 @@ public class SearchKernelContextProvider implements Provider<KernelContext> {
 
     private void addOptions(CLProgram program, CLDevice device, List<String> extensions) {
 
-        //todo:implement
-//        if(advice.isBFI_INT() && extensions.contains("cl_amd_media_ops")){
+//        if(advice.isBfi_int() && extensions.contains("cl_amd_media_ops")){
 //            program.addBuildOption("-D BITALIGN");
+//            //todo: add bitalign processing?
 //        }
+
         program.addBuildOption("-D OUTPUT_MASK=0xFF");
+
+        //device.getPreferredVectorWidthInt();
         program.addBuildOption("-D VECTORS" + advice.getVectors());
     }
 

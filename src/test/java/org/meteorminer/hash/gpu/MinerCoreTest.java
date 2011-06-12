@@ -23,7 +23,7 @@ import static junit.framework.Assert.assertEquals;
 /**
  * @author John Ericksen
  */
-public class DiabloMinerTest {
+public class MinerCoreTest {
 
     private KernelContext kernelContext;
     private ObjectPool intBufferPool;
@@ -49,9 +49,9 @@ public class DiabloMinerTest {
 
         int nonce = 563799816;
 
-        DiabloMiner miner = new DiabloMiner(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output);
+        MinerCore minerCore = new MinerCore(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output);
 
-        MinerResult result = miner.hash(nonce, work);
+        MinerResult result = minerCore.hash(nonce, work);
         result.getEvent().waitFor();
 
         IntBuffer buffer = result.getBuffer();

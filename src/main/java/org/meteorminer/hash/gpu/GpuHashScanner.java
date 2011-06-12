@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import java.util.Iterator;
 
 /**
- * HashScanner that utilizes the GPU through the DiabloMiner implementation
+ * HashScanner that utilizes the GPU
  *
  * @author John Ericksen
  */
@@ -27,7 +27,7 @@ public class GpuHashScanner extends AbstractHashScanner {
     @Inject
     private NonceIteratorFactory nonceIteratorFactory;
     @Inject
-    private DiabloMiner diabloMiner;
+    private MinerCore minerCore;
     @Inject
     private WorkConsumer workSource;
     @Inject
@@ -42,7 +42,7 @@ public class GpuHashScanner extends AbstractHashScanner {
     public void innerScan() {
 
         nonceCount = 0;
-        int nonceWorkSize = diabloMiner.getWorkgroupSize() * vectors;
+        int nonceWorkSize = minerCore.getWorkgroupSize() * vectors;
 
         Iterator<Integer> nonceIterator = nonceIteratorFactory.createNonceIterator(NONCE_BUFFER * nonceWorkSize);
 
@@ -55,7 +55,7 @@ public class GpuHashScanner extends AbstractHashScanner {
             //inner loop to iterate over the buffered ranges
             int nonceEnd = nonce + NONCE_BUFFER * nonceWorkSize;
             for (; nonce < nonceEnd; nonce += nonceWorkSize) {
-                MinerResult output = diabloMiner.hash(nonce, work);
+                MinerResult output = minerCore.hash(nonce, work);
                 hashChecker.check(output, work);
             }
             nonceCount += NONCE_BUFFER;
@@ -66,9 +66,9 @@ public class GpuHashScanner extends AbstractHashScanner {
 
     @Override
     public long getNonceCount() {
-        if (diabloMiner == null) {
+        if (minerCore == null) {
             return 0;
         }
-        return nonceCount * diabloMiner.getWorkgroupSize() * vectors;
+        return nonceCount * minerCore.getWorkgroupSize() * vectors;
     }
 }

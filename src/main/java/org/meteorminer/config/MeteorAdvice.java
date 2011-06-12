@@ -43,6 +43,7 @@ public class MeteorAdvice {
     private Long networkErrorPause = 5000L;
     private URLFactory urlFactory = new URLFactory();
     private int vectors;
+    private boolean bfi_int;
 
     /**
      * Sets up default parameters
@@ -137,6 +138,7 @@ public class MeteorAdvice {
             vectors = 1; //no vectors case
         }
 
+        bfi_int = line.hasOption("bfiint");
 
     }
 
@@ -202,5 +204,9 @@ public class MeteorAdvice {
 
     public int getVectors() {
         return vectors;
+    }
+
+    public boolean isBfi_int() {
+        return bfi_int;
     }
 }
