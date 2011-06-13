@@ -4,6 +4,7 @@ import com.nativelibs4java.opencl.*;
 import org.apache.commons.io.IOUtils;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerRuntimeException;
+import org.meteorminer.config.binding.BufferSize;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -24,6 +25,9 @@ public class SearchKernelContextProvider implements Provider<KernelContext> {
     private CLDevice device;
     @Inject
     private MeteorAdvice advice;
+    @Inject
+    @BufferSize
+    private int bufferSize;
 
     @Override
     public KernelContext get() {
@@ -60,7 +64,8 @@ public class SearchKernelContextProvider implements Provider<KernelContext> {
 //            //todo: add bitalign processing?
 //        }
 
-        program.addBuildOption("-D OUTPUT_MASK=0xFF");
+        program.addBuildOption("-D OUTPUT_MASK=" + (bufferSize - 2));
+        program.addBuildOption("-D OUTPUT_SIZE=" + (bufferSize - 1));
 
         //device.getPreferredVectorWidthInt();
         program.addBuildOption("-D VECTORS" + advice.getVectors());

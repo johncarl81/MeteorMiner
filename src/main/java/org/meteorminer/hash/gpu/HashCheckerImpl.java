@@ -1,6 +1,7 @@
 package org.meteorminer.hash.gpu;
 
 import org.apache.commons.pool.ObjectPool;
+import org.meteorminer.config.binding.BufferSize;
 import org.meteorminer.config.binding.CLIntBufferPool;
 import org.meteorminer.config.binding.IntBufferPool;
 import org.meteorminer.domain.Work;
@@ -25,6 +26,9 @@ public class HashCheckerImpl implements HashChecker {
     private CLInterface output;
     @Inject
     private VerifyHash verifyHash;
+    @Inject
+    @BufferSize
+    private int bufferSize;
 
     @Override
     public void check(MinerResult result, Work work) {
@@ -33,11 +37,12 @@ public class HashCheckerImpl implements HashChecker {
         try {
             clIntBufferPool.returnObject(result.getClBuffer());
 
-            for (int i = 0; i < 0xFF; i++) {
-
-                if (buffer.get(i) > 0) {
-                    this.output.verbose("Found Hash, proceeding to local verification");
-                    verifyHash.verify(work, buffer.get(i));
+            if (buffer.get(bufferSize - 1) > 0) {
+                for (int i = 0; i < bufferSize - 1; i++) {
+                    if (buffer.get(i) > 0) {
+                        this.output.verbose("Found Hash, proceeding to local verification");
+                        verifyHash.verify(work, buffer.get(i));
+                    }
                 }
             }
 

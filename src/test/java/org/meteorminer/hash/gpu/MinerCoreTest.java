@@ -6,7 +6,9 @@ import com.nativelibs4java.opencl.JavaCL;
 import org.apache.commons.pool.ObjectPool;
 import org.junit.Before;
 import org.junit.Test;
+import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
+import org.meteorminer.config.binding.BufferSize;
 import org.meteorminer.config.binding.CLIntBufferPool;
 import org.meteorminer.config.binding.IntBufferPool;
 import org.meteorminer.config.binding.SearchKernel;
@@ -31,6 +33,8 @@ public class MinerCoreTest {
     private GPUDevice device;
     private CLInterface output;
     private WorkMockFactory workMockFactory;
+    private MeteorAdvice advice;
+    private int bufferSize;
 
     @Before
     public void setup() throws MalformedURLException {
@@ -41,6 +45,8 @@ public class MinerCoreTest {
         device = injector.getInstance(GPUDevice.class);
         output = injector.getInstance(CLInterface.class);
         workMockFactory = injector.getInstance(WorkMockFactory.class);
+        advice = injector.getInstance(MeteorAdvice.class);
+        bufferSize = injector.getInstance(Key.get(Integer.class, BufferSize.class));
     }
 
     @Test
@@ -49,13 +55,14 @@ public class MinerCoreTest {
 
         int nonce = 563799816;
 
-        MinerCore minerCore = new MinerCore(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output);
+        MinerCore minerCore = new MinerCore(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output, bufferSize);
 
-        MinerResult result = minerCore.hash(nonce, work);
+        MinerResult result = minerCore.hash(nonce / advice.getVectors(), work);
         result.getEvent().waitFor();
 
         IntBuffer buffer = result.getBuffer();
 
-        assertEquals(nonce, buffer.get(nonce & 0xFF));
+        assertEquals(nonce, buffer.get(nonce & (bufferSize - 1)));
+        assertEquals(nonce, buffer.get(bufferSize - 1));
     }
 }

@@ -76,16 +76,16 @@ __kernel void search(	const uint fW0, const uint fW1, const uint fW2, const uint
 	u nonce;
 
 #ifdef VECTORS16
-    nonce = (uint16)(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) + (base + get_global_id(0));
+    nonce = (uint16)(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) + (base + get_global_id(0)<<4);
 #endif
 #ifdef VECTORS8
-    nonce = (uint8)(0, 1, 2, 3, 4, 5, 6, 7) + (base + get_global_id(0));
+    nonce = (uint8)(0, 1, 2, 3, 4, 5, 6, 7) + (base + get_global_id(0)<<3);
 #endif
 #ifdef VECTORS4
-    nonce = (uint4)(0, 1, 2, 3) + (base + get_global_id(0));
+    nonce = (uint4)(0, 1, 2, 3) + (base + get_global_id(0)<<2);
 #endif
 #ifdef VECTORS2
-    nonce = (uint2)(0, 1) + (base + get_global_id(0));
+    nonce = (uint2)(0, 1) + (base + get_global_id(0)<<1);
 #endif
 #ifdef VECTORS1
     nonce = base + get_global_id(0);
@@ -313,44 +313,44 @@ __kernel void search(	const uint fW0, const uint fW1, const uint fW2, const uint
 
 	H+=0x5be0cd19;
 #ifdef VECTORS16
-    if (H.s0 == 0){output[nonce.s0 & OUTPUT_MASK] = nonce.s0;}
-	else if (H.s1 == 0){output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
-	else if (H.s2 == 0){output[nonce.s2 & OUTPUT_MASK] = nonce.s2;}
-	else if (H.s3 == 0){output[nonce.s3 & OUTPUT_MASK] = nonce.s3;}
-	else if (H.s4 == 0){output[nonce.s4 & OUTPUT_MASK] = nonce.s4;}
-	else if (H.s5 == 0){output[nonce.s5 & OUTPUT_MASK] = nonce.s5;}
-	else if (H.s6 == 0){output[nonce.s6 & OUTPUT_MASK] = nonce.s6;}
-	else if (H.s7 == 0){output[nonce.s7 & OUTPUT_MASK] = nonce.s7;}
-	else if (H.s8 == 0){output[nonce.s8 & OUTPUT_MASK] = nonce.s8;}
-	else if (H.s9 == 0){output[nonce.s9 & OUTPUT_MASK] = nonce.s9;}
-	else if (H.sa == 0){output[nonce.sa & OUTPUT_MASK] = nonce.sa;}
-	else if (H.sb == 0){output[nonce.sb & OUTPUT_MASK] = nonce.sb;}
-	else if (H.sc == 0){output[nonce.sc & OUTPUT_MASK] = nonce.sc;}
-	else if (H.sd == 0){output[nonce.sd & OUTPUT_MASK] = nonce.sd;}
-	else if (H.se == 0){output[nonce.se & OUTPUT_MASK] = nonce.se;}
-	else if (H.sf == 0){output[nonce.sf & OUTPUT_MASK] = nonce.sf;}
+    if (H.s0 == 0){output[OUTPUT_SIZE] = output[nonce.s0 & OUTPUT_MASK] = nonce.s0;}
+	else if (H.s1 == 0){output[OUTPUT_SIZE] = output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
+	else if (H.s2 == 0){output[OUTPUT_SIZE] = output[nonce.s2 & OUTPUT_MASK] = nonce.s2;}
+	else if (H.s3 == 0){output[OUTPUT_SIZE] = output[nonce.s3 & OUTPUT_MASK] = nonce.s3;}
+	else if (H.s4 == 0){output[OUTPUT_SIZE] = output[nonce.s4 & OUTPUT_MASK] = nonce.s4;}
+	else if (H.s5 == 0){output[OUTPUT_SIZE] = output[nonce.s5 & OUTPUT_MASK] = nonce.s5;}
+	else if (H.s6 == 0){output[OUTPUT_SIZE] = output[nonce.s6 & OUTPUT_MASK] = nonce.s6;}
+	else if (H.s7 == 0){output[OUTPUT_SIZE] = output[nonce.s7 & OUTPUT_MASK] = nonce.s7;}
+	else if (H.s8 == 0){output[OUTPUT_SIZE] = output[nonce.s8 & OUTPUT_MASK] = nonce.s8;}
+	else if (H.s9 == 0){output[OUTPUT_SIZE] = output[nonce.s9 & OUTPUT_MASK] = nonce.s9;}
+	else if (H.sa == 0){output[OUTPUT_SIZE] = output[nonce.sa & OUTPUT_MASK] = nonce.sa;}
+	else if (H.sb == 0){output[OUTPUT_SIZE] = output[nonce.sb & OUTPUT_MASK] = nonce.sb;}
+	else if (H.sc == 0){output[OUTPUT_SIZE] = output[nonce.sc & OUTPUT_MASK] = nonce.sc;}
+	else if (H.sd == 0){output[OUTPUT_SIZE] = output[nonce.sd & OUTPUT_MASK] = nonce.sd;}
+	else if (H.se == 0){output[OUTPUT_SIZE] = output[nonce.se & OUTPUT_MASK] = nonce.se;}
+	else if (H.sf == 0){output[OUTPUT_SIZE] = output[nonce.sf & OUTPUT_MASK] = nonce.sf;}
 #endif
 #ifdef VECTORS8
-    if (H.s0 == 0){output[nonce.s0 & OUTPUT_MASK] = nonce.s0;}
-	else if (H.s1 == 0){output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
-	else if (H.s2 == 0){output[nonce.s2 & OUTPUT_MASK] = nonce.s2;}
-	else if (H.s3 == 0){output[nonce.s3 & OUTPUT_MASK] = nonce.s3;}
-	else if (H.s4 == 0){output[nonce.s4 & OUTPUT_MASK] = nonce.s4;}
-	else if (H.s5 == 0){output[nonce.s5 & OUTPUT_MASK] = nonce.s5;}
-	else if (H.s6 == 0){output[nonce.s6 & OUTPUT_MASK] = nonce.s6;}
-	else if (H.s7 == 0){output[nonce.s7 & OUTPUT_MASK] = nonce.s7;}
+    if (H.s0 == 0){output[OUTPUT_SIZE] = output[nonce.s0 & OUTPUT_MASK] = nonce.s0;}
+	else if (H.s1 == 0){output[OUTPUT_SIZE] = output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
+	else if (H.s2 == 0){output[OUTPUT_SIZE] = output[nonce.s2 & OUTPUT_MASK] = nonce.s2;}
+	else if (H.s3 == 0){output[OUTPUT_SIZE] = output[nonce.s3 & OUTPUT_MASK] = nonce.s3;}
+	else if (H.s4 == 0){output[OUTPUT_SIZE] = output[nonce.s4 & OUTPUT_MASK] = nonce.s4;}
+	else if (H.s5 == 0){output[OUTPUT_SIZE] = output[nonce.s5 & OUTPUT_MASK] = nonce.s5;}
+	else if (H.s6 == 0){output[OUTPUT_SIZE] = output[nonce.s6 & OUTPUT_MASK] = nonce.s6;}
+	else if (H.s7 == 0){output[OUTPUT_SIZE] = output[nonce.s7 & OUTPUT_MASK] = nonce.s7;}
 #endif
 #ifdef VECTORS4
     if (H.s0 == 0){output[nonce.s0 & OUTPUT_MASK] = nonce.s0;}
-	else if (H.s1 == 0){output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
-	else if (H.s2 == 0){output[nonce.s2 & OUTPUT_MASK] = nonce.s2;}
-	else if (H.s3 == 0){output[nonce.s3 & OUTPUT_MASK] = nonce.s3;}
+	else if (H.s1 == 0){output[OUTPUT_SIZE] = output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
+	else if (H.s2 == 0){output[OUTPUT_SIZE] = output[nonce.s2 & OUTPUT_MASK] = nonce.s2;}
+	else if (H.s3 == 0){output[OUTPUT_SIZE] = output[nonce.s3 & OUTPUT_MASK] = nonce.s3;}
 #endif
 #ifdef VECTORS2
-    if (H.s0 == 0){output[nonce.s0 & OUTPUT_MASK] = nonce.s0;}
-	else if (H.s1 == 0){output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
+    if (H.s0 == 0){output[OUTPUT_SIZE] = output[nonce.s0 & OUTPUT_MASK] = nonce.s0;}
+	else if (H.s1 == 0){output[OUTPUT_SIZE] = output[nonce.s1 & OUTPUT_MASK] = nonce.s1;}
 #endif
 #ifdef VECTORS1
-    if (H == 0){output[nonce & OUTPUT_MASK] = nonce;}
+    if (H == 0){output[OUTPUT_SIZE] = output[nonce & OUTPUT_MASK] = nonce;}
 #endif
 }

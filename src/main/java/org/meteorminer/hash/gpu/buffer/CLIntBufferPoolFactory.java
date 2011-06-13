@@ -3,6 +3,7 @@ package org.meteorminer.hash.gpu.buffer;
 import com.nativelibs4java.opencl.CLIntBuffer;
 import com.nativelibs4java.opencl.CLMem;
 import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.meteorminer.config.binding.BufferSize;
 import org.meteorminer.config.binding.SearchKernel;
 import org.meteorminer.hash.gpu.KernelContext;
 
@@ -24,8 +25,9 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
     @SearchKernel
     private KernelContext kernelContext;
 
-    public CLIntBufferPoolFactory() {
-        int[] emptyArray = new int[0xFF];
+    @Inject
+    public CLIntBufferPoolFactory(@BufferSize int bufferSize) {
+        int[] emptyArray = new int[bufferSize];
         Arrays.fill(emptyArray, 0);
         emptyBuffer = IntBuffer.wrap(emptyArray);
     }

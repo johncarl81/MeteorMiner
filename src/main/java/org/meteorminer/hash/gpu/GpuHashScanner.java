@@ -55,7 +55,7 @@ public class GpuHashScanner extends AbstractHashScanner {
             //inner loop to iterate over the buffered ranges
             int nonceEnd = nonce + NONCE_BUFFER * nonceWorkSize;
             for (; nonce < nonceEnd; nonce += nonceWorkSize) {
-                MinerResult output = minerCore.hash(nonce, work);
+                MinerResult output = minerCore.hash(nonce / vectors, work);
                 hashChecker.check(output, work);
             }
             nonceCount += NONCE_BUFFER;
