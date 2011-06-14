@@ -2,7 +2,7 @@ package org.meteorminer.output;
 
 import org.apache.commons.pool.ObjectPool;
 import org.meteorminer.config.binding.CLIntBufferPool;
-import org.meteorminer.config.binding.IntBufferPool;
+import org.meteorminer.config.binding.RunnableHashCheckerPool;
 import org.meteorminer.config.binding.Verbose;
 
 import javax.inject.Inject;
@@ -13,7 +13,7 @@ import java.util.Formatter;
  */
 public class GPUStatistics extends Statistics {
     @Inject
-    @IntBufferPool
+    @RunnableHashCheckerPool
     private ObjectPool intBufferPool;
     @Inject
     @CLIntBufferPool

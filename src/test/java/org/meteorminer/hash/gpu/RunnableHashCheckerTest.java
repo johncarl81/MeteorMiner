@@ -1,5 +1,6 @@
 package org.meteorminer.hash.gpu;
 
+import org.apache.commons.pool.ObjectPool;
 import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.domain.Work;
@@ -16,6 +17,7 @@ public class RunnableHashCheckerTest {
     private MinerResult output;
     private Work work;
     private HashChecker delegate;
+    private ObjectPool runnablePool;
 
     @Before
     public void setup() {
@@ -23,15 +25,18 @@ public class RunnableHashCheckerTest {
         output = createMock(MinerResult.class);
         work = createMock(Work.class);
         delegate = createMock(HashChecker.class);
+        runnablePool = createMock(ObjectPool.class);
 
-        hashChecker = new RunnableHashChecker(output, work, delegate);
+        hashChecker = new RunnableHashChecker(delegate);
+        hashChecker.setup(output, work, runnablePool);
     }
 
     @Test
-    public void testRun() {
+    public void testRun() throws Exception {
         reset(output, work, delegate);
 
         delegate.check(output, work);
+        runnablePool.returnObject(hashChecker);
 
         replay(output, work, delegate);
 

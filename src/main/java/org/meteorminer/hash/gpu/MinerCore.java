@@ -1,8 +1,9 @@
 package org.meteorminer.hash.gpu;
 
+import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLEvent;
-import com.nativelibs4java.opencl.CLIntBuffer;
 import org.apache.commons.pool.ObjectPool;
+import org.bridj.Pointer;
 import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.domain.Work;
@@ -75,7 +76,7 @@ public class MinerCore {
     public MinerResult hash(int nonceStart, Work work) {
         MinerResult result = null;
         try {
-            CLIntBuffer outputBuffer = (CLIntBuffer) clIntBufferPool.borrowObject();
+            CLBuffer<Integer> outputBuffer = (CLBuffer<Integer>) clIntBufferPool.borrowObject();
             IntBuffer outputBuff = (IntBuffer) intBufferPool.borrowObject();
 
             synchronized (kernelContext) {
@@ -88,7 +89,7 @@ public class MinerCore {
                 kernelContext.getKernel().setArg(23, outputBuffer);
 
                 CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{workgroupSize}, new int[]{localWorkSize});
-                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), 0, bufferSize, outputBuff, false, event), outputBuff, outputBuffer);
+                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), Pointer.pointerToInts(outputBuff), false, event), outputBuff, outputBuffer);
             }
         } catch (Exception e) {
             output.error(e);

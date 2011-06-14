@@ -1,7 +1,7 @@
 package org.meteorminer.hash.gpu;
 
+import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLEvent;
-import com.nativelibs4java.opencl.CLIntBuffer;
 
 import java.nio.IntBuffer;
 
@@ -14,9 +14,9 @@ public class MinerResult {
 
     private CLEvent event;
     private IntBuffer buffer;
-    private CLIntBuffer clBuffer;
+    private CLBuffer<Integer> clBuffer;
 
-    public MinerResult(CLEvent event, IntBuffer buffer, CLIntBuffer clBuffer) {
+    public MinerResult(CLEvent event, IntBuffer buffer, CLBuffer<Integer> clBuffer) {
         this.event = event;
         this.buffer = buffer;
         this.clBuffer = clBuffer;
@@ -30,7 +30,7 @@ public class MinerResult {
         return buffer;
     }
 
-    public CLIntBuffer getClBuffer() {
+    public CLBuffer<Integer> getClBuffer() {
         return clBuffer;
     }
 }

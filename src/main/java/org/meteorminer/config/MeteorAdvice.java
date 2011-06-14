@@ -56,7 +56,7 @@ public class MeteorAdvice {
             this.intensity = Integer.parseInt(INTENSITY);
             this.worksize = -1;
             this.gpuIds.add(0);
-            this.vectors = 2;
+            this.vectors = 1;
         } catch (MalformedURLException e) {
             throw new MeteorMinerRuntimeException("Error setting up default configuration");
         }

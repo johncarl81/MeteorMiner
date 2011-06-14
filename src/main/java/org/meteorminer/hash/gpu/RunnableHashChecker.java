@@ -1,6 +1,6 @@
 package org.meteorminer.hash.gpu;
 
-import com.google.inject.assistedinject.Assisted;
+import org.apache.commons.pool.ObjectPool;
 import org.meteorminer.config.binding.Synchronous;
 import org.meteorminer.domain.Work;
 
@@ -16,18 +16,30 @@ public class RunnableHashChecker implements Runnable {
     private MinerResult output;
     private Work work;
     private HashChecker delegate;
+    private ObjectPool runnablePool;
 
     @Inject
-    public RunnableHashChecker(@Assisted MinerResult output,
-                               @Assisted Work work,
-                               @Synchronous HashChecker delegate) {
+    public RunnableHashChecker(@Synchronous HashChecker delegate) {
+        this.delegate = delegate;
+    }
+
+    public void setup(MinerResult output, Work work, ObjectPool runnablePool) {
         this.output = output;
         this.work = work;
-        this.delegate = delegate;
+        this.runnablePool = runnablePool;
     }
 
     @Override
     public void run() {
         delegate.check(output, work);
+        try {
+            runnablePool.returnObject(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clear() {
+        setup(null, null, null);
     }
 }

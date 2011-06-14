@@ -1,8 +1,9 @@
 package org.meteorminer.hash.gpu.buffer;
 
-import com.nativelibs4java.opencl.CLIntBuffer;
+import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLMem;
 import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.bridj.Pointer;
 import org.meteorminer.config.binding.BufferSize;
 import org.meteorminer.config.binding.SearchKernel;
 import org.meteorminer.hash.gpu.KernelContext;
@@ -50,7 +51,7 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
      */
     @Override
     public void passivateObject(Object passivate) throws Exception {
-        ((CLIntBuffer) passivate).write(kernelContext.getQueue(), emptyBuffer, true);
+        ((CLBuffer<Integer>) passivate).write(kernelContext.getQueue(), Pointer.pointerToInts(emptyBuffer), false);
     }
 
     /**
@@ -60,6 +61,6 @@ public class CLIntBufferPoolFactory extends BasePoolableObjectFactory {
      * @throws Exception
      */
     public void destroyObject(Object buffer) throws Exception {
-        ((CLIntBuffer) buffer).release();
+        ((CLBuffer<Integer>) buffer).release();
     }
 }

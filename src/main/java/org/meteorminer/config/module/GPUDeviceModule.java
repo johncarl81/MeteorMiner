@@ -1,7 +1,6 @@
 package org.meteorminer.config.module;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.nativelibs4java.opencl.CLDevice;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -33,12 +32,6 @@ public class GPUDeviceModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        //Assisted injection factories
-        FactoryModuleBuilder factoryModuleBuilder = new FactoryModuleBuilder();
-
-        install(factoryModuleBuilder
-                .build((RunnableHashCheckerFactory.class)));
-
         bind(CLDevice.class).toInstance(device);
         GPUDevice gpuDevice = new GPUDevice(device, id);
         bind(Device.class).toInstance(gpuDevice);
@@ -58,15 +51,18 @@ public class GPUDeviceModule extends AbstractModule {
         //ObjectPool setup
         IntBufferPoolFactory intBufferPoolFactory = new IntBufferPoolFactory(bufferSize);
         CLIntBufferPoolFactory clIntBufferPoolFactory = new CLIntBufferPoolFactory(bufferSize);
+        RunnableHashCheckerPoolFactory runnableHashCheckerFactory = new RunnableHashCheckerPoolFactory();
 
         requestInjection(intBufferPoolFactory);
         requestInjection(clIntBufferPoolFactory);
+        requestInjection(runnableHashCheckerFactory);
 
         GenericObjectPool.Config config = new GenericObjectPool.Config();
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
 
         bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(new GenericObjectPool(intBufferPoolFactory, config));
         bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(new GenericObjectPool(clIntBufferPoolFactory, config));
+        bind(ObjectPool.class).annotatedWith(RunnableHashCheckerPool.class).toInstance(new GenericObjectPool(runnableHashCheckerFactory, config));
 
     }
 }
