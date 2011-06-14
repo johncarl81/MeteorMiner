@@ -31,8 +31,8 @@ public class MinerCore {
     private ObjectPool clIntBufferPool;
     private ObjectPool intBufferPool;
 
-    private int localWorkSize;
-    private int workgroupSize;
+    private int[] localWorkSize;
+    private int[] workgroupSize;
     private CLInterface output;
     private Work work;
     private int bufferSize;
@@ -49,11 +49,11 @@ public class MinerCore {
         this.bufferSize = bufferSize;
 
         if (worksize == -1) {
-            localWorkSize = kernelContext.getKernel().getWorkGroupSize().get(device.getCLDevice()).intValue();
+            localWorkSize = new int[]{kernelContext.getKernel().getWorkGroupSize().get(device.getCLDevice()).intValue()};
         } else {
-            localWorkSize = worksize;
+            localWorkSize = new int[]{worksize};
         }
-        this.workgroupSize = new Double(Math.pow(2, 16 + intensity)).intValue();
+        this.workgroupSize = new int[]{new Double(Math.pow(2, 16 + intensity)).intValue()};
 
         this.kernelContext = kernelContext;
         this.clIntBufferPool = clIntBufferPool;
@@ -88,7 +88,7 @@ public class MinerCore {
                 kernelContext.getKernel().setArg(22, nonceStart);
                 kernelContext.getKernel().setArg(23, outputBuffer);
 
-                CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), new int[]{workgroupSize}, new int[]{localWorkSize});
+                CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), workgroupSize, localWorkSize);
                 result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), Pointer.pointerToInts(outputBuff), false, event), outputBuff, outputBuffer);
             }
         } catch (Exception e) {
@@ -130,6 +130,6 @@ public class MinerCore {
 
 
     public int getWorkgroupSize() {
-        return workgroupSize;
+        return workgroupSize[0];
     }
 }
