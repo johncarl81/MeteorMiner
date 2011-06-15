@@ -8,10 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
-import org.meteorminer.config.binding.BufferSize;
-import org.meteorminer.config.binding.CLIntBufferPool;
-import org.meteorminer.config.binding.IntBufferPool;
-import org.meteorminer.config.binding.SearchKernel;
+import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.WorkMockFactory;
@@ -30,6 +27,7 @@ public class MinerCoreTest {
     private KernelContext kernelContext;
     private ObjectPool intBufferPool;
     private ObjectPool clIntBufferPool;
+    private ObjectPool resultPool;
     private GPUDevice device;
     private CLInterface output;
     private WorkMockFactory workMockFactory;
@@ -42,6 +40,7 @@ public class MinerCoreTest {
         kernelContext = injector.getInstance(Key.get(KernelContext.class, SearchKernel.class));
         intBufferPool = injector.getInstance(Key.get(ObjectPool.class, IntBufferPool.class));
         clIntBufferPool = injector.getInstance(Key.get(ObjectPool.class, CLIntBufferPool.class));
+        resultPool = injector.getInstance(Key.get(ObjectPool.class, ResultPool.class));
         device = injector.getInstance(GPUDevice.class);
         output = injector.getInstance(CLInterface.class);
         workMockFactory = injector.getInstance(WorkMockFactory.class);
@@ -55,7 +54,7 @@ public class MinerCoreTest {
 
         int nonce = 563799816;
 
-        MinerCore minerCore = new MinerCore(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output, bufferSize);
+        MinerCore minerCore = new MinerCore(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output, bufferSize, resultPool);
 
         MinerResult result = minerCore.hash(nonce / advice.getVectors(), work);
         result.getEvent().waitFor();

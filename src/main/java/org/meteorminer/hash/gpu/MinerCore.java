@@ -30,12 +30,12 @@ public class MinerCore {
 
     private ObjectPool clIntBufferPool;
     private ObjectPool intBufferPool;
+    private ObjectPool resultPool;
 
     private int[] localWorkSize;
     private int[] workgroupSize;
     private CLInterface output;
     private Work work;
-    private int bufferSize;
 
     @Inject
     public MinerCore(GPUDevice device,
@@ -44,9 +44,10 @@ public class MinerCore {
                      @SearchKernel KernelContext kernelContext,
                      @CLIntBufferPool ObjectPool clIntBufferPool,
                      @IntBufferPool ObjectPool intBufferPool, CLInterface output,
-                     @BufferSize int bufferSize) {
+                     @BufferSize int bufferSize,
+                     @ResultPool ObjectPool resultPool) {
         this.output = output;
-        this.bufferSize = bufferSize;
+        this.resultPool = resultPool;
 
         if (worksize == -1) {
             localWorkSize = new int[]{kernelContext.getKernel().getWorkGroupSize().get(device.getCLDevice()).intValue()};
@@ -78,6 +79,7 @@ public class MinerCore {
         try {
             CLBuffer<Integer> outputBuffer = (CLBuffer<Integer>) clIntBufferPool.borrowObject();
             IntBuffer outputBuff = (IntBuffer) intBufferPool.borrowObject();
+            result = (MinerResult) resultPool.borrowObject();
 
             synchronized (kernelContext) {
 
@@ -89,7 +91,7 @@ public class MinerCore {
                 kernelContext.getKernel().setArg(23, outputBuffer);
 
                 CLEvent event = kernelContext.getKernel().enqueueNDRange(kernelContext.getQueue(), workgroupSize, localWorkSize);
-                result = new MinerResult(outputBuffer.read(kernelContext.getQueue(), Pointer.pointerToInts(outputBuff), false, event), outputBuff, outputBuffer);
+                result.setup(outputBuffer.read(kernelContext.getQueue(), Pointer.pointerToInts(outputBuff), false, event), outputBuff, outputBuffer);
             }
         } catch (Exception e) {
             output.error(e);

@@ -16,12 +16,6 @@ public class MinerResult {
     private IntBuffer buffer;
     private CLBuffer<Integer> clBuffer;
 
-    public MinerResult(CLEvent event, IntBuffer buffer, CLBuffer<Integer> clBuffer) {
-        this.event = event;
-        this.buffer = buffer;
-        this.clBuffer = clBuffer;
-    }
-
     public CLEvent getEvent() {
         return event;
     }
@@ -32,5 +26,15 @@ public class MinerResult {
 
     public CLBuffer<Integer> getClBuffer() {
         return clBuffer;
+    }
+
+    public void setup(CLEvent event, IntBuffer outputBuff, CLBuffer<Integer> outputBuffer) {
+        this.event = event;
+        this.buffer = outputBuff;
+        this.clBuffer = outputBuffer;
+    }
+
+    public void clear() {
+        setup(null, null, null);
     }
 }

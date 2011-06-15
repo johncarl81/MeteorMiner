@@ -50,4 +50,8 @@ public class WorkFactory {
 
         return work;
     }
+
+    public void setPreProcessWorkFactories(Set<PreProcessWorkFactory> preProcessWorkFactories) {
+        this.preProcessWorkFactories = preProcessWorkFactories;
+    }
 }

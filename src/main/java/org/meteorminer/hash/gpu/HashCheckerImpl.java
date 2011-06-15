@@ -4,6 +4,7 @@ import org.apache.commons.pool.ObjectPool;
 import org.meteorminer.config.binding.BufferSize;
 import org.meteorminer.config.binding.CLIntBufferPool;
 import org.meteorminer.config.binding.IntBufferPool;
+import org.meteorminer.config.binding.ResultPool;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.VerifyHash;
 import org.meteorminer.output.CLInterface;
@@ -22,6 +23,9 @@ public class HashCheckerImpl implements HashChecker {
     @Inject
     @CLIntBufferPool
     private ObjectPool clIntBufferPool;
+    @Inject
+    @ResultPool
+    private ObjectPool resultPool;
     @Inject
     private CLInterface output;
     @Inject
@@ -45,7 +49,7 @@ public class HashCheckerImpl implements HashChecker {
                     }
                 }
             }
-
+            resultPool.returnObject(result);
             intBufferPool.returnObject(buffer);
         } catch (Exception e) {
             output.error(e);

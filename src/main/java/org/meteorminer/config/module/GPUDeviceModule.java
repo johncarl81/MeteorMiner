@@ -52,10 +52,12 @@ public class GPUDeviceModule extends AbstractModule {
         IntBufferPoolFactory intBufferPoolFactory = new IntBufferPoolFactory(bufferSize);
         CLIntBufferPoolFactory clIntBufferPoolFactory = new CLIntBufferPoolFactory(bufferSize);
         RunnableHashCheckerPoolFactory runnableHashCheckerFactory = new RunnableHashCheckerPoolFactory();
+        MinerResultPoolFactory minerResultPoolFactory = new MinerResultPoolFactory();
 
         requestInjection(intBufferPoolFactory);
         requestInjection(clIntBufferPoolFactory);
         requestInjection(runnableHashCheckerFactory);
+        requestInjection(minerResultPoolFactory);
 
         GenericObjectPool.Config config = new GenericObjectPool.Config();
         config.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_GROW;
@@ -63,6 +65,8 @@ public class GPUDeviceModule extends AbstractModule {
         bind(ObjectPool.class).annotatedWith(IntBufferPool.class).toInstance(new GenericObjectPool(intBufferPoolFactory, config));
         bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(new GenericObjectPool(clIntBufferPoolFactory, config));
         bind(ObjectPool.class).annotatedWith(RunnableHashCheckerPool.class).toInstance(new GenericObjectPool(runnableHashCheckerFactory, config));
+        bind(ObjectPool.class).annotatedWith(ResultPool.class).toInstance(new GenericObjectPool(minerResultPoolFactory, config));
+
 
     }
 }
