@@ -57,6 +57,7 @@ public class MeteorAdvice {
             this.worksize = -1;
             this.gpuIds.add(0);
             this.vectors = 1;
+            this.password = "";
         } catch (MalformedURLException e) {
             throw new MeteorMinerRuntimeException("Error setting up default configuration");
         }
@@ -93,7 +94,7 @@ public class MeteorAdvice {
         }
 
         username = line.getOptionValue("user", null);
-        password = line.getOptionValue("pass", null);
+        password = line.getOptionValue("pass", "");
         getWorkTimeout = Long.parseLong(line.getOptionValue("getwork", GET_WORK_TIMEOUT)) * 1000;
         verbose = line.hasOption("verbose");
         cpuCount = Integer.parseInt(line.getOptionValue("cpu", CPU_COUNT));

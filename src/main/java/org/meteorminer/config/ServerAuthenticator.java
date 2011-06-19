@@ -14,13 +14,21 @@ public class ServerAuthenticator extends Authenticator {
     private PasswordAuthentication proxyAuthentication;
 
     public ServerAuthenticator(String username, String password, String proxyUsername, String proxyPassword) {
-        if (username != null && password != null) {
-            this.serverAuthentication = new PasswordAuthentication(username, password.toCharArray());
+        if (username != null) {
+            this.serverAuthentication = new PasswordAuthentication(username, nullSafeCharArray(password));
         }
-        if (proxyUsername != null && proxyPassword != null) {
-            this.proxyAuthentication = new PasswordAuthentication(proxyUsername, proxyPassword.toCharArray());
+        if (proxyUsername != null) {
+            this.proxyAuthentication = new PasswordAuthentication(proxyUsername, nullSafeCharArray(proxyPassword));
         }
     }
+
+    private char[] nullSafeCharArray(String proxyPassword) {
+        if (proxyPassword == null) {
+            return new char[0];
+        }
+        return proxyPassword.toCharArray();
+    }
+
 
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
