@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.nio.IntBuffer;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author John Ericksen
@@ -61,7 +62,12 @@ public class MinerCoreTest {
 
         IntBuffer buffer = result.getBuffer();
 
-        assertEquals(nonce, buffer.get(nonce & (bufferSize - 1)));
+        boolean found = false;
+        for (int i = 0; i < bufferSize; i++) {
+            found |= buffer.get(i) == nonce;
+        }
+
+        assertTrue(found);
         assertEquals(nonce, buffer.get(bufferSize - 1));
     }
 }

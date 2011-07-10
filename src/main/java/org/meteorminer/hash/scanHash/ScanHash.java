@@ -5,21 +5,17 @@ import org.meteorminer.hash.AbstractHashScanner;
 import org.meteorminer.hash.NonceIteratorFactory;
 import org.meteorminer.hash.VerifyHash;
 import org.meteorminer.hash.WorkConsumer;
-import org.meteorminer.output.Statistics;
 
 import javax.inject.Inject;
 import java.util.Iterator;
 
 
-//4877554
 public class ScanHash extends AbstractHashScanner {
 
     private static final int NONCE_BUFFER = 1000;
 
     @Inject
     private VerifyHash verifyHash;
-    @Inject
-    private Statistics statistics;
     @Inject
     private NonceIteratorFactory nonceIteratorFactory;
     @Inject

@@ -86,6 +86,10 @@ public class Work {
         return target;
     }
 
+    public String getTargetString() {
+        return targetString;
+    }
+
     public String getDataString() {
         return dataString;
     }

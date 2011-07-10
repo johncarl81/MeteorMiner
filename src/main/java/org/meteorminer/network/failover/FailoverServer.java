@@ -33,7 +33,7 @@ public class FailoverServer {
     }
 
     public int getTimeToReturn() {
-        return timeToReturn * 1000;
+        return timeToReturn;
     }
 
     public URL getUrl() {
@@ -47,7 +47,7 @@ public class FailoverServer {
 
     @Override
     public String toString() {
-        return '{' + host + ':' + port + ", ttr=" + getTimeToReturn() + "ms}";
+        return '{' + host + ':' + port + ", ttr=" + getTimeToReturn() + "s}";
     }
 
     public void setOutput(CLInterface output) {
