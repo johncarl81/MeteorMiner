@@ -12,10 +12,6 @@ import javax.inject.Provider;
 public class GsonBuilderConfiguration implements Provider<GsonBuilder> {
     @Override
     public GsonBuilder get() {
-        GsonBuilder builder = new GsonBuilder();
-
-        //builder.registerTypeHierarchyAdapter()
-
-        return builder;
+        return new GsonBuilder();
     }
 }

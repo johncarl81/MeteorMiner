@@ -1,16 +1,17 @@
 package org.meteorminer.network;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.hash.WorkConsumer;
+import org.meteorminer.network.longpoll.LongPollMessageStrategy;
 import org.meteorminer.network.longpoll.LongPollWorker;
 import org.meteorminer.output.CLInterface;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -23,6 +24,7 @@ public class LongPollWorkerTest {
 
     private LongPollWorker longPollWorker;
 
+    private LongPollMessageStrategy longPollMessageStrategy;
     private URL longPollWorkerUrl;
     private JsonClient jsonClient;
     private String getWorkRequest;
@@ -30,7 +32,7 @@ public class LongPollWorkerTest {
     private HashScanner hashScanner;
     private CLInterface output;
     private Work work;
-    private JsonNode jsonNode;
+    private InputStream inputStream;
     private WorkConsumer workSource;
 
     @Before
@@ -44,29 +46,29 @@ public class LongPollWorkerTest {
         hashScanner = createMock(HashScanner.class);
         output = createMock(CLInterface.class);
         work = createMock(Work.class);
-        jsonNode = createMock(JsonNode.class);
+        inputStream = createMock(InputStream.class);
         workSource = createMock(WorkConsumer.class);
+        longPollMessageStrategy = new LongPollMessageStrategy();
 
-        longPollWorker = new LongPollWorker(longPollWorkerUrl, jsonClient, getWorkRequest, workFactory, output, workSource, 10);
+        longPollWorker = new LongPollWorker(longPollWorkerUrl, jsonClient, output, workSource, 10, longPollMessageStrategy);
     }
 
     @Test
     public void testExecution() throws IOException {
-        reset(jsonClient, workFactory, output, hashScanner);
+        reset(jsonClient, workFactory, output, hashScanner, inputStream);
 
-        expect(jsonClient.execute(anyObject(String.class), eq(getWorkRequest), anyObject(URL.class))).andReturn(jsonNode);
+        expect(jsonClient.execute(anyObject(URL.class), eq(longPollMessageStrategy))).andReturn(work);
         output.notification(anyObject(String.class));
         expectLastCall().anyTimes();
 
-        expect(workFactory.buildWork(jsonNode)).andReturn(work);
         workSource.pushWork(work);
 
-        replay(jsonClient, workFactory, output, hashScanner);
+        replay(jsonClient, workFactory, output, hashScanner, inputStream);
 
         longPollWorker.setRunning(false); // will only execute once
         longPollWorker.run();
 
-        verify(jsonClient, workFactory, output, hashScanner);
+        verify(jsonClient, workFactory, output, hashScanner, inputStream);
     }
 
     //todo: test jsonclient throwing exception

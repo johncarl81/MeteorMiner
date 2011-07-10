@@ -1,10 +1,6 @@
 package org.meteorminer.network;
 
 import com.google.inject.assistedinject.Assisted;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.domain.Work;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.output.Statistics;
@@ -19,33 +15,34 @@ public class WorkSubmit implements Runnable {
 
     private Work work;
     private JsonClient jsonClient;
-    private ObjectMapper mapper;
     private Statistics stats;
     private int nonce;
     private CLInterface output;
+    private SubmitWorkMessageStrategyFactory submitWorkMessageStrategyFactory;
 
     @Inject
     public WorkSubmit(@Assisted Work work, @Assisted int nonce,
                       JsonClient jsonClient, Statistics stats,
-                      CLInterface output, ObjectMapper mapper) {
+                      CLInterface output,
+                      SubmitWorkMessageStrategyFactory submitWorkMessageStrategyFactory) {
         this.work = work;
         this.jsonClient = jsonClient;
         this.stats = stats;
         this.nonce = nonce;
         this.output = output;
-        this.mapper = mapper;
+        this.submitWorkMessageStrategyFactory = submitWorkMessageStrategyFactory;
     }
 
     public void run() {
         try {
             output.verbose("Work passed local verification.  Proceeding to submit.");
 
-            String submitMessage = buildSubmitMessage(work);
+            SubmitWorkMessageStrategy submitWorkMessageStrategy = submitWorkMessageStrategyFactory.buildSubmitWorkStrategy(work);
             //last chance to check for stale work
             if (!work.isStale()) {
-                boolean success = parseJsonResult(jsonClient.execute("SendWork", submitMessage));
+                SubmitWorkResponse workResponse = jsonClient.execute(submitWorkMessageStrategy);
 
-                if (success) {
+                if (workResponse.isResult()) {
                     output.notification("Hash Submitted: %08x", nonce);
                     stats.incrementWorkPass(1);
 
@@ -60,28 +57,5 @@ public class WorkSubmit implements Runnable {
             output.notification(work.toString());
             output.error(e);
         }
-    }
-
-    private boolean parseJsonResult(JsonNode node) {
-        return node.getBooleanValue();
-    }
-
-    private String buildSubmitMessage(Work work) {
-        ObjectNode sendworkMessage = mapper.createObjectNode();
-        sendworkMessage.put("method", "getwork");
-        ArrayNode params = sendworkMessage.putArray("params");
-        params.add(encodeBlock(work));
-        sendworkMessage.put("id", 1);
-
-        return sendworkMessage.toString();
-    }
-
-    private String encodeBlock(Work work) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int d : work.getData())
-            builder.append(String.format("%08x", Integer.reverseBytes(d)));
-
-        return builder.toString();
     }
 }

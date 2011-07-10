@@ -1,10 +1,13 @@
 package org.meteorminer.domain;
 
-import org.codehaus.jackson.JsonNode;
+import com.google.gson.Gson;
 import org.meteorminer.hash.PreProcessWorkFactory;
+import org.meteorminer.network.ResponseFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Set;
 
 /**
@@ -13,45 +16,46 @@ import java.util.Set;
  * @author John Ericksen
  */
 @Singleton
-public class WorkFactory {
+public class WorkFactory implements ResponseFactory<Work> {
 
     @Inject
     private Set<PreProcessWorkFactory> preProcessWorkFactories;
-
-    /**
-     * Build a work object from the given JSON response node from the GetWork request.
-     *
-     * @param responseNode
-     * @return Work
-     */
-    public Work buildWork(JsonNode responseNode) {
-        Work work = null;
-
-        if (responseNode.has("midstate") &&
-                responseNode.has("data") &&
-                responseNode.has("hash1") &&
-                responseNode.has("target")) {
-            return buildWork(responseNode.get("data").getValueAsText(),
-                    responseNode.get("midstate").getValueAsText(),
-                    responseNode.get("hash1").getValueAsText(),
-                    responseNode.get("target").getValueAsText());
-        }
-
-        return work;
-    }
+    @Inject
+    private Gson gson;
 
     public Work buildWork(String midstate, String data, String hash1, String target) {
         Work work = new Work(midstate, data, hash1, target);
-        //preprocessing
-        for (PreProcessWorkFactory preProcessWorkFactory : preProcessWorkFactories) {
-            work.getPreProcessedWork().put(preProcessWorkFactory.getPreProcessWorkName(),
-                    preProcessWorkFactory.buildPreProcessWork(work));
-        }
+
+        preprocessWork(work);
 
         return work;
     }
 
     public void setPreProcessWorkFactories(Set<PreProcessWorkFactory> preProcessWorkFactories) {
         this.preProcessWorkFactories = preProcessWorkFactories;
+    }
+
+    /**
+     * Build a work object from the given JSON response node from the GetWork request.
+     *
+     * @param inputStream
+     * @return Work
+     */
+    @Override
+    public Work buildResponse(InputStream inputStream) {
+        Work work = gson.fromJson(new InputStreamReader(inputStream), GetWorkResponse.class).getResult();
+        work.processStrings();
+
+        preprocessWork(work);
+
+        return work;
+    }
+
+    private void preprocessWork(Work work) {
+        //preprocessing
+        for (PreProcessWorkFactory preProcessWorkFactory : preProcessWorkFactories) {
+            work.getPreProcessedWork().put(preProcessWorkFactory.getPreProcessWorkName(),
+                    preProcessWorkFactory.buildPreProcessWork(work));
+        }
     }
 }

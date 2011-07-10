@@ -1,11 +1,8 @@
 package org.meteorminer.network.longpoll;
 
 import com.google.inject.assistedinject.Assisted;
-import org.codehaus.jackson.JsonNode;
-import org.meteorminer.config.binding.GetWorkMessage;
 import org.meteorminer.config.binding.NetworkErrorPause;
 import org.meteorminer.domain.Work;
-import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.hash.WorkConsumer;
 import org.meteorminer.network.JsonClient;
 import org.meteorminer.output.CLInterface;
@@ -21,24 +18,21 @@ public class LongPollWorker implements Runnable {
 
     private URL longPollWorkerUrl;
     private JsonClient jsonClient;
-    private String getWorkRequest;
-    private WorkFactory workFactory;
     private CLInterface output;
     private WorkConsumer workSource;
     private boolean running = true;
     private long errorWait;
+    private LongPollMessageStrategy longPollMessageStrategy;
 
     @Inject
     public LongPollWorker(@Assisted URL longPollWorkerUrl,
                           JsonClient jsonClient,
-                          @GetWorkMessage String getWorkRequest,
-                          WorkFactory workFactory,
                           CLInterface output, WorkConsumer workSource,
-                          @NetworkErrorPause long netorkErrorPause) {
+                          @NetworkErrorPause long netorkErrorPause,
+                          LongPollMessageStrategy longPollMessageStrategy) {
         this.longPollWorkerUrl = longPollWorkerUrl;
         this.jsonClient = jsonClient;
-        this.getWorkRequest = getWorkRequest;
-        this.workFactory = workFactory;
+        this.longPollMessageStrategy = longPollMessageStrategy;
         this.output = output;
         this.workSource = workSource;
         this.errorWait = netorkErrorPause;
@@ -47,11 +41,10 @@ public class LongPollWorker implements Runnable {
     public void run() {
         do {
             try {
-                JsonNode responseNode = jsonClient.execute("GetWork - Long Poll", getWorkRequest, longPollWorkerUrl);
+                Work work = jsonClient.execute(longPollWorkerUrl, longPollMessageStrategy);
 
                 output.notification("Long poll received, pushing work");
 
-                final Work work = workFactory.buildWork(responseNode);
                 if (work != null) {
                     workSource.pushWork(work);
                 }

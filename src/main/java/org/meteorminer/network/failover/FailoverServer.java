@@ -1,5 +1,6 @@
 package org.meteorminer.network.failover;
 
+import com.google.gson.annotations.SerializedName;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.service.URLFactory;
 
@@ -12,12 +13,16 @@ import java.net.URL;
 public class FailoverServer {
 
     //{"host":"server.tld","port":8332,"ttr":0}
-
     private String host;
     private int port;
+    @SerializedName("ttr")
     private int timeToReturn;
-    private CLInterface output;
-    private URLFactory urlFactory;
+    private transient CLInterface output;
+    private transient URLFactory urlFactory;
+
+    public FailoverServer() {
+        //empty bean constructor
+    }
 
     public FailoverServer(String host, int port, int timeToReturn, CLInterface output, URLFactory urlFactory) {
         this.host = host;
@@ -28,7 +33,7 @@ public class FailoverServer {
     }
 
     public int getTimeToReturn() {
-        return timeToReturn;
+        return timeToReturn * 1000;
     }
 
     public URL getUrl() {
@@ -42,6 +47,14 @@ public class FailoverServer {
 
     @Override
     public String toString() {
-        return '{' + host + ':' + port + ", ttr=" + timeToReturn + "ms}";
+        return '{' + host + ':' + port + ", ttr=" + getTimeToReturn() + "ms}";
+    }
+
+    public void setOutput(CLInterface output) {
+        this.output = output;
+    }
+
+    public void setUrlFactory(URLFactory urlFactory) {
+        this.urlFactory = urlFactory;
     }
 }

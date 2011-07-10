@@ -1,10 +1,5 @@
 package org.meteorminer.network;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.output.CLInterface;
 
 import javax.inject.Inject;
@@ -23,25 +18,23 @@ public class JsonClient {
     @Inject
     private BitcoinConnectionFactory connectionFactory;
     @Inject
-    private ObjectMapper mapper;
-    @Inject
     private CLInterface output;
     @Inject
     private Set<RPCExtension> extensions;
 
-    public JsonNode execute(String requestType, String requestMessage, URL url) throws IOException {
-        return execute(requestType, requestMessage, connectionFactory.getBitcoinConnection(url));
+    public <T> T execute(URL url, MessageStrategy<T> messageStrategy) throws IOException {
+        return execute(connectionFactory.getBitcoinConnection(url), messageStrategy);
     }
 
-    public JsonNode execute(String requestType, String requestMessage) throws IOException {
+    public <T> T execute(MessageStrategy<T> messageStrategy) throws IOException {
 
         HttpURLConnection connection = connectionFactory.getBitcoinConnection();
-        return execute(requestType, requestMessage, connection);
+        return execute(connection, messageStrategy);
     }
 
-    public JsonNode execute(String requestType, String requestMessage, HttpURLConnection connection) throws IOException {
+    public <T> T execute(HttpURLConnection connection, MessageStrategy<T> messageStrategy) throws IOException {
 
-        output.verbose("JSON Request " + requestType + " @ " + connection.getURL());
+        output.verbose("JSON Request " + messageStrategy.getRequestType() + " @ " + connection.getURL());
 
         connection.setRequestProperty("Accept-Encoding", "gzip,deflate");
         connection.setRequestProperty("Content-Type", "application/json");
@@ -49,12 +42,12 @@ public class JsonClient {
 
         OutputStream requestStream = connection.getOutputStream();
         Writer request = new OutputStreamWriter(requestStream);
-        request.write(requestMessage);
+        request.write(messageStrategy.getRequestMessage());
 
         request.close();
         requestStream.close();
 
-        ObjectNode responseMessage = null;
+        T response = null;
 
         InputStream responseStream = null;
 
@@ -74,74 +67,23 @@ public class JsonClient {
                 throw new IOException("Drop to error handler");
             }
 
-            responseMessage = (ObjectNode) mapper.readTree(responseStream);
+            response = messageStrategy.getResponseFactory().buildResponse(responseStream);
 
-        } catch (JsonProcessingException e) {
-            connectionFactory.errorUpdate();
-            throw new IOException("Bitcoin returned unparsable JSON");
         } catch (IOException e) {
             connectionFactory.errorUpdate();
-            readError(connection);
+            throw new IOException("Error while recieving response from server", e);
         } finally {
             if (responseStream != null) {
                 responseStream.close();
             }
         }
 
-        if (responseMessage == null || !responseMessage.has("result")) {
+        if (response == null) {
             connectionFactory.errorUpdate();
             throw new IOException("Bitcoin did not return a result or an error");
         }
 
-
-        return responseMessage.get("result");
-    }
-
-    private void readError(HttpURLConnection connection) throws IOException {
-        if (connection.getErrorStream() == null)
-            throw new IOException("Bitcoin disconnected during response: "
-                    + connection.getResponseCode() + " " + connection.getResponseMessage());
-
-        InputStream errorStream = unboxStream(connection, new StreamExecution() {
-            public InputStream getInputStream(HttpURLConnection connection) {
-                return connection.getErrorStream();
-            }
-        });
-
-        if (errorStream == null)
-            throw new IOException("Bitcoin disconnected during response: "
-                    + connection.getResponseCode() + " " + connection.getResponseMessage());
-
-
-        String error = IOUtils.toString(errorStream);
-
-        if (error.startsWith("{")) {
-            try {
-                checkForError((ObjectNode) mapper.readTree(error));
-            } catch (JsonProcessingException f) {
-                throw new IOException("Bitcoin returned unparsable JSON");
-            }
-        } else {
-            throw new IOException("Bitcoin returned error message: " + error);
-        }
-
-        errorStream.close();
-
-        throw new IOException("Bitcoin returned an error, but with no message");
-    }
-
-    private void checkForError(ObjectNode objectNode) throws IOException {
-        if (objectNode.has("error")) {
-            if (objectNode.get("error").has("message")) {
-                String error = objectNode.get("error").get("message").getValueAsText().trim();
-                throw new IOException("Bitcoin returned error message: " + error);
-            } else if (objectNode.has("error")) {
-                String error = objectNode.get("error").getValueAsText().trim();
-
-                if (!"null".equals(error) && !"".equals(error))
-                    throw new IOException("Bitcoin returned error message: " + error);
-            }
-        }
+        return response;
     }
 
     private InputStream unboxStream(HttpURLConnection connection, StreamExecution execution) throws IOException {
@@ -152,6 +94,10 @@ public class JsonClient {
                 return new InflaterInputStream(execution.getInputStream(connection));
         }
         return execution.getInputStream(connection);
+    }
+
+    public void setExtensions(Set<RPCExtension> extensions) {
+        this.extensions = extensions;
     }
 
     private interface StreamExecution {

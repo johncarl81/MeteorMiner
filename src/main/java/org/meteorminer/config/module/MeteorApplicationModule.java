@@ -3,8 +3,6 @@ package org.meteorminer.config.module;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerRuntimeException;
 import org.meteorminer.config.ServerAuthenticator;
@@ -13,6 +11,7 @@ import org.meteorminer.config.factory.CachedThreadPoolProvider;
 import org.meteorminer.hash.PreProcessWorkFactory;
 import org.meteorminer.hash.gpu.GPUPreProcessWorkFactory;
 import org.meteorminer.hash.scanHash.ScanHashPreProcessWorkFactory;
+import org.meteorminer.network.GetWorkMessageProvider;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
 import org.meteorminer.service.TandemMinerStrategy;
@@ -57,7 +56,7 @@ public class MeteorApplicationModule extends AbstractModule {
         }
 
         bind(Proxy.class).annotatedWith(BitcoinProxy.class).toProvider(new ProxyProvider(meteorAdvice.getProxy()));
-        bind(String.class).annotatedWith(GetWorkMessage.class).toInstance(createGetWorkMessage());
+        bind(String.class).annotatedWith(GetWorkMessage.class).toProvider(GetWorkMessageProvider.class).asEagerSingleton();
         bind(Long.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
         bind(Boolean.class).annotatedWith(Verbose.class).toInstance(meteorAdvice.isVerbose());
         bind(Integer.class).annotatedWith(CPUCount.class).toInstance(meteorAdvice.getCpuCount());
@@ -97,16 +96,5 @@ public class MeteorApplicationModule extends AbstractModule {
         } catch (NoSuchAlgorithmException e) {
             throw new MeteorMinerRuntimeException(e);
         }
-    }
-
-    private String createGetWorkMessage() {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode getWorkNode = mapper.createObjectNode();
-
-        getWorkNode.put("method", "getwork");
-        getWorkNode.putArray("params");
-        getWorkNode.put("id", 1);
-
-        return getWorkNode.toString();
     }
 }

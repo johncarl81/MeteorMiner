@@ -1,10 +1,7 @@
 package org.meteorminer.service;
 
-import org.codehaus.jackson.JsonNode;
-import org.meteorminer.config.binding.GetWorkMessage;
 import org.meteorminer.config.binding.NetworkErrorPause;
 import org.meteorminer.domain.Work;
-import org.meteorminer.domain.WorkFactory;
 import org.meteorminer.network.JsonClient;
 import org.meteorminer.output.CLInterface;
 
@@ -16,35 +13,27 @@ import java.io.IOException;
  */
 public class WorkProducerImpl implements WorkProducer {
 
-    private String getWorkMessage;
     private JsonClient jsonClient;
-    private WorkFactory workFactory;
     private CLInterface output;
     private long errorWait;
+    private GetWorkMessageStrategy getWorkMessageStrategy;
 
     @Inject
     public WorkProducerImpl(
-            @GetWorkMessage String getWorkMessage,
             JsonClient jsonClient,
-            WorkFactory workFactory,
             CLInterface output,
-            @NetworkErrorPause long networkErrorPause) {
+            @NetworkErrorPause long networkErrorPause,
+            GetWorkMessageStrategy getWorkMessageStrategy) {
 
-        this.workFactory = workFactory;
         this.jsonClient = jsonClient;
-        this.getWorkMessage = getWorkMessage;
         this.output = output;
         this.errorWait = networkErrorPause;
+        this.getWorkMessageStrategy = getWorkMessageStrategy;
     }
 
     public Work produce() {
         try {
-            JsonNode responseNode = jsonClient.execute("GetWork", getWorkMessage);
-
-            if (responseNode != null) {
-                return workFactory.buildWork(responseNode);
-            }
-
+            return jsonClient.execute(getWorkMessageStrategy);
         } catch (IOException e) {
             output.error(e);
             try {

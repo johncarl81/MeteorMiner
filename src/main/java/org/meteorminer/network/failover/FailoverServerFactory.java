@@ -1,16 +1,12 @@
 package org.meteorminer.network.failover;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.service.URLFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -19,7 +15,7 @@ import java.util.List;
 public class FailoverServerFactory {
 
     @Inject
-    private ObjectMapper mapper;
+    private Gson gson;
     @Inject
     private CLInterface output;
     @Inject
@@ -27,51 +23,33 @@ public class FailoverServerFactory {
 
     public List<FailoverServer> buildFailoverServers(String hostList) {
 
-        List<FailoverServer> servers = new ArrayList<FailoverServer>();
+        Type collectionType = new TypeToken<List<FailoverServer>>() {
+        }.getType();
 
-        try {
-            ArrayNode nodes = (ArrayNode) mapper.readTree(hostList);
+        List<FailoverServer> servers = gson.fromJson(hostList, collectionType);
 
-            for (JsonNode node : nodes) {
-                FailoverServer server = buildFailoverServer((ObjectNode) node);
-                if (server != null) {
-                    servers.add(server);
-                }
-            }
-
-        } catch (IOException e) {
-            output.error(e);
-            return Collections.emptyList();
+        for (FailoverServer server : servers) {
+            addServerParameters(server);
         }
 
         return servers;
     }
 
-    public FailoverServer buildFailoverServer(String server) {
-        try {
-            return buildFailoverServer((ObjectNode) mapper.readTree(server));
-        } catch (IOException e) {
-            output.error(e);
-            return null;
-        }
-    }
-
-    private FailoverServer buildFailoverServer(ObjectNode node) {
-
-        FailoverServer server = null;
-        if (node.has("host") &&
-                node.has("port") &&
-                node.has("ttr")) {
-            server = new FailoverServer(node.get("host").getTextValue(),
-                    node.get("port").getIntValue(),
-                    node.get("ttr").getIntValue() * 60 * 1000, output, urlFactory);
+    private FailoverServer addServerParameters(FailoverServer server) {
+        if (server != null) {
+            server.setOutput(output);
+            server.setUrlFactory(urlFactory);
         }
 
         return server;
     }
 
-    public void setMapper(ObjectMapper mapper) {
-        this.mapper = mapper;
+    public FailoverServer buildFailoverServer(String server) {
+        return addServerParameters(gson.fromJson(server, FailoverServer.class));
+    }
+
+    public void setGson(Gson gson) {
+        this.gson = gson;
     }
 
     public void setOutput(CLInterface output) {
