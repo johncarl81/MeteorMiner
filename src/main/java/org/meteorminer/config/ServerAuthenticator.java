@@ -4,7 +4,6 @@ import org.meteorminer.config.advice.ServerAdvice;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.Map;
  */
 public class ServerAuthenticator extends Authenticator {
 
-    private Map<URL, ServerAuthentication> urlAuthenticationMap = new HashMap<URL, ServerAuthentication>();
+    private Map<String, ServerAuthentication> domainAuthenticationMap = new HashMap<String, ServerAuthentication>();
 
     private class ServerAuthentication {
         private PasswordAuthentication serverAuthentication;
@@ -43,7 +42,7 @@ public class ServerAuthenticator extends Authenticator {
     public ServerAuthenticator(List<ServerAdvice> serverAdvice) {
 
         for (ServerAdvice advice : serverAdvice) {
-            urlAuthenticationMap.put(advice.getBitcoinUrl(),
+            domainAuthenticationMap.put(advice.getBitcoinUrl().getHost(),
                     new ServerAuthentication(advice.getUsername(), advice.getPassword(),
                             advice.getProxyUsername(), advice.getProxyPassword()));
         }
@@ -59,10 +58,8 @@ public class ServerAuthenticator extends Authenticator {
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
 
-        System.out.println("host: " + getRequestingHost());
-
-        if (urlAuthenticationMap.containsKey(getRequestingURL())) {
-            ServerAuthentication authentication = urlAuthenticationMap.get(getRequestingURL());
+        if (domainAuthenticationMap.containsKey(getRequestingHost())) {
+            ServerAuthentication authentication = domainAuthenticationMap.get(getRequestingHost());
 
             if (getRequestorType() == RequestorType.SERVER && authentication.getServerAuthentication() != null) {
                 return authentication.getServerAuthentication();
