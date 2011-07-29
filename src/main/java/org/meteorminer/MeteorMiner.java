@@ -1,9 +1,13 @@
 package org.meteorminer;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.commons.cli.*;
-import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
+import org.meteorminer.config.advice.CommandLineAdviceFactory;
+import org.meteorminer.config.advice.MeteorAdvice;
+import org.meteorminer.config.advice.YAMLFileAdviceFactory;
+import org.meteorminer.config.module.BootstrapModule;
 import org.meteorminer.output.ShutdownDetection;
 import org.meteorminer.service.MiningService;
 
@@ -21,16 +25,26 @@ public class MeteorMiner {
         try {
             Options options = buildOptions();
 
-            CommandLine line = new PosixParser().parse(options, args);
+            Injector bootstrapInjector = Guice.createInjector(new BootstrapModule());
 
-            MeteorAdvice advice = new MeteorAdvice(line);
+            PosixParser parser = bootstrapInjector.getInstance(PosixParser.class);
 
-            if (advice.help()) {
-                //print help
-                HelpFormatter formatter = new HelpFormatter();
+            CommandLine commandLine = parser.parse(options, args);
 
+            if (commandLine.hasOption("help")) {
+                HelpFormatter formatter = bootstrapInjector.getInstance(HelpFormatter.class);
                 formatter.printHelp("MeteorMiner", options);
             } else {
+                MeteorAdvice advice;
+                if (commandLine.hasOption("config")) {
+                    YAMLFileAdviceFactory adviceFactory = bootstrapInjector.getInstance(YAMLFileAdviceFactory.class);
+                    advice = adviceFactory.buildAdvice(commandLine.getOptionValue("config"));
+                } else {
+
+                    CommandLineAdviceFactory adviceFactory = bootstrapInjector.getInstance(CommandLineAdviceFactory.class);
+                    advice = adviceFactory.buildAdvice(commandLine);
+                }
+
                 Injector injector = MeteorMinerInjector.getInjector(advice);
 
                 Runtime runtime = injector.getInstance(Runtime.class);
@@ -51,6 +65,7 @@ public class MeteorMiner {
     public static Options buildOptions() {
         Options options = new Options();
         options.addOption("h", "help", false, "this help");
+        options.addOption("config", false, "optional YAML configuration file");
         options.addOption("u", "user", true, "optional bitcoin host username");
         options.addOption("p", "pass", true, "optional bitcoin host password");
         options.addOption("o", "host", true, "optional bitcoin host IP (default: localhost)");

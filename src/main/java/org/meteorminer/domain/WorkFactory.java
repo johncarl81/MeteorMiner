@@ -48,6 +48,8 @@ public class WorkFactory implements ResponseFactory<Work> {
 
         preprocessWork(work);
 
+        work.updateTime();
+
         return work;
     }
 

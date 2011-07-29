@@ -7,10 +7,12 @@ import org.meteorminer.network.MessageStrategy;
 import org.meteorminer.network.ResponseFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author John Ericksen
  */
+@Singleton
 public class GetWorkMessageStrategy implements MessageStrategy<Work> {
 
     private static final String REQUEST_TYPE = "GetWork";

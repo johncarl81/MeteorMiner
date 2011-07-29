@@ -6,11 +6,13 @@ import com.nativelibs4java.opencl.JavaCL;
 import org.apache.commons.pool.ObjectPool;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerInjector;
+import org.meteorminer.config.advice.GPUDeviceAdvice;
+import org.meteorminer.config.advice.MeteorAdvice;
 import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.GPUDevice;
 import org.meteorminer.domain.Work;
+import org.meteorminer.hash.MockAdviceFactory;
 import org.meteorminer.hash.WorkMockFactory;
 import org.meteorminer.output.CLInterface;
 
@@ -32,12 +34,15 @@ public class MinerCoreTest {
     private GPUDevice device;
     private CLInterface output;
     private WorkMockFactory workMockFactory;
-    private MeteorAdvice advice;
     private int bufferSize;
 
     @Before
     public void setup() throws MalformedURLException {
-        Injector injector = MeteorMinerInjector.getGPUDeviceInjector(JavaCL.getBestDevice(), 0);
+        GPUDeviceAdvice gpuAdvice = MockAdviceFactory.getInstance().buildDefaultGPUAdvice();
+        MeteorAdvice meteorAdvice = MockAdviceFactory.getInstance().buildDefaultMeteorAdvice();
+
+        MeteorMinerInjector.getInjector(meteorAdvice);
+        Injector injector = MeteorMinerInjector.getGPUDeviceInjector(JavaCL.getBestDevice(), gpuAdvice);
         kernelContext = injector.getInstance(Key.get(KernelContext.class, SearchKernel.class));
         intBufferPool = injector.getInstance(Key.get(ObjectPool.class, IntBufferPool.class));
         clIntBufferPool = injector.getInstance(Key.get(ObjectPool.class, CLIntBufferPool.class));
@@ -45,7 +50,6 @@ public class MinerCoreTest {
         device = injector.getInstance(GPUDevice.class);
         output = injector.getInstance(CLInterface.class);
         workMockFactory = injector.getInstance(WorkMockFactory.class);
-        advice = injector.getInstance(MeteorAdvice.class);
         bufferSize = injector.getInstance(Key.get(Integer.class, BufferSize.class));
     }
 
@@ -57,7 +61,9 @@ public class MinerCoreTest {
 
         MinerCore minerCore = new MinerCore(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output, bufferSize, resultPool);
 
-        MinerResult result = minerCore.hash(nonce / advice.getVectors(), work);
+        //todo:fix vector count
+        //MinerResult result = minerCore.hash(nonce / advice.getVectors(), work);
+        MinerResult result = minerCore.hash(nonce, work);
         result.getEvent().waitFor();
 
         IntBuffer buffer = result.getBuffer();

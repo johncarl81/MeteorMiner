@@ -1,7 +1,13 @@
 package org.meteorminer.config;
 
+import org.meteorminer.config.advice.ServerAdvice;
+
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Authenticator class for providing server and proxy authentication.
@@ -10,15 +16,36 @@ import java.net.PasswordAuthentication;
  */
 public class ServerAuthenticator extends Authenticator {
 
-    private PasswordAuthentication serverAuthentication;
-    private PasswordAuthentication proxyAuthentication;
+    private Map<URL, ServerAuthentication> urlAuthenticationMap = new HashMap<URL, ServerAuthentication>();
 
-    public ServerAuthenticator(String username, String password, String proxyUsername, String proxyPassword) {
-        if (username != null) {
-            this.serverAuthentication = new PasswordAuthentication(username, nullSafeCharArray(password));
+    private class ServerAuthentication {
+        private PasswordAuthentication serverAuthentication;
+        private PasswordAuthentication proxyAuthentication;
+
+        private ServerAuthentication(String username, String password, String proxyUsername, String proxyPassword) {
+            if (username != null) {
+                this.serverAuthentication = new PasswordAuthentication(username, nullSafeCharArray(password));
+            }
+            if (proxyUsername != null) {
+                this.proxyAuthentication = new PasswordAuthentication(proxyUsername, nullSafeCharArray(proxyPassword));
+            }
         }
-        if (proxyUsername != null) {
-            this.proxyAuthentication = new PasswordAuthentication(proxyUsername, nullSafeCharArray(proxyPassword));
+
+        public PasswordAuthentication getServerAuthentication() {
+            return serverAuthentication;
+        }
+
+        public PasswordAuthentication getProxyAuthentication() {
+            return proxyAuthentication;
+        }
+    }
+
+    public ServerAuthenticator(List<ServerAdvice> serverAdvice) {
+
+        for (ServerAdvice advice : serverAdvice) {
+            urlAuthenticationMap.put(advice.getBitcoinUrl(),
+                    new ServerAuthentication(advice.getUsername(), advice.getPassword(),
+                            advice.getProxyUsername(), advice.getProxyPassword()));
         }
     }
 
@@ -29,13 +56,19 @@ public class ServerAuthenticator extends Authenticator {
         return proxyPassword.toCharArray();
     }
 
-
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
-        if (getRequestorType() == RequestorType.SERVER && serverAuthentication != null) {
-            return serverAuthentication;
-        } else if (getRequestorType() == RequestorType.PROXY && proxyAuthentication != null) {
-            return proxyAuthentication;
+
+        System.out.println("host: " + getRequestingHost());
+
+        if (urlAuthenticationMap.containsKey(getRequestingURL())) {
+            ServerAuthentication authentication = urlAuthenticationMap.get(getRequestingURL());
+
+            if (getRequestorType() == RequestorType.SERVER && authentication.getServerAuthentication() != null) {
+                return authentication.getServerAuthentication();
+            } else if (getRequestorType() == RequestorType.PROXY && authentication.getProxyAuthentication() != null) {
+                return authentication.getProxyAuthentication();
+            }
         }
         return super.getPasswordAuthentication();
     }

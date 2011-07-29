@@ -32,6 +32,7 @@ public class Work {
 
     private long created;
     private boolean stale;
+    private ServerSpecification serverSpecification;
 
     public Work() {
         this.stale = false;
@@ -116,5 +117,9 @@ public class Work {
 
     public Map<String, PreProcessWork> getPreProcessedWork() {
         return preProcessedWork;
+    }
+
+    public ServerSpecification getServerSpecification() {
+        return serverSpecification;
     }
 }

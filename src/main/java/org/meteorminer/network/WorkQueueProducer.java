@@ -29,7 +29,6 @@ public class WorkQueueProducer implements Runnable {
             try {
                 Work work = workProducer.produce();
                 if (work != null) {
-                    work.updateTime();
                     workQueue.put(work);
                 }
             } catch (InterruptedException e) {

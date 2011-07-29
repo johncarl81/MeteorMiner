@@ -2,8 +2,8 @@ package org.meteorminer.hash.gpu;
 
 import com.nativelibs4java.opencl.*;
 import org.apache.commons.io.IOUtils;
-import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerRuntimeException;
+import org.meteorminer.config.advice.GPUDeviceAdvice;
 import org.meteorminer.config.binding.BufferSize;
 
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ public class SearchKernelContextProvider implements Provider<KernelContext> {
     @Inject
     private CLDevice device;
     @Inject
-    private MeteorAdvice advice;
+    private GPUDeviceAdvice advice;
     @Inject
     @BufferSize
     private int bufferSize;

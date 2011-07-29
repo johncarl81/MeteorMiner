@@ -1,7 +1,7 @@
 package org.meteorminer.hash;
 
 import com.google.inject.Inject;
-import org.meteorminer.config.binding.GetWorkTimeout;
+import org.meteorminer.config.ServerProvider;
 import org.meteorminer.domain.Work;
 import org.meteorminer.network.InterruptTimerTask;
 import org.meteorminer.output.CLInterface;
@@ -20,15 +20,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public class WorkConsumer {
 
     private static final long LAST_NONCE = 0xFFFFFFFFL;
-    private AtomicLong nonce = new AtomicLong();
-    private AtomicReference<Work> work = new AtomicReference<Work>();
+
+    @Inject
+    private AtomicLong nonce;
+    @Inject
+    private AtomicReference<Work> work;
     @Inject
     private Timer timer;
     @Inject
     private Provider<InterruptTimerTask> interruptTimerTaskProvider;
-    @Inject
-    @GetWorkTimeout
-    private long getWorkTimeout;
     @Inject
     private WorkProducerImpl workProducer;
     @Inject
@@ -37,6 +37,8 @@ public class WorkConsumer {
     private CLInterface output;
     @Inject
     private StatisticsHolder statistics;
+    @Inject
+    private ServerProvider serverProvider;
 
     private InterruptTimerTask interruptTimerTask;
 
@@ -72,17 +74,15 @@ public class WorkConsumer {
 
     private void setWork(Work work) {
         this.work.set(work);
-        reset();
-    }
 
-    public void reset() {
+        //reset
         nonce.set(0);
         //reset getwork timeout
         if (interruptTimerTask != null) {
             interruptTimerTask.cancel();
         }
         interruptTimerTask = interruptTimerTaskProvider.get();
-        timer.schedule(interruptTimerTask, getWorkTimeout);
+        timer.schedule(interruptTimerTask, serverProvider.get().getGetWorkTimeout());
     }
 
     public Work getWork() {

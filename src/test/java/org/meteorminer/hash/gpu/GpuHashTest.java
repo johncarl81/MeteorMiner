@@ -7,7 +7,8 @@ import com.google.inject.util.Modules;
 import com.nativelibs4java.opencl.JavaCL;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.MeteorAdvice;
+import org.meteorminer.config.advice.GPUDeviceAdvice;
+import org.meteorminer.config.advice.MeteorAdvice;
 import org.meteorminer.config.module.*;
 import org.meteorminer.domain.Work;
 import org.meteorminer.hash.*;
@@ -26,13 +27,16 @@ public class GpuHashTest {
 
     @Before
     public void setup() throws MalformedURLException {
+        GPUDeviceAdvice advice = MockAdviceFactory.getInstance().buildDefaultGPUAdvice();
+        MeteorAdvice meteorAdvice = MockAdviceFactory.getInstance().buildDefaultMeteorAdvice();
+
         Injector injector = Guice.createInjector(
-                Modules.override(new MeteorApplicationModule(new MeteorAdvice()),
+                Modules.override(new MeteorApplicationModule(meteorAdvice),
                         new MinerModule(),
                         new FailoverExtensionModule(),
                         new LongPollExtensionModule(),
                         new DeviceModule(),
-                        new GPUDeviceModule(JavaCL.getBestDevice(), 0)).with(
+                        new GPUDeviceModule(JavaCL.getBestDevice(), advice)).with(
                         new SynchronousModule(),
                         new GPUSynchronousModule()));
         scanHash = injector.getInstance(GpuHashScanner.class);

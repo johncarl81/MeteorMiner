@@ -1,8 +1,12 @@
 package org.meteorminer.service;
 
+import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
+import org.meteorminer.config.MeteorMinerInjector;
+import org.meteorminer.config.advice.MeteorAdvice;
 import org.meteorminer.hash.HashScanner;
+import org.meteorminer.hash.MockAdviceFactory;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,12 +26,15 @@ public class ParallelMinerStrategyTest {
 
     @Before
     public void setup() {
+        MeteorAdvice meteorAdvice = MockAdviceFactory.getInstance().buildDefaultMeteorAdvice();
+        meteorAdvice.setTandem(false);
+        Injector injector = MeteorMinerInjector.getInjector(meteorAdvice);
 
         asynchronousFactory = createMock(AsynchronousFactory.class);
         minerFactory = createMock(MinerFactory.class);
         miner = createMock(Miner.class);
 
-        parallelMinerStrategy = new ParallelMinerStrategy();
+        parallelMinerStrategy = injector.getInstance(ParallelMinerStrategy.class);
         for (int i = 0; i < 10; i++) {
             parallelMinerStrategy.add(createMock(HashScanner.class));
         }
