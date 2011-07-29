@@ -1,6 +1,7 @@
 package org.meteorminer.network.longpoll;
 
-import org.meteorminer.config.binding.BitcoinUrl;
+import org.meteorminer.config.ServerProvider;
+import org.meteorminer.config.advice.ServerAdvice;
 import org.meteorminer.network.RPCExtension;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.service.AsynchronousFactory;
@@ -18,8 +19,7 @@ import java.net.URL;
 public class LongPollExtension implements RPCExtension {
 
     @Inject
-    @BitcoinUrl
-    private URL bitcoind;
+    private ServerProvider serverProvider;
     @Inject
     private CLInterface output;
     @Inject
@@ -27,10 +27,12 @@ public class LongPollExtension implements RPCExtension {
     @Inject
     private AsynchronousFactory asynchronousFactory;
 
-    //private Thread longPollThread = null;
     private boolean started = false;
 
     public synchronized void setup(HttpURLConnection connection) {
+        ServerAdvice serverAdvice = serverProvider.get();
+
+        //todo:better integration with server provider looping
         if (!started) {
             String xlongpolling = connection.getHeaderField("X-Long-Polling");
 
@@ -50,6 +52,7 @@ public class LongPollExtension implements RPCExtension {
     }
 
     private URL parseLongPollURL(String xlongpolling) throws MalformedURLException {
+        URL bitcoind = serverProvider.get().getBitcoinUrl();
         if (xlongpolling.startsWith("http")) {
             return new URL(xlongpolling);
         } else if (xlongpolling.startsWith("/")) {

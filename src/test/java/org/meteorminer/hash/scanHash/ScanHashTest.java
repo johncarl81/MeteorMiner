@@ -6,14 +6,12 @@ import com.google.inject.Injector;
 import com.google.inject.util.Modules;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.MeteorAdvice;
+import org.meteorminer.config.advice.CPUDeviceAdvice;
+import org.meteorminer.config.advice.MeteorAdvice;
 import org.meteorminer.config.module.*;
 import org.meteorminer.domain.Work;
 import org.meteorminer.domain.WorkFactory;
-import org.meteorminer.hash.MockNonceIteratorFactory;
-import org.meteorminer.hash.SynchronousModule;
-import org.meteorminer.hash.WorkConsumer;
-import org.meteorminer.hash.WorkFoundCallbackTester;
+import org.meteorminer.hash.*;
 
 import java.net.MalformedURLException;
 
@@ -29,13 +27,16 @@ public class ScanHashTest {
 
     @Before
     public void setup() throws MalformedURLException {
+        CPUDeviceAdvice cpuAdvice = MockAdviceFactory.getInstance().buildDefaultCPUAdvice();
+        MeteorAdvice meteorAdvice = MockAdviceFactory.getInstance().buildDefaultMeteorAdvice();
+
         Injector injector = Guice.createInjector(
-                Modules.override(new MeteorApplicationModule(new MeteorAdvice()),
+                Modules.override(new MeteorApplicationModule(meteorAdvice),
                         new MinerModule(),
                         new FailoverExtensionModule(),
                         new LongPollExtensionModule(),
                         new DeviceModule(),
-                        new CPUDeviceModule(0)).with(
+                        new CPUDeviceModule(cpuAdvice)).with(
                         new SynchronousModule()));
         scanHash = injector.getInstance(ScanHash.class);
         callbackTester = injector.getInstance(WorkFoundCallbackTester.class);

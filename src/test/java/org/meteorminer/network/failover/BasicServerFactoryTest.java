@@ -2,6 +2,9 @@ package org.meteorminer.network.failover;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.meteorminer.config.ServerProvider;
+import org.meteorminer.config.advice.MeteorAdvice;
+import org.meteorminer.hash.MockAdviceFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,9 +22,10 @@ public class BasicServerFactoryTest {
 
     @Before
     public void setup() throws MalformedURLException {
-        testUrl = new URL("http://localhost:80");
+        MeteorAdvice meteorAdvice = MockAdviceFactory.getInstance().buildDefaultMeteorAdvice();
+        testUrl = meteorAdvice.getServers().get(0).getBitcoinUrl();
         serverFactory = new BasicServerFactory();
-        serverFactory.setBitcoind(testUrl);
+        serverFactory.setServerProvider(new ServerProvider(meteorAdvice));
     }
 
     @Test

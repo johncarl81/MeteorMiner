@@ -5,8 +5,9 @@ import com.nativelibs4java.opencl.CLDevice;
 import com.nativelibs4java.opencl.CLPlatform;
 import com.nativelibs4java.opencl.JavaCL;
 import org.meteorminer.config.MeteorMinerInjector;
-import org.meteorminer.config.binding.CPUCount;
-import org.meteorminer.config.binding.GPUIds;
+import org.meteorminer.config.advice.CPUDeviceAdvice;
+import org.meteorminer.config.advice.GPUDeviceAdvice;
+import org.meteorminer.config.advice.MeteorAdvice;
 import org.meteorminer.domain.Device;
 import org.meteorminer.hash.HashScanner;
 import org.meteorminer.output.CLInterface;
@@ -34,41 +35,42 @@ public class MiningService {
     @Inject
     private StatisticsHolder statisticsHolder;
     @Inject
-    @CPUCount
-    private int cpuCount;
-    @Inject
-    @GPUIds
-    private List<Integer> activatedGpus;
-    @Inject
     private MinerStrategy minerStrategy;
+    @Inject
+    private MeteorAdvice advice;
     @Inject
     private StatisticsDelayTimerTask statisticsDelayTimerTask;
 
     public void start() {
-        List<CLDevice> gpuDevices = getAllDevices();
 
-        //output gpus found
-        System.out.println("GPU devices found:");
-        System.out.println("Id\tName");
-        for (int i = 0; i < gpuDevices.size(); i++) {
-            System.out.println(i + ":\t" + gpuDevices.get(i));
-        }
+        if (advice.getGpuDevices().size() > 0) {
+            List<CLDevice> gpuDevices = getAllDevices();
 
-        //gpu setup
-        for (Integer id : activatedGpus) {
-            if (id < gpuDevices.size()) {
-                Injector gpuDeviceInjector = MeteorMinerInjector.getGPUDeviceInjector(gpuDevices.get(id), id);
-                setupDevice(gpuDeviceInjector);
-            } else {
-                output.notification("GPU Device not found: " + id);
+            //output gpus found
+            output.notification("GPU devices found:");
+            output.notification("Id\tName");
+            for (int i = 0; i < gpuDevices.size(); i++) {
+                output.notification(i + ":\t" + gpuDevices.get(i));
+            }
+
+            //gpu setup
+            for (GPUDeviceAdvice gpuAdvice : advice.getGpuDevices()) {
+                if (gpuAdvice.getId() < gpuDevices.size()) {
+                    Injector gpuDeviceInjector = MeteorMinerInjector.getGPUDeviceInjector(gpuDevices.get(gpuAdvice.getId()), gpuAdvice);
+                    setupDevice(gpuDeviceInjector);
+                } else {
+                    output.notification("GPU Device not found: " + gpuAdvice.getId());
+                }
             }
         }
 
-        //cpu setup
-        for (int i = 0; i < cpuCount; i++) {
-            Injector cpuDeviceInjector = MeteorMinerInjector.getCPUDeviceInjector(i);
+        if (advice.getCpuDevices().size() > 0) {
+            //cpu setup
+            for (CPUDeviceAdvice cpuAdvice : advice.getCpuDevices()) {
+                Injector cpuDeviceInjector = MeteorMinerInjector.getCPUDeviceInjector(cpuAdvice);
 
-            setupDevice(cpuDeviceInjector);
+                setupDevice(cpuDeviceInjector);
+            }
         }
 
         minerStrategy.start();

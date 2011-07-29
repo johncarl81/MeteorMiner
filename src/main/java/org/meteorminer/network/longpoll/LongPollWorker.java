@@ -28,14 +28,14 @@ public class LongPollWorker implements Runnable {
     public LongPollWorker(@Assisted URL longPollWorkerUrl,
                           JsonClient jsonClient,
                           CLInterface output, WorkConsumer workSource,
-                          @NetworkErrorPause long netorkErrorPause,
+                          @NetworkErrorPause long networkErrorPause,
                           LongPollMessageStrategy longPollMessageStrategy) {
         this.longPollWorkerUrl = longPollWorkerUrl;
         this.jsonClient = jsonClient;
         this.longPollMessageStrategy = longPollMessageStrategy;
         this.output = output;
         this.workSource = workSource;
-        this.errorWait = netorkErrorPause;
+        this.errorWait = networkErrorPause;
     }
 
     public void run() {

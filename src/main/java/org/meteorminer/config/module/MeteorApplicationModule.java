@@ -1,28 +1,30 @@
 package org.meteorminer.config.module;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
-import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.MeteorMinerRuntimeException;
 import org.meteorminer.config.ServerAuthenticator;
-import org.meteorminer.config.binding.*;
+import org.meteorminer.config.ServerProvider;
+import org.meteorminer.config.advice.MeteorAdvice;
+import org.meteorminer.config.advice.ServerAdvice;
+import org.meteorminer.config.binding.CachedThreadPool;
+import org.meteorminer.config.binding.GetWorkMessage;
+import org.meteorminer.config.binding.NetworkErrorPause;
+import org.meteorminer.config.binding.Verbose;
 import org.meteorminer.config.factory.CachedThreadPoolProvider;
 import org.meteorminer.hash.PreProcessWorkFactory;
 import org.meteorminer.hash.gpu.GPUPreProcessWorkFactory;
 import org.meteorminer.hash.scanHash.ScanHashPreProcessWorkFactory;
+import org.meteorminer.network.BitcoinUrlFactory;
 import org.meteorminer.network.GetWorkMessageProvider;
 import org.meteorminer.service.MinerStrategy;
 import org.meteorminer.service.ParallelMinerStrategy;
 import org.meteorminer.service.TandemMinerStrategy;
 
 import java.net.Authenticator;
-import java.net.Proxy;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
-import java.util.List;
 import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 
@@ -32,7 +34,6 @@ import java.util.concurrent.ExecutorService;
  * @author John Ericksen
  */
 public class MeteorApplicationModule extends AbstractModule {
-
 
     private MeteorAdvice meteorAdvice;
 
@@ -46,26 +47,17 @@ public class MeteorApplicationModule extends AbstractModule {
         bind(MeteorAdvice.class).toInstance(meteorAdvice);
 
         //Annotated @Injections
-        bind(URL.class).annotatedWith(BitcoinUrl.class)
-                .toInstance(meteorAdvice.getBitcoinUrl());
-
         if (meteorAdvice.isTandem()) {
             bind(MinerStrategy.class).to(TandemMinerStrategy.class);
         } else {
             bind(MinerStrategy.class).to(ParallelMinerStrategy.class);
         }
 
-        bind(Proxy.class).annotatedWith(BitcoinProxy.class).toProvider(new ProxyProvider(meteorAdvice.getProxy()));
         bind(String.class).annotatedWith(GetWorkMessage.class).toProvider(GetWorkMessageProvider.class).asEagerSingleton();
-        bind(Long.class).annotatedWith(GetWorkTimeout.class).toInstance(meteorAdvice.getGetWorkTimeout());
         bind(Boolean.class).annotatedWith(Verbose.class).toInstance(meteorAdvice.isVerbose());
-        bind(Integer.class).annotatedWith(CPUCount.class).toInstance(meteorAdvice.getCpuCount());
-        bind(Integer.class).annotatedWith(Intensity.class).toInstance(meteorAdvice.getIntensity());
-        bind(Integer.class).annotatedWith(WorkSize.class).toInstance(meteorAdvice.getWorksize());
         bind(Long.class).annotatedWith(NetworkErrorPause.class).toInstance(meteorAdvice.getNetworkErrorPause());
-        bind(Integer.class).annotatedWith(Vectors.class).toInstance(meteorAdvice.getVectors());
-        bind(new TypeLiteral<List<Integer>>() {
-        }).annotatedWith(GPUIds.class).toInstance(meteorAdvice.getGpuIds());
+        bind(ServerAdvice.class).toProvider(ServerProvider.class);
+        bind(BitcoinUrlFactory.class).asEagerSingleton();
 
         //additional singletons
         final Timer timer = new Timer(true);
@@ -80,7 +72,7 @@ public class MeteorApplicationModule extends AbstractModule {
 
         bind(DateFormat.class).toInstance(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
 
-        Authenticator.setDefault(new ServerAuthenticator(meteorAdvice.getUsername(), meteorAdvice.getPassword(), meteorAdvice.getProxyUsername(), meteorAdvice.getProxyPassword()));
+        Authenticator.setDefault(new ServerAuthenticator(meteorAdvice.getServers()));
 
         //is this the right place for these?
         Multibinder<PreProcessWorkFactory> preProcessedWorkMultibinder = Multibinder.newSetBinder(binder(), PreProcessWorkFactory.class);

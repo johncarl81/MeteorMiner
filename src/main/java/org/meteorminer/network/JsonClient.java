@@ -27,7 +27,6 @@ public class JsonClient {
     }
 
     public <T> T execute(MessageStrategy<T> messageStrategy) throws IOException {
-
         HttpURLConnection connection = connectionFactory.getBitcoinConnection();
         return execute(connection, messageStrategy);
     }

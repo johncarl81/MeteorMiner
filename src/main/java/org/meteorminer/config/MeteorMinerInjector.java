@@ -3,6 +3,9 @@ package org.meteorminer.config;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.nativelibs4java.opencl.CLDevice;
+import org.meteorminer.config.advice.CPUDeviceAdvice;
+import org.meteorminer.config.advice.GPUDeviceAdvice;
+import org.meteorminer.config.advice.MeteorAdvice;
 import org.meteorminer.config.module.*;
 
 /**
@@ -42,11 +45,11 @@ public class MeteorMinerInjector {
      * GPU level injector.  Provides the GPU child injector.
      *
      * @param device
-     * @param id
+     * @param advice
      * @return GPU Injector
      */
-    public synchronized static Injector getGPUDeviceInjector(CLDevice device, int id) {
-        return getMinerInjector().createChildInjector(new DeviceModule(), new GPUDeviceModule(device, id));
+    public synchronized static Injector getGPUDeviceInjector(CLDevice device, GPUDeviceAdvice advice) {
+        return getMinerInjector().createChildInjector(new DeviceModule(), new GPUDeviceModule(device, advice));
     }
 
     /**
@@ -55,7 +58,7 @@ public class MeteorMinerInjector {
      * @param cpuNumber
      * @return CPU Injector
      */
-    public synchronized static Injector getCPUDeviceInjector(int cpuNumber) {
+    public synchronized static Injector getCPUDeviceInjector(CPUDeviceAdvice cpuNumber) {
         return getMinerInjector().createChildInjector(new DeviceModule(), new CPUDeviceModule(cpuNumber));
     }
 

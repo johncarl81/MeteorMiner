@@ -1,12 +1,10 @@
 package org.meteorminer.network;
 
-import org.meteorminer.config.binding.BitcoinProxy;
+import org.meteorminer.config.advice.ServerAdvice;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.Proxy;
 import java.net.URL;
 
 /**
@@ -18,19 +16,18 @@ public class BitcoinConnectionFactory {
     private BitcoinUrlFactory bitcoinUrlFactory;
 
     @Inject
-    @Nullable
-    @BitcoinProxy
-    private Proxy proxy;
+    private ServerAdvice serverAdvice;
 
     public HttpURLConnection getBitcoinConnection() throws IOException {
         return getBitcoinConnection(bitcoinUrlFactory.getUrl());
     }
 
     public HttpURLConnection getBitcoinConnection(URL url) throws IOException {
-        if (proxy == null)
+        if (serverAdvice.getProxy() == null) {
             return (HttpURLConnection) url.openConnection();
-        else
-            return (HttpURLConnection) url.openConnection(proxy);
+        } else {
+            return (HttpURLConnection) url.openConnection(serverAdvice.getProxy());
+        }
     }
 
     public void errorUpdate() {

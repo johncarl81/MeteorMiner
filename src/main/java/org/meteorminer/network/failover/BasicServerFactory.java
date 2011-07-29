@@ -1,6 +1,6 @@
 package org.meteorminer.network.failover;
 
-import org.meteorminer.config.binding.BitcoinUrl;
+import org.meteorminer.config.ServerProvider;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -11,12 +11,11 @@ import java.net.URL;
 public class BasicServerFactory implements FailoverServerDecoratorFactory {
 
     @Inject
-    @BitcoinUrl
-    private URL bitcoind;
+    private ServerProvider serverProvider;
 
     @Override
     public URL getUrl() {
-        return bitcoind;
+        return serverProvider.get().getBitcoinUrl();
     }
 
     @Override
@@ -31,10 +30,10 @@ public class BasicServerFactory implements FailoverServerDecoratorFactory {
 
     @Override
     public void updateError() {
-        //noop
+        serverProvider.iterate();
     }
 
-    public void setBitcoind(URL bitcoind) {
-        this.bitcoind = bitcoind;
+    public void setServerProvider(ServerProvider serverProvider) {
+        this.serverProvider = serverProvider;
     }
 }

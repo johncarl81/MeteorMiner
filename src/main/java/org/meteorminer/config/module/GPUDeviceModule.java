@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.nativelibs4java.opencl.CLDevice;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.meteorminer.config.advice.GPUDeviceAdvice;
 import org.meteorminer.config.binding.*;
 import org.meteorminer.domain.Device;
 import org.meteorminer.domain.GPUDevice;
@@ -22,18 +23,19 @@ import org.meteorminer.output.Statistics;
 public class GPUDeviceModule extends AbstractModule {
 
     private CLDevice device;
-    private int id;
+    private GPUDeviceAdvice advice;
 
-    public GPUDeviceModule(CLDevice device, int id) {
+    public GPUDeviceModule(CLDevice device, GPUDeviceAdvice advice) {
         this.device = device;
-        this.id = id;
+        this.advice = advice;
     }
 
     @Override
     protected void configure() {
 
+        bind(GPUDeviceAdvice.class).toInstance(advice);
         bind(CLDevice.class).toInstance(device);
-        GPUDevice gpuDevice = new GPUDevice(device, id);
+        GPUDevice gpuDevice = new GPUDevice(device, advice.getId());
         bind(Device.class).toInstance(gpuDevice);
         bind(GPUDevice.class).toInstance(gpuDevice);
 
@@ -66,6 +68,10 @@ public class GPUDeviceModule extends AbstractModule {
         bind(ObjectPool.class).annotatedWith(CLIntBufferPool.class).toInstance(new GenericObjectPool(clIntBufferPoolFactory, config));
         bind(ObjectPool.class).annotatedWith(RunnableHashCheckerPool.class).toInstance(new GenericObjectPool(runnableHashCheckerFactory, config));
         bind(ObjectPool.class).annotatedWith(ResultPool.class).toInstance(new GenericObjectPool(minerResultPoolFactory, config));
+
+        bind(Integer.class).annotatedWith(Intensity.class).toInstance(advice.getIntensity());
+        bind(Integer.class).annotatedWith(WorkSize.class).toInstance(advice.getWorksize());
+        bind(Integer.class).annotatedWith(Vectors.class).toInstance(advice.getVectors());
 
 
     }

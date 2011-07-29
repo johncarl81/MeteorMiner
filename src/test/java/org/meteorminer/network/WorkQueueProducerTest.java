@@ -24,7 +24,6 @@ public class WorkQueueProducerTest {
     @Before
     public void setup() {
 
-
         testWork = createMock(Work.class);
         output = createMock(CLInterface.class);
         workProducer = createMock(WorkProducer.class);
@@ -44,7 +43,6 @@ public class WorkQueueProducerTest {
         reset(output, workProducer, workQueue);
 
         expect(workProducer.produce()).andReturn(testWork);
-        testWork.updateTime();
         workQueue.put(testWork);
 
         replay(output, workProducer, workQueue);
@@ -74,7 +72,6 @@ public class WorkQueueProducerTest {
         reset(output, workProducer, workQueue);
 
         expect(workProducer.produce()).andReturn(testWork);
-        testWork.updateTime();
         InterruptedException interruptedException = new InterruptedException();
         workQueue.put(testWork);
         expectLastCall().andThrow(interruptedException);

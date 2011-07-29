@@ -6,12 +6,14 @@ import com.google.inject.Inject;
 import org.meteorminer.output.CLInterface;
 import org.meteorminer.service.URLFactory;
 
+import javax.inject.Singleton;
 import java.lang.reflect.Type;
 import java.util.List;
 
 /**
  * @author John Ericksen
  */
+@Singleton
 public class FailoverServerFactory {
 
     @Inject

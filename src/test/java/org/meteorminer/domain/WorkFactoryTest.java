@@ -4,8 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
-import org.meteorminer.config.MeteorAdvice;
 import org.meteorminer.config.module.MeteorApplicationModule;
+import org.meteorminer.hash.MockAdviceFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -30,7 +30,10 @@ public class WorkFactoryTest {
 
     @Before
     public void setup() {
-        Injector injector = Guice.createInjector(new MeteorApplicationModule(new MeteorAdvice()));
+
+
+        Injector injector = Guice.createInjector(new MeteorApplicationModule(
+                MockAdviceFactory.getInstance().buildDefaultMeteorAdvice()));
         workFactory = injector.getInstance(WorkFactory.class);
     }
 
