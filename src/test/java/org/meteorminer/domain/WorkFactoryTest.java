@@ -24,7 +24,6 @@ public class WorkFactoryTest {
     private static final String HASH1 = "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000" +
             "000000000000000000000000000000000010000";
     private static final String TARGET = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000";
-    private static final long ID = 1;
 
     private WorkFactory workFactory;
 
@@ -40,7 +39,7 @@ public class WorkFactoryTest {
                 "\"data\":\"" + DATA + "\"," +
                 "\"hash1\":\"" + HASH1 + "\"," +
                 "\"target\":\"" + TARGET + "\"}," +
-                "\"error\":null,\"id\":\"" + ID + "\"}";
+                "\"error\":null,\"id\":1}";
 
         InputStream inputStream = new ByteArrayInputStream(test.getBytes());
 
