@@ -105,7 +105,6 @@ public class CommandLineAdviceFactory {
             String[] gpuIdParts = line.getOptionValue("gpu").split(",");
 
             for (String gpuIdString : gpuIdParts) {
-                int gpuId = Integer.parseInt(gpuIdString);
                 GPUDeviceAdvice gpuAdvice = new GPUDeviceAdvice();
 
                 gpuAdvice.setIntensity(intensity);

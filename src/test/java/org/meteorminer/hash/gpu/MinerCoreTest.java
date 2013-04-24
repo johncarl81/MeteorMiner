@@ -59,7 +59,7 @@ public class MinerCoreTest {
 
         int nonce = 563799816;
 
-        MinerCore minerCore = new MinerCore(device, 4, -1, kernelContext, clIntBufferPool, intBufferPool, output, bufferSize, resultPool);
+        MinerCore minerCore = new MinerCore(device, 4, 1, kernelContext, clIntBufferPool, intBufferPool, output, bufferSize, resultPool);
 
         //todo:fix vector count
         //MinerResult result = minerCore.hash(nonce / advice.getVectors(), work);
